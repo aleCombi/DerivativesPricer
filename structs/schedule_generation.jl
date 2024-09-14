@@ -2,15 +2,14 @@ module ScheduleGeneration
 
 using Dates
 
-# Define the abstract type ScheduleRule
+export ScheduleRule, DailySchedule, MonthlySchedule, QuarterlySchedule, AnnualSchedule, generate_schedule
+
 """
     ScheduleRule
 
 Abstract type for schedule generation rules. This is the base type for all specific schedule generation rules such as `DailySchedule`, `MonthlySchedule`, `QuarterlySchedule`, etc.
 """
 abstract type ScheduleRule end
-
-# Define concrete schedule generation rules
 
 """
     DailySchedule <: ScheduleRule
@@ -40,10 +39,6 @@ A concrete type representing a rule that generates schedules annually.
 """
 struct AnnualSchedule <: ScheduleRule end
 
-# Export the types and relevant functions
-export ScheduleRule, DailySchedule, MonthlySchedule, QuarterlySchedule, AnnualSchedule, generate_schedule
-
-# Helper function to increment dates based on the schedule rule
 """
     generate_schedule(start_date::Date, end_date::Date, rule::ScheduleRule) -> Vector{Date}
 
@@ -57,7 +52,7 @@ Generates a sequence of dates between `start_date` and `end_date` based on the s
 # Returns
 - `Vector{Date}`: A vector of generated dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, rule::DailySchedule)
+function generate_schedule(start_date::Date, end_date::Date, rule::DailySchedule)::Vector{Date}
     dates = Date[]
     current_date = start_date
     while current_date <= end_date
@@ -80,7 +75,7 @@ Generates a sequence of monthly dates between `start_date` and `end_date`.
 # Returns
 - `Vector{Date}`: A vector of generated monthly dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, rule::MonthlySchedule)
+function generate_schedule(start_date::Date, end_date::Date, rule::MonthlySchedule)::Vector{Date}
     dates = Date[]
     current_date = start_date
     while current_date <= end_date
@@ -103,7 +98,7 @@ Generates a sequence of quarterly dates between `start_date` and `end_date`.
 # Returns
 - `Vector{Date}`: A vector of generated quarterly dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, rule::QuarterlySchedule)
+function generate_schedule(start_date::Date, end_date::Date, rule::QuarterlySchedule)::Vector{Date}
     dates = Date[]
     current_date = start_date
     while current_date <= end_date
@@ -126,7 +121,7 @@ Generates a sequence of annual dates between `start_date` and `end_date`.
 # Returns
 - `Vector{Date}`: A vector of generated annual dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, rule::AnnualSchedule)
+function generate_schedule(start_date::Date, end_date::Date, rule::AnnualSchedule)::Vector{Date}
     dates = Date[]
     current_date = start_date
     while current_date <= end_date
@@ -136,7 +131,6 @@ function generate_schedule(start_date::Date, end_date::Date, rule::AnnualSchedul
     return dates
 end
 
-# Helper function to add months (handling end-of-month cases)
 """
     add_months(date::Date, n::Int) -> Date
 
@@ -149,7 +143,7 @@ Adds `n` months to a date, handling edge cases where the date is at the end of t
 # Returns
 - `Date`: The date after adding `n` months, adjusted for end-of-month cases.
 """
-function add_months(date::Date, n::Int)
+function add_months(date::Date, n::Int)::Date
     y, m = Dates.year(date), Dates.month(date)
     new_m = m + n
     new_y = y + div(new_m - 1, 12)
@@ -158,7 +152,6 @@ function add_months(date::Date, n::Int)
     return Date(new_y, new_m, d)
 end
 
-# Helper function to add years
 """
     add_years(date::Date, n::Int) -> Date
 
@@ -171,7 +164,7 @@ Adds `n` years to a date, handling leap years and end-of-month cases.
 # Returns
 - `Date`: The date after adding `n` years, adjusted for leap years and end-of-month cases.
 """
-function add_years(date::Date, n::Int)
+function add_years(date::Date, n::Int)::Date
     y, m, d = Dates.year(date), Dates.month(date), Dates.day(date)
     new_y = y + n
     d = min(d, Dates.daysinmonth(Date(new_y, m, 1)))
