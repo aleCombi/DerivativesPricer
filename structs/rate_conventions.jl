@@ -1,4 +1,4 @@
-module RateType
+module RateConventions
 
 using Types
 
