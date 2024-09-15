@@ -1,4 +1,6 @@
-This library aims at writing demo functions to prepare for a more extensive derivative evaluation library.
+[![Coverage Status](https://coveralls.io/repos/github/aleCombi/juliaExperiment/badge.svg?branch=master)](https://coveralls.io/github/aleCombi/juliaExperiment?branch=master)
+
+This library aims at writing some derivatives pricers.
 Main ideas:
   1. Using symbolic calculus, storing symbolic expressions for products and the reevaluating them when need be.
   2. Start from linear derivatives.
