@@ -21,8 +21,6 @@ jobs:
       # Step 2: Set up Julia (specify your Julia version)
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
-        with:
-          version: '1.6' # or any version of Julia you are using
 
       # Step 3: Install dependencies (using the local environment)
       - name: Install dependencies
