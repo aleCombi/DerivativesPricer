@@ -1,0 +1,39 @@
+name: CI
+
+# Trigger the workflow on push or pull request events to the main branch
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest # This uses the latest Ubuntu environment
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Julia (specify your Julia version)
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: '1.6' # or any version of Julia you are using
+
+      # Step 3: Install dependencies (using the local environment)
+      - name: Install dependencies
+        run: julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.build()'
+
+      # Step 4: Run the tests with coverage enabled
+      - name: Run tests with coverage
+        run: julia --project=. --code-coverage=lcov -e 'using Pkg; Pkg.test()'
+
+      # Step 5: Upload coverage to Coveralls
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
