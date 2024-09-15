@@ -9,3 +9,4 @@ Main ideas:
   5. In the demo the model should be single curve, without convexity adjustments.
   6. Next up we can add FX conversions.
   7. Benchmark for accuracy and performance against Quantlib.jl.
+  8. Move this list into a number of Issues and give descriptive text here
