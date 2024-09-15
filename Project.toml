@@ -1,5 +1,7 @@
 name = "JuliaExperiment"
+uuid = "265bde8e-a8a2-4012-a19c-337de8aac561"
 version = "0.1.0"
+
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
