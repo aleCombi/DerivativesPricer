@@ -28,7 +28,7 @@ jobs:
 
       # Step 4: Run the tests with coverage enabled
       - name: Run tests with coverage
-        run: julia --project=. --code-coverage=lcov -e 'using Pkg; Pkg.test()'
+        run: julia --project=. --code-coverage -e 'using Pkg; Pkg.test()'
 
       # Step 5: Upload coverage to Coveralls
       - name: Upload coverage to Coveralls
