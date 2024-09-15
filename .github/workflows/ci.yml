@@ -15,11 +15,11 @@ jobs:
     steps:
       # Step 1: Check out the repository
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3 # Latest version of checkout for Node.js 20 compatibility
 
       # Step 2: Set up Julia (specify your Julia version)
       - name: Set up Julia
-        uses: julia-actions/setup-julia@v1
+        uses: julia-actions/setup-julia@v2 # Ensure this version is up to date
 
       # Step 3: Install dependencies (using the local environment)
       - name: Install dependencies
@@ -39,8 +39,7 @@ jobs:
 
       # Step 5: Upload coverage to Coveralls
       - name: Upload coverage to Coveralls
-        uses: coverallsapp/github-action@v1
+        uses: coverallsapp/github-action@v2 # Updated to Coveralls v2
         with:
-          path-to-lcov: coverage/lcov.info
-          github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}    
-    
+          file: coverage/lcov.info # Specify the path to the coverage file
+          github-token: ${{ secrets.GITHUB_TOKEN }} # Default GitHub token, do not store in secrets manually
