@@ -43,6 +43,11 @@ function calculate_interest(principal::Float64, rate, time_fraction::Float64, ::
     return principal * rate * time_fraction
 end
 
+function calculate_interest(principals::Vector{Float64}, rates::Vector{Float64}, time_fractions::Vector{Float64}, ::Linear)::Vector{Float64}
+    return principals .* rates .* time_fractions
+end
+
+
 """
     calculate_interest(principal::Float64, rate::CalcValue, time_fraction::Float64, frequency::Int, ::Compounded) -> Float64
 
@@ -60,6 +65,10 @@ Rate and return type are Float64 or symbolic expression.
 """
 function calculate_interest(principal::Float64, rate, time_fraction::Float64, frequency::Int, ::Compounded)
     return principal * (1 + rate / frequency)^(frequency * time_fraction) - principal
+end
+
+function calculate_interest(principals::Vector{Float64}, rates::Vector{Float64}, time_fractions::Vector{Float64}, frequencies::Vector{Int}, ::Compounded)::Vector{Float64}
+    return principals .* ((1 .+ rates ./ frequencies) .^ (frequencies .* time_fractions)) .- principals
 end
 
 end

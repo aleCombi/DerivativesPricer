@@ -1,6 +1,7 @@
 module DayCount
 
 using Dates
+include("../src/schedule_generation.jl"); using .ScheduleGeneration
 
 """
     DayCountConvention
@@ -42,6 +43,19 @@ Calculates the day count fraction between two dates according to the ACT/360 con
 function day_count_fraction(start_date::Date, end_date::Date, ::ACT360)
     days = Dates.value(end_date - start_date)
     return days / 360
+end
+
+function day_count_fraction(start_dates::Vector{Date}, end_dates::Vector{Date}, ::ACT360)::Vector{Float64}
+    return (Dates.value.(end_dates .- start_dates)) ./ 360
+end
+
+function day_count_fraction(dates::Vector{Date}, ::DayCountConvention)::Vector{Float64}
+    return day_count_fraction(dates[2:end], dates[1:end-1])
+end
+
+function day_count_fraction(start_date::Date, end_date::Date, schedule_rule::ScheduleRule, day_count_convention::DayCountConvention)::Vector{Float64}
+    schedule = generate_schedule(start_date, end_date, schedule_rule)
+    return day_count_fraction(schedule, day_count_convention)
 end
 
 """
