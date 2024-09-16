@@ -1,6 +1,5 @@
 using Test
 using Dates
-
 include("../src/day_count_conventions.jl"); using .DayCount
 
 @testset "DayCount Tests" begin

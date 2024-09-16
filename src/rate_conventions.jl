@@ -1,7 +1,5 @@
 module RateConventions
 
-using Types
-
 # Export the abstract type and concrete rate types
 export RateType, Linear, Compounded, calculate_interest
 
@@ -28,7 +26,7 @@ Concrete type representing compound interest, where the interest is added to the
 struct Compounded <: RateType end
 
 """
-    calculate_interest(principal::Float64, rate::CalcValue, time_fraction::Float64, ::LIN) -> Float64
+    calculate_interest(principal::Float64, rate::CalcValue, time_fraction::Float64, ::Linear) -> Float64
 
 Calculates interest using the linear (simple) interest method. The interest is calculated as a percentage of the principal for a given time period.
 Rate and return type are Float64 or symbolic expression.
@@ -46,7 +44,7 @@ function calculate_interest(principal::Float64, rate, time_fraction::Float64, ::
 end
 
 """
-    calculate_interest(principal::Float64, rate::CalcValue, time_fraction::Float64, frequency::Int, ::COM) -> Float64
+    calculate_interest(principal::Float64, rate::CalcValue, time_fraction::Float64, frequency::Int, ::Compounded) -> Float64
 
 Calculates interest using the compound interest method. The interest is calculated on the principal and accumulated interest over multiple periods.
 Rate and return type are Float64 or symbolic expression.
