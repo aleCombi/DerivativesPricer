@@ -11,7 +11,7 @@ Abstract type representing a day count convention. This serves as the base type 
 abstract type DayCountConvention end
 
 # Export the abstract type and concrete types
-export DayCountConvention, ACT360, ACT365, ISDA_30_360, day_count_fraction
+export DayCountConvention, ACT360, ACT365, day_count_fraction
 
 """
     ACT360 <: DayCountConvention
@@ -49,15 +49,6 @@ function day_count_fraction(start_dates::Vector{Date}, end_dates::Vector{Date}, 
     return (Dates.value.(end_dates .- start_dates)) ./ 360
 end
 
-function day_count_fraction(dates::Vector{Date}, ::DayCountConvention)::Vector{Float64}
-    return day_count_fraction(dates[2:end], dates[1:end-1])
-end
-
-function day_count_fraction(start_date::Date, end_date::Date, schedule_rule::ScheduleRule, day_count_convention::DayCountConvention)::Vector{Float64}
-    schedule = generate_schedule(start_date, end_date, schedule_rule)
-    return day_count_fraction(schedule, day_count_convention)
-end
-
 """
     day_count_fraction(start_date::Date, end_date::Date, ::ACT365) -> Float64
 
@@ -74,6 +65,14 @@ Calculates the day count fraction between two dates according to the ACT/365 con
 function day_count_fraction(start_date::Date, end_date::Date, ::ACT365)
     days = Dates.value(end_date - start_date)
     return days / 365
+end
+
+function day_count_fraction(start_dates::Vector{Date}, end_dates::Vector{Date}, ::ACT365)::Vector{Float64}
+    return (Dates.value.(end_dates .- start_dates)) ./ 365
+end
+
+function day_count_fraction(dates::Vector{Date}, ::DayCountConvention)::Vector{Float64}
+    return day_count_fraction(dates[2:end], dates[1:end-1])
 end
 
 end
