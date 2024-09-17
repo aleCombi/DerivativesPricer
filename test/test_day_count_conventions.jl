@@ -2,20 +2,14 @@ using Test
 using Dates
 include("../src/day_count_conventions.jl"); using .DayCount
 
-"""
-    DayCount Tests
-
-This test suite covers the functionality of different day count conventions including ACT/360 and ACT/365.
-It checks the calculation of day count fractions between specific dates for each convention.
-"""
+# DayCount Tests
+# This test suite covers the functionality of different day count conventions including ACT/360 and ACT/365.
+# It checks the calculation of day count fractions between specific dates for each convention.
 @testset "DayCount Tests" begin
 
-    """
-        ACT/360 Day Count Tests
-
-    This test set covers the ACT/360 day count convention. It calculates the day count fraction between two dates
-    and verifies the results by comparing them with expected values.
-    """
+    # ACT/360 Day Count Tests
+    # This test set covers the ACT/360 day count convention. It calculates the day count fraction between two dates
+    # and verifies the results by comparing them with expected values.
     @testset "ACT/360 Day Count Tests" begin
         # Test for a full year (365 days)
         start_date = Date(2023, 1, 1)
@@ -36,12 +30,9 @@ It checks the calculation of day count fractions between specific dates for each
         @test day_count_fraction(start_dates, end_dates, ACT360()) ≈ expected
     end
 
-    """
-        ACT/365 Day Count Tests
-
-    This test set covers the ACT/365 day count convention. It verifies the day count fraction calculation between two dates
-    using the ACT/365 convention.
-    """
+    # ACT/365 Day Count Tests
+    # This test set covers the ACT/365 day count convention. It verifies the day count fraction calculation between two dates
+    # using the ACT/365 convention.
     @testset "ACT/365 Day Count Tests" begin
         # Test for a full year (365 days)
         start_date = Date(2023, 1, 1)

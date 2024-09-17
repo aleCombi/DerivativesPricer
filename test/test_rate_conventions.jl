@@ -1,18 +1,13 @@
 using Test
 include("../src/rate_conventions.jl"); using .RateConventions  # Import the module you're testing
 
-# Test for Linear Interest
-"""
-    Linear Interest Tests
-
-This test set validates the `calculate_interest` function for the `Linear` (simple) interest method.
-
-The tests cover:
-- Standard interest calculation with a 5% annual rate.
-- Different time fractions (e.g., 6 months).
-- Edge cases such as zero principal and negative time fractions.
-- Vectorized calculations for multiple principals, rates, and time fractions.
-"""
+# Linear Interest Tests
+# This test set validates the `calculate_interest` function for the `Linear` (simple) interest method.
+# The tests cover:
+# - Standard interest calculation with a 5% annual rate.
+# - Different time fractions (e.g., 6 months).
+# - Edge cases such as zero principal and negative time fractions.
+# - Vectorized calculations for multiple principals, rates, and time fractions.
 @testset "Linear Interest Tests" begin
     principal = 1000.0
     rate = 0.05  # 5% annual interest
@@ -47,18 +42,13 @@ The tests cover:
     @test calculate_interest(principals, rates, time_fractions, Linear()) == expected
 end
 
-# Test for Compounded Interest
-"""
-    Compounded Interest Tests
-
-This test set validates the `calculate_interest` function for the `Compounded` interest method.
-
-The tests cover:
-- Standard interest calculation with monthly compounding at a 5% annual rate.
-- Different compounding frequencies (e.g., quarterly).
-- Edge cases such as zero principal, zero time fraction, and negative time fractions.
-- Vectorized calculations for multiple principals, rates, and time fractions.
-"""
+# Compounded Interest Tests
+# This test set validates the `calculate_interest` function for the `Compounded` interest method.
+# The tests cover:
+# - Standard interest calculation with monthly compounding at a 5% annual rate.
+# - Different compounding frequencies (e.g., quarterly).
+# - Edge cases such as zero principal, zero time fraction, and negative time fractions.
+# - Vectorized calculations for multiple principals, rates, and time fractions.
 @testset "Compounded Interest Tests" begin
     principal = 1000.0
     rate = 0.05  # 5% annual interest
