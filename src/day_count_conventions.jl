@@ -1,7 +1,6 @@
 module DayCount
 
 using Dates
-include("../src/schedule_generation.jl"); using .ScheduleGeneration
 
 """
     DayCountConvention
@@ -109,8 +108,8 @@ Calculates the day count fractions between consecutive dates in the input vector
 # Returns
 - `Vector{Float64}`: A vector of day count fractions calculated between consecutive dates according to the provided convention.
 """
-function day_count_fraction(dates::Vector{Date}, ::DayCountConvention)::Vector{Float64}
-    return day_count_fraction(dates[2:end], dates[1:end-1])
+function day_count_fraction(dates::Vector{Date}, day_count_convention::DayCountConvention)::Vector{Float64}
+    return day_count_fraction(dates[1:end-1], dates[2:end], day_count_convention)
 end
 
 end

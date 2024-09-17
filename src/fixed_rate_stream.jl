@@ -5,6 +5,8 @@ include("../src/day_count_conventions.jl"); using .DayCount
 include("../src/schedule_generation.jl"); using .ScheduleGeneration
 include("../src/rate_conventions.jl"); using .RateConventions
 
+export ScheduleConfig, FlowStreamConfig, FixedRateStreamConfig, FlowStream, FixedRateStream
+
 """
     ScheduleConfig
 
