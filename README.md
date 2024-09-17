@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/aleCombi/juliaExperiment/badge.svg?branch=master)](https://coveralls.io/github/aleCombi/juliaExperiment?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/aleCombi/juliaExperiment/badge.svg?branch=master&cache-control=no-cache)](https://coveralls.io/github/aleCombi/juliaExperiment?branch=master)
 
 This library aims at writing some derivatives pricers
 Main ideas:
