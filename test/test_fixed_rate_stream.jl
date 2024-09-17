@@ -3,6 +3,9 @@ using Dates
 include("../src/fixed_rate_stream.jl")  # Assuming your module is in src/rate_stream.jl
 using .RateStream
 
+# Import specific items to avoid fully qualifying them
+import .RateStream: ScheduleConfig, FixedRateStreamConfig, FixedRateStream, MonthlySchedule, ACT360, ACT365, Linear
+
 @testset "RateStream Tests" begin
 
     # Test 1: Test FixedRateStreamConfig creation
@@ -11,8 +14,8 @@ using .RateStream
         end_date = Date(2024, 1, 1)
         principal = 100000.0
         rate = 0.05
-        schedule_config = ScheduleConfig(start_date, end_date, RateStream.MonthlySchedule(), RateStream.ACT360())
-        rate_convention = RateStream.Linear()
+        schedule_config = ScheduleConfig(start_date, end_date, MonthlySchedule(), ACT360())
+        rate_convention = Linear()
 
         # Create a FixedRateStreamConfig
         stream_config = FixedRateStreamConfig(principal, rate, schedule_config, rate_convention)
@@ -30,8 +33,8 @@ using .RateStream
         end_date = Date(2024, 1, 1)
         principal = 100000.0
         rate = 0.05
-        schedule_config = ScheduleConfig(start_date, end_date, RateStream.MonthlySchedule(), RateStream.ACT360())
-        rate_convention = RateStream.Linear()
+        schedule_config = ScheduleConfig(start_date, end_date, MonthlySchedule(), ACT360())
+        rate_convention = Linear()
 
         # Create a FixedRateStreamConfig
         stream_config = FixedRateStreamConfig(principal, rate, schedule_config, rate_convention)
@@ -52,8 +55,8 @@ using .RateStream
         end_date = Date(2024, 1, 1)
         principal = 100000.0
         rate = 0.05  # 5% interest
-        schedule_config = ScheduleConfig(start_date, end_date, RateStream.MonthlySchedule(), RateStream.ACT360())
-        rate_convention = RateStream.Linear()
+        schedule_config = ScheduleConfig(start_date, end_date, MonthlySchedule(), ACT360())
+        rate_convention = Linear()
 
         # Create a FixedRateStreamConfig
         stream_config = FixedRateStreamConfig(principal, rate, schedule_config, rate_convention)
@@ -82,8 +85,8 @@ using .RateStream
         end_date = Date(2024, 1, 1)
         principal = 0.0  # Zero principal
         rate = 0.05
-        schedule_config = ScheduleConfig(start_date, end_date, RateStream.MonthlySchedule(), RateStream.ACT360())
-        rate_convention = RateStream.Linear()
+        schedule_config = ScheduleConfig(start_date, end_date, MonthlySchedule(), ACT360())
+        rate_convention = Linear()
 
         # Create a FixedRateStreamConfig
         stream_config = FixedRateStreamConfig(principal, rate, schedule_config, rate_convention)
@@ -103,8 +106,8 @@ using .RateStream
         end_date = Date(2024, 1, 1)
         principal = 100000.0
         rate = 0.05
-        schedule_config = ScheduleConfig(start_date, end_date, RateStream.MonthlySchedule(), RateStream.ACT365())
-        rate_convention = RateStream.Linear()
+        schedule_config = ScheduleConfig(start_date, end_date, MonthlySchedule(), ACT365())
+        rate_convention = Linear()
 
         # Create a FixedRateStreamConfig
         stream_config = FixedRateStreamConfig(principal, rate, schedule_config, rate_convention)
