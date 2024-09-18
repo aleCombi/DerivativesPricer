@@ -1,5 +1,3 @@
-module DayCount
-
 using Dates
 
 """
@@ -8,9 +6,6 @@ using Dates
 Abstract type representing a day count convention. This serves as the base type for all specific day count conventions.
 """
 abstract type DayCountConvention end
-
-# Export the abstract type and concrete types
-export DayCountConvention, ACT360, ACT365, day_count_fraction
 
 """
     ACT360 <: DayCountConvention
@@ -110,6 +105,4 @@ Calculates the day count fractions between consecutive dates in the input vector
 """
 function day_count_fraction(dates::Vector{Date}, day_count_convention::DayCountConvention)::Vector{Float64}
     return day_count_fraction(dates[1:end-1], dates[2:end], day_count_convention)
-end
-
 end

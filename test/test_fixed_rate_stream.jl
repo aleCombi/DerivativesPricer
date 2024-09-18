@@ -1,10 +1,6 @@
 using Test
 using Dates
-include("../src/fixed_rate_stream.jl")  # Assuming your module is in src/rate_stream.jl
-using .RateStream
-
-# Import specific items to avoid fully qualifying them
-import .RateStream: ScheduleConfig, FixedRateStreamConfig, FixedRateStream, MonthlySchedule, ACT360, ACT365, Linear
+include("../src/DerivativesPricer.jl"); using .DerivativesPricer
 
 @testset "RateStream Tests" begin
 

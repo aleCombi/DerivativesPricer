@@ -1,6 +1,6 @@
 using Test
 using Dates
-include("../src/schedule_generation.jl"); using .ScheduleGeneration
+include("../src/DerivativesPricer.jl"); using .DerivativesPricer
 
 # Test for DailySchedule
 @testset "DailySchedule Tests" begin

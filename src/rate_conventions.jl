@@ -1,9 +1,3 @@
-module RateConventions
-
-# Export the abstract type and concrete rate types
-export RateType, Linear, Compounded, calculate_interest
-
-# Define an abstract type for rate types
 """
     RateType
 
@@ -29,8 +23,6 @@ Concrete type representing compound interest, where interest is calculated and a
 struct Compounded <: RateType
     frequency::Int    
 end
-
-# Function to calculate interest for different rate types
 
 """
     calculate_interest(principal::Float64, rate::CalcValue, time_fraction::Float64, ::Linear) -> Float64
@@ -101,5 +93,3 @@ Calculates compound interest for multiple principals. This vectorized version ha
 function calculate_interest(principals::Vector{Float64}, rates::Vector{Float64}, time_fractions::Vector{Float64}, rate_type::Compounded)::Vector{Float64}
     return principals .* ((1 .+ rates ./ rate_type.frequency) .^ (rate_type.frequency .* time_fractions)) .- principals
 end
-
-end # module RateConventions

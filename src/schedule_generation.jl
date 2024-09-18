@@ -1,9 +1,3 @@
-module ScheduleGeneration
-
-using Dates
-
-export ScheduleRule, DailySchedule, MonthlySchedule, QuarterlySchedule, AnnualSchedule, generate_schedule
-
 """
     ScheduleRule
 
@@ -52,7 +46,6 @@ Generates a sequence of dates between `start_date` and `end_date` based on the s
 # Returns
 - `Vector{Date}`: A vector of generated dates.
 """
-# Optimized for daily schedules using ranges
 function generate_schedule(start_date::Date, end_date::Date, ::DailySchedule)::Vector{Date}
     return collect(start_date:Day(1):end_date)
 end
@@ -70,7 +63,6 @@ Generates a sequence of monthly dates between `start_date` and `end_date`.
 # Returns
 - `Vector{Date}`: A vector of generated monthly dates.
 """
-# Optimized to avoid push! and manual memory management
 function generate_schedule(start_date::Date, end_date::Date, ::MonthlySchedule)::Vector{Date}
     return collect(start_date:Month(1):end_date)
 end
@@ -102,6 +94,4 @@ Generates a sequence of yearly dates between `start_date` and `end_date`.
 """
 function generate_schedule(start_date::Date, end_date::Date, ::AnnualSchedule)::Vector{Date}
     return collect(start_date:Year(1):end_date)
-end
-
 end

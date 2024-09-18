@@ -1,12 +1,3 @@
-module RateStream
-
-using Dates
-include("../src/day_count_conventions.jl"); using .DayCount
-include("../src/schedule_generation.jl"); using .ScheduleGeneration
-include("../src/rate_conventions.jl"); using .RateConventions
-
-export ScheduleConfig, FlowStreamConfig, FixedRateStreamConfig, FlowStream, FixedRateStream
-
 """
     ScheduleConfig
 
@@ -88,23 +79,18 @@ between accrual periods using the specified day count convention, and computes t
 - A `FixedRateStream` containing the payment dates, accrual dates, and cash flows.
 
 # Example
-- config = FixedRateStreamConfig( 100000, 0.05, ScheduleConfig(Date(2023, 1, 1), Date(2024, 1, 1), Monthly(), ACT360()), Linear() ) stream = FixedRateStream(config)
+- config = FixedRateStreamConfig( 100000, 0.05, ScheduleConfig(Date(2023, 1, 1), Date(2024, 1, 1), MonthlySchedule(), ACT360()), Linear() ) stream = FixedRateStream(config)
 """
 function FixedRateStream(stream_config::FixedRateStreamConfig)
-    # Generate the accrual schedule based on the schedule configuration
     accrual_dates = generate_schedule(
         stream_config.schedule_config.start_date, 
         stream_config.schedule_config.end_date, 
         stream_config.schedule_config.schedule_rule
     )
     
-    # Calculate the time fractions for each accrual period
     time_fractions = day_count_fraction(accrual_dates, stream_config.schedule_config.day_count_convention)
     
-    # Compute the cash flows using the principal, rate, and rate convention
     cash_flows = calculate_interest([stream_config.principal], [stream_config.rate], time_fractions, stream_config.rate_convention)
     
     return FixedRateStream(accrual_dates, accrual_dates, cash_flows)
 end
-
-end # module RateStream
