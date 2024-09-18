@@ -1,5 +1,5 @@
 using Test
-include("../src/DerivativesPricer.jl"); using .DerivativesPricer
+using DerivativesPricer
 
 # Linear Interest Tests
 # This test set validates the `calculate_interest` function for the `Linear` (simple) interest method.

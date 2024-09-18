@@ -1,7 +1,6 @@
 using Test
-include("../src/DerivativesPricer.jl")
-using .DerivativesPricer
 using Dates
+using DerivativesPricer
 
 # DayCount Tests
 # This test suite covers the functionality of different day count conventions including ACT/360 and ACT/365.
