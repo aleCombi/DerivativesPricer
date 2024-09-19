@@ -1,37 +1,37 @@
 """
     ScheduleRule
 
-Abstract type for schedule generation rules. This is the base type for all specific schedule generation rules such as `DailySchedule`, `MonthlySchedule`, `QuarterlySchedule`, etc.
+Abstract type for schedule generation rules. This is the base type for all specific schedule generation rules such as `DailySchedule`, `Monthly`, `Quarterly`, etc.
 """
 abstract type ScheduleRule end
 
 """
-    DailySchedule <: ScheduleRule
+    Daily <: ScheduleRule
 
 A concrete type representing a rule that generates schedules daily.
 """
-struct DailySchedule <: ScheduleRule end
+struct Daily <: ScheduleRule end
 
 """
-    MonthlySchedule <: ScheduleRule
+    Monthly <: ScheduleRule
 
 A concrete type representing a rule that generates schedules monthly.
 """
-struct MonthlySchedule <: ScheduleRule end
+struct Monthly <: ScheduleRule end
 
 """
-    QuarterlySchedule <: ScheduleRule
+    Quarterly <: ScheduleRule
 
 A concrete type representing a rule that generates schedules quarterly.
 """
-struct QuarterlySchedule <: ScheduleRule end
+struct Quarterly <: ScheduleRule end
 
 """
-    AnnualSchedule <: ScheduleRule
+    Annual <: ScheduleRule
 
 A concrete type representing a rule that generates schedules annually.
 """
-struct AnnualSchedule <: ScheduleRule end
+struct Annual <: ScheduleRule end
 
 """
     generate_schedule(start_date::Date, end_date::Date, rule::ScheduleRule) -> Vector{Date}
@@ -41,57 +41,57 @@ Generates a sequence of dates between `start_date` and `end_date` based on the s
 # Arguments
 - `start_date::Date`: The starting date of the schedule.
 - `end_date::Date`: The ending date of the schedule.
-- `rule::ScheduleRule`: The rule for schedule generation (e.g., `DailySchedule`, `MonthlySchedule`, `QuarterlySchedule`, etc.).
+- `rule::ScheduleRule`: The rule for schedule generation (e.g., `DailySchedule`, `Monthly`, `Quarterly`, etc.).
 
 # Returns
 - `Vector{Date}`: A vector of generated dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, ::DailySchedule)::Vector{Date}
+function generate_schedule(start_date::Date, end_date::Date, ::Daily)::Vector{Date}
     return collect(start_date:Day(1):end_date)
 end
 
 """
-    generate_schedule(start_date::Date, end_date::Date, rule::MonthlySchedule) -> Vector{Date}
+    generate_schedule(start_date::Date, end_date::Date, rule::Monthly) -> Vector{Date}
 
 Generates a sequence of monthly dates between `start_date` and `end_date`.
 
 # Arguments
 - `start_date::Date`: The starting date of the schedule.
 - `end_date::Date`: The ending date of the schedule.
-- `rule::MonthlySchedule`: The rule for generating monthly schedules.
+- `rule::Monthly`: The rule for generating monthly schedules.
 
 # Returns
 - `Vector{Date}`: A vector of generated monthly dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, ::MonthlySchedule)::Vector{Date}
+function generate_schedule(start_date::Date, end_date::Date, ::Monthly)::Vector{Date}
     return collect(start_date:Month(1):end_date)
 end
 
 
 """
-    generate_schedule(start_date::Date, end_date::Date, rule::QuarterlySchedule) -> Vector{Date}
+    generate_schedule(start_date::Date, end_date::Date, rule::Quarterly) -> Vector{Date}
 
 Generates a sequence of quarterly dates between `start_date` and `end_date`.
 
 # Arguments
 - `start_date::Date`: The starting date of the schedule.
 - `end_date::Date`: The ending date of the schedule.
-- `rule::QuarterlySchedule`: The rule for generating quarterly dates.
+- `rule::Quarterly`: The rule for generating quarterly dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, ::QuarterlySchedule)::Vector{Date}
+function generate_schedule(start_date::Date, end_date::Date, ::Quarterly)::Vector{Date}
     return collect(start_date:Month(3):end_date)
 end
 
 """
-    generate_schedule(start_date::Date, end_date::Date, rule::AnnualSchedule) -> Vector{Date}
+    generate_schedule(start_date::Date, end_date::Date, rule::Annual) -> Vector{Date}
 
 Generates a sequence of yearly dates between `start_date` and `end_date`.
 
 # Arguments
 - `start_date::Date`: The starting date of the schedule.
 - `end_date::Date`: The ending date of the schedule.
-- `rule::AnnualSchedule`: The rule for generating yearly dates.
+- `rule::Annual`: The rule for generating yearly dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, ::AnnualSchedule)::Vector{Date}
+function generate_schedule(start_date::Date, end_date::Date, ::Annual)::Vector{Date}
     return collect(start_date:Year(1):end_date)
 end

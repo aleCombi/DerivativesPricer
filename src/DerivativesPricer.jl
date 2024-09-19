@@ -11,7 +11,7 @@ export  ACT360, ACT365, day_count_fraction,
         # day_count_conventions.jl
         Linear, Compounded, Exponential, calculate_interest,
         # rate_conventions.jl
-        ScheduleRule, DailySchedule, MonthlySchedule, QuarterlySchedule, AnnualSchedule, generate_schedule,
+        ScheduleRule, Daily, Monthly, Quarterly, Annual, generate_schedule,
         # schedule_generation.jl
         ScheduleConfig, FixedRateStreamConfig, FixedRateStream
         # fixed_rate_stream.jl

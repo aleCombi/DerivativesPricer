@@ -10,7 +10,7 @@ using DerivativesPricer
         end_date = Date(2024, 1, 1)
         principal = 100000.0
         rate = 0.05
-        schedule_config = ScheduleConfig(start_date, end_date, MonthlySchedule(), ACT360())
+        schedule_config = ScheduleConfig(start_date, end_date, Monthly(), ACT360())
         rate_convention = Linear()
 
         # Create a FixedRateStreamConfig
@@ -29,7 +29,7 @@ using DerivativesPricer
         end_date = Date(2024, 1, 1)
         principal = 100000.0
         rate = 0.05
-        schedule_config = ScheduleConfig(start_date, end_date, MonthlySchedule(), ACT360())
+        schedule_config = ScheduleConfig(start_date, end_date, Monthly(), ACT360())
         rate_convention = Linear()
 
         # Create a FixedRateStreamConfig
@@ -39,7 +39,7 @@ using DerivativesPricer
         stream = FixedRateStream(stream_config)
 
         # Expected number of accrual dates (12 months)
-        expected_dates = generate_schedule(start_date, end_date, MonthlySchedule())
+        expected_dates = generate_schedule(start_date, end_date, Monthly())
 
         # Check that the generated accrual dates match the expected dates
         @test stream.accrual_dates == expected_dates
@@ -51,7 +51,7 @@ using DerivativesPricer
         end_date = Date(2024, 1, 1)
         principal = 100000.0
         rate = 0.05  # 5% interest
-        schedule_config = ScheduleConfig(start_date, end_date, MonthlySchedule(), ACT360())
+        schedule_config = ScheduleConfig(start_date, end_date, Monthly(), ACT360())
         rate_convention = Linear()
 
         # Create a FixedRateStreamConfig
@@ -81,7 +81,7 @@ using DerivativesPricer
         end_date = Date(2024, 1, 1)
         principal = 0.0  # Zero principal
         rate = 0.05
-        schedule_config = ScheduleConfig(start_date, end_date, MonthlySchedule(), ACT360())
+        schedule_config = ScheduleConfig(start_date, end_date, Monthly(), ACT360())
         rate_convention = Linear()
 
         # Create a FixedRateStreamConfig
@@ -102,7 +102,7 @@ using DerivativesPricer
         end_date = Date(2024, 1, 1)
         principal = 100000.0
         rate = 0.05
-        schedule_config = ScheduleConfig(start_date, end_date, MonthlySchedule(), ACT365())
+        schedule_config = ScheduleConfig(start_date, end_date, Monthly(), ACT365())
         rate_convention = Linear()
 
         # Create a FixedRateStreamConfig

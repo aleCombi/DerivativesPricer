@@ -79,7 +79,7 @@ between accrual periods using the specified day count convention, and computes t
 - A `FixedRateStream` containing the payment dates, accrual dates, and cash flows.
 
 # Example
-- config = FixedRateStreamConfig( 100000, 0.05, ScheduleConfig(Date(2023, 1, 1), Date(2024, 1, 1), MonthlySchedule(), ACT360()), Linear() ) stream = FixedRateStream(config)
+- config = FixedRateStreamConfig( 100000, 0.05, ScheduleConfig(Date(2023, 1, 1), Date(2024, 1, 1), Monthly(), ACT360()), Linear() ) stream = FixedRateStream(config)
 """
 function FixedRateStream(stream_config::FixedRateStreamConfig)
     accrual_dates = generate_schedule(
