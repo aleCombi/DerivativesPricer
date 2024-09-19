@@ -97,3 +97,52 @@ end
     ]
     @test calculate_interest(principals, rates, time_fractions, Compounded(frequency)) ≈ expected
 end
+
+# Exponential Interest Tests
+# This test set validates the `calculate_interest` function for the `Exponential` interest method.
+# The tests cover:
+# - Standard interest calculation with a 5% annual rate.
+# - Different time fractions (e.g., 6 months).
+# - Edge cases such as zero principal and negative time fractions.
+# - Vectorized calculations for multiple principals, rates, and time fractions.
+@testset "Exponential Interest Tests" begin
+    principal = 1000.0
+    rate = 0.05  # 5% annual interest
+    time_fraction = 1.0  # 1 year
+
+    # Test 1: Standard calculation for 1 year at 5% interest
+    # Expected: 1000 * exp(0.05 * 1) - 1000
+    expected_interest = principal * exp(rate * time_fraction) - principal
+    @test calculate_interest(principal, rate, time_fraction, Exponential()) ≈ expected_interest
+
+    # Test 2: Calculation for 6 months (0.5 years)
+    time_fraction = 0.5
+    # Expected: 1000 * exp(0.05 * 0.5) - 1000
+    expected_interest = principal * exp(rate * time_fraction) - principal
+    @test calculate_interest(principal, rate, time_fraction, Exponential()) ≈ expected_interest
+
+    # Test 3: Edge case with zero principal
+    principal = 0.0
+    # Expected: 0 exponential interest
+    @test calculate_interest(principal, rate, time_fraction, Exponential()) == 0.0
+
+    # Test 4: Edge case with a negative time fraction (e.g., interest for past periods)
+    principal = 1000.0
+    time_fraction = -1.0
+    # Expected: 1000 * exp(0.05 * -1) - 1000
+    expected_interest = principal * exp(rate * time_fraction) - principal
+    @test calculate_interest(principal, rate, time_fraction, Exponential()) ≈ expected_interest
+
+    # Test 5: Vectorized calculation for multiple principals, rates, and time fractions
+    principals = [1000.0, 500.0]
+    rates = [0.05, 0.04]
+    time_fractions = [1.0, 0.5]
+    # Expected for each:
+    # 1000 * exp(0.05 * 1) - 1000
+    # 500 * exp(0.04 * 0.5) - 500
+    expected = [
+        1000.0 * exp(0.05 * 1.0) - 1000.0,
+        500.0 * exp(0.04 * 0.5) - 500.0
+    ]
+    @test calculate_interest(principals, rates, time_fractions, Exponential()) ≈ expected
+end
