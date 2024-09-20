@@ -6,6 +6,24 @@ Abstract type for schedule generation rules. This is the base type for all speci
 abstract type ScheduleRule end
 
 """
+    ScheduleConfig
+
+Represents the configuration for generating a payment schedule in a stream of cash flows.
+
+# Fields
+- `start_date::Date`: The start date of the schedule.
+- `end_date::Date`: The end date of the schedule.
+- `schedule_rule::ScheduleRule`: The rule for generating the schedule (e.g., monthly, quarterly).
+- `day_count_convention::DayCountConvention`: The convention for calculating time fractions between accrual periods (e.g., ACT/360, ACT/365).
+"""
+struct ScheduleConfig
+    start_date::Date
+    end_date::Date
+    schedule_rule::ScheduleRule
+    day_count_convention::DayCountConvention
+end
+
+"""
     Daily <: ScheduleRule
 
 A concrete type representing a rule that generates schedules daily.
@@ -46,8 +64,8 @@ Generates a sequence of dates between `start_date` and `end_date` based on the s
 # Returns
 - `Vector{Date}`: A vector of generated dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, ::Daily)::Vector{Date}
-    return collect(start_date:Day(1):end_date)
+function generate_schedule(start_date::Date, end_date::Date, ::Daily)::StepRange{Date}
+    return start_date:Day(1):end_date
 end
 
 """
@@ -63,8 +81,8 @@ Generates a sequence of monthly dates between `start_date` and `end_date`.
 # Returns
 - `Vector{Date}`: A vector of generated monthly dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, ::Monthly)::Vector{Date}
-    return collect(start_date:Month(1):end_date)
+function generate_schedule(start_date::Date, end_date::Date, ::Monthly)::StepRange{Date}
+    return start_date:Month(1):end_date
 end
 
 
@@ -78,8 +96,8 @@ Generates a sequence of quarterly dates between `start_date` and `end_date`.
 - `end_date::Date`: The ending date of the schedule.
 - `rule::Quarterly`: The rule for generating quarterly dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, ::Quarterly)::Vector{Date}
-    return collect(start_date:Month(3):end_date)
+function generate_schedule(start_date::Date, end_date::Date, ::Quarterly)::StepRange{Date}
+    return start_date:Month(3):end_date
 end
 
 """
@@ -92,6 +110,23 @@ Generates a sequence of yearly dates between `start_date` and `end_date`.
 - `end_date::Date`: The ending date of the schedule.
 - `rule::Annual`: The rule for generating yearly dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, ::Annual)::Vector{Date}
-    return collect(start_date:Year(1):end_date)
+function generate_schedule(start_date::Date, end_date::Date, ::Annual)::StepRange{Date}
+    return start_date:Year(1):end_date
+end
+
+"""
+    generate_schedule(schedule_config::ScheduleConfig)
+
+Generate a schedule based on the provided `schedule_config`.
+
+# Arguments
+- `schedule_config::ScheduleConfig`: A configuration object containing the start date, end date, and schedule rule.
+
+# Returns
+- A schedule generated according to the specified configuration.
+
+# Example
+"""
+function generate_schedule(schedule_config::ScheduleConfig)
+    return generate_schedule(schedule_config.start_date, schedule_config.end_date, schedule_config.schedule_rule)
 end

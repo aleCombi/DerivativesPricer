@@ -12,16 +12,15 @@ function day_count_fraction(start_dates::Vector{Date}, end_dates::Vector{Date}):
 end
 
 function day_count_fraction(dates::Vector{Date})::Vector{Float64}
-    return day_count_fraction(dates[1:end-1], dates[2:end])
+    return (Dates.value.(diff(dates)) ./ 360)
 end
 
 function eager_process(start_date::Date, end_date::Date)::Vector{Float64}
-    schedule = generate_schedule(start_date, end_date)
-    return day_count_fraction(schedule)
+    generate_schedule(start_date, end_date) |> day_count_fraction
 end
 
 # Lazy version functions
-function lazy_generate_schedule(start_date::Date, end_date::Date)
+function lazy_generate_schedule(start_date::Date, end_date::Date)::StepRange{Date}
     return start_date:Month(1):end_date
 end
 
@@ -38,9 +37,6 @@ end
 start_date = Date(2023, 1, 1)
 end_date = Date(2070, 1, 1)
 
-# Run benchmarks
-println("Eager version:")
-@benchmark eager_process($start_date, $end_date)
 
-println("Lazy version:")
-@benchmark lazy_process($start_date, $end_date)
+println("Eager version:")
+display(@benchmark eager_process($start_date, $end_date))

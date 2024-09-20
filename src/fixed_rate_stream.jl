@@ -1,22 +1,4 @@
 """
-    ScheduleConfig
-
-Represents the configuration for generating a payment schedule in a stream of cash flows.
-
-# Fields
-- `start_date::Date`: The start date of the schedule.
-- `end_date::Date`: The end date of the schedule.
-- `schedule_rule::ScheduleRule`: The rule for generating the schedule (e.g., monthly, quarterly).
-- `day_count_convention::DayCountConvention`: The convention for calculating time fractions between accrual periods (e.g., ACT/360, ACT/365).
-"""
-struct ScheduleConfig
-    start_date::Date
-    end_date::Date
-    schedule_rule::ScheduleRule
-    day_count_convention::DayCountConvention
-end
-
-"""
     FlowStreamConfig
 
 An abstract type representing the configuration for a stream of cash flows.
@@ -38,7 +20,7 @@ for the payments, along with the convention for calculating interest.
 """
 struct FixedRateStreamConfig <: FlowStreamConfig
     principal::Float64
-    rate
+    rate::Float64
     schedule_config::ScheduleConfig
     rate_convention::RateType
 end
@@ -82,11 +64,7 @@ between accrual periods using the specified day count convention, and computes t
 - config = FixedRateStreamConfig( 100000, 0.05, ScheduleConfig(Date(2023, 1, 1), Date(2024, 1, 1), Monthly(), ACT360()), Linear() ) stream = FixedRateStream(config)
 """
 function FixedRateStream(stream_config::FixedRateStreamConfig)
-    accrual_dates = generate_schedule(
-        stream_config.schedule_config.start_date, 
-        stream_config.schedule_config.end_date, 
-        stream_config.schedule_config.schedule_rule
-    )
+    accrual_dates = generate_schedule(stream_config.schedule_config)
     
     time_fractions = day_count_fraction(accrual_dates, stream_config.schedule_config.day_count_convention)
     
