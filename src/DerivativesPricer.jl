@@ -7,7 +7,7 @@ include("schedule_generation.jl")
 include("fixed_rate_stream.jl")
 
 # Export relevant functions and types for external use
-export  ACT360, ACT365, day_count_fraction,
+export  DayCountConvention, ACT360, ACT365, day_count_fraction,
         # day_count_conventions.jl
         Linear, Compounded, Exponential, calculate_interest,
         # rate_conventions.jl
