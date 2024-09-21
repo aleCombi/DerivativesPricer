@@ -39,7 +39,7 @@ using DerivativesPricer
         stream = FixedRateStream(stream_config)
 
         # Expected number of accrual dates (12 months)
-        expected_dates = generate_schedule(start_date, end_date, Monthly())
+        expected_dates = generate_schedule(start_date, end_date, Monthly()) |> collect
 
         # Check that the generated accrual dates match the expected dates
         @test stream.accrual_dates == expected_dates
