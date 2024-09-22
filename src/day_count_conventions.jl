@@ -34,7 +34,7 @@ Calculates the day count fraction between two dates according to the ACT/360 con
 # Returns
 - `Float64`: The day count fraction calculated according to the ACT/360 convention.
 """
-@inline function day_count_fraction(start_date::Date, end_date::Date, ::ACT360)::Float64
+@inline function day_count_fraction(start_date, end_date, ::ACT360)
     return Dates.value(end_date - start_date) / 360
 end
 
@@ -51,7 +51,7 @@ Calculates the day count fractions between multiple pairs of start and end dates
 # Returns
 - `Vector{Float64}`: A vector of day count fractions for each pair of dates, calculated according to the ACT/360 convention.
 """
-@inline function day_count_fraction(start_dates::Vector{Date}, end_dates::Vector{Date}, ::ACT360)::Vector{Float64}
+@inline function day_count_fraction(start_dates, end_dates, ::ACT360)
     return (Dates.value.(end_dates .- start_dates)) ./ 360
 end
 
@@ -67,7 +67,7 @@ Calculates the day count fractions between consecutive dates in a vector accordi
 # Returns
 - `Vector{Float64}`: A vector of day count fractions for each consecutive pair of dates, calculated according to the ACT/360 convention.
 """
-@inline function day_count_fraction(dates::Vector{Date}, ::ACT360)::Vector{Float64}
+@inline function day_count_fraction(dates, ::ACT360)
     return Dates.value.(diff(dates)) ./ 360
 end
 
@@ -84,7 +84,7 @@ Calculates the day count fraction between two dates according to the ACT/365 con
 # Returns
 - `Float64`: The day count fraction calculated according to the ACT/365 convention.
 """
-@inline function day_count_fraction(start_date::Date, end_date::Date, ::ACT365)::Float64
+@inline function day_count_fraction(start_date, end_date, ::ACT365)
     return Dates.value(end_date - start_date) / 365
 end
 
@@ -101,7 +101,7 @@ Calculates the day count fractions between multiple pairs of start and end dates
 # Returns
 - `Vector{Float64}`: A vector of day count fractions for each pair of dates, calculated according to the ACT/365 convention.
 """
-@inline function day_count_fraction(start_dates::Vector{Date}, end_dates::Vector{Date}, ::ACT365)::Vector{Float64}
+@inline function day_count_fraction(start_dates, end_dates, ::ACT365)
     return (Dates.value.(end_dates .- start_dates)) ./ 365
 end
 
@@ -117,6 +117,6 @@ Calculates the day count fractions between consecutive dates in a vector accordi
 # Returns
 - `Vector{Float64}`: A vector of day count fractions for each consecutive pair of dates, calculated according to the ACT/365 convention.
 """
-@inline function day_count_fraction(dates::Vector{Date}, ::ACT365)::Vector{Float64}
+@inline function day_count_fraction(dates, ::ACT365)
     return Dates.value.(diff(dates)) ./ 365
 end
