@@ -44,7 +44,7 @@ Calculates interest using the linear (simple) interest method. The interest is c
 # Returns
 - `Float64`: The calculated simple interest.
 """
-function calculate_interest(principal::Float64, rate, time_fraction::Float64, ::Linear)
+function calculate_interest(principal, rate, time_fraction, ::Linear)
     return principal * rate * time_fraction
 end
 
@@ -61,7 +61,7 @@ Calculates interest for multiple principals using the linear (simple) interest m
 # Returns
 - `Vector{Float64}`: A vector of calculated simple interest for each investment.
 """
-function calculate_interest(principals::Vector{Float64}, rates::Vector{Float64}, time_fractions::Vector{Float64}, ::Linear)::Vector{Float64}
+function calculate_interest(principals::Vector{T}, rates::Vector{S}, time_fractions::Vector{U}, ::Linear) where {T,S,U}
     return principals .* rates .* time_fractions
 end
 
@@ -79,7 +79,7 @@ Calculates interest using the compound interest method. Interest is compounded o
 # Returns
 - `Float64`: The calculated compound interest.
 """
-function calculate_interest(principal::Float64, rate, time_fraction::Float64, rate_type::Compounded)
+function calculate_interest(principal, rate, time_fraction, rate_type::Compounded)
     return principal * (1 + rate / rate_type.frequency)^(rate_type.frequency * time_fraction) - principal
 end
 
@@ -97,7 +97,7 @@ Calculates compound interest for multiple principals. This vectorized version ha
 # Returns
 - `Vector{Float64}`: A vector of calculated compound interest for each investment.
 """
-function calculate_interest(principals::Vector{Float64}, rates::Vector{Float64}, time_fractions::Vector{Float64}, rate_type::Compounded)::Vector{Float64}
+function calculate_interest(principals::Vector{P}, rates::Vector{R}, time_fractions::Vector{T}, rate_type::Compounded) where {P,R,T}
     return principals .* ((1 .+ rates ./ rate_type.frequency) .^ (rate_type.frequency .* time_fractions)) .- principals
 end
 
@@ -114,7 +114,7 @@ Calculates interest using the exponential interest method. The interest is calcu
 # Returns
 - `Float64`: The calculated exponential interest.
 """
-function calculate_interest(principal::Float64, rate, time_fraction::Float64, ::Exponential)
+function calculate_interest(principal, rate, time_fraction, ::Exponential)
     return principal * exp(rate * time_fraction) - principal
 end
 
@@ -131,6 +131,6 @@ Calculates exponential interest for multiple principals. This vectorized version
 # Returns
 - `Vector{Float64}`: A vector of calculated exponential interest for each investment.
 """
-function calculate_interest(principals::Vector{Float64}, rates::Vector{Float64}, time_fractions::Vector{Float64}, ::Exponential)::Vector{Float64}
+function calculate_interest(principals::Vector{P}, rates::Vector{R}, time_fractions::Vector{T}, ::Exponential) where {P,R,T}
     return principals .* (exp.(rates .* time_fractions)) .- principals
 end

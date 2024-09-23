@@ -18,11 +18,11 @@ for the payments, along with the convention for calculating interest.
 - `schedule_config::ScheduleConfig`: The schedule configuration that defines the start, end, and payment frequency.
 - `rate_convention::RateType`: The rate convention used to calculate interest (e.g., `Linear`, `Compounded`).
 """
-struct FixedRateStreamConfig <: FlowStreamConfig
-    principal::Float64
-    rate::Float64
-    schedule_config::ScheduleConfig
-    rate_convention::RateType
+struct FixedRateStreamConfig{P, R, S<:ScheduleConfig, T<:RateType} <: FlowStreamConfig
+    principal::P
+    rate::R
+    schedule_config::S
+    rate_convention::T
 end
 
 """
@@ -42,10 +42,10 @@ A concrete type representing a stream of fixed-rate cash flows. This includes th
 - `accrual_dates::Vector{Date}`: A vector of accrual period start dates.
 - `cash_flows::Vector{Float64}`: A vector of calculated cash flows for each period.
 """
-struct FixedRateStream <: FlowStream
-    pay_dates::Vector{Date}
-    accrual_dates::Vector{Date}
-    cash_flows::Vector{Float64}
+struct FixedRateStream{D, T} <: FlowStream
+    pay_dates::Vector{D}
+    accrual_dates::Vector{D}
+    cash_flows::Vector{T}
 end
 
 """

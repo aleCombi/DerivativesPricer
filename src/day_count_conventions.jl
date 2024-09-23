@@ -51,7 +51,7 @@ Calculates the day count fractions between multiple pairs of start and end dates
 # Returns
 - `Vector{Float64}`: A vector of day count fractions for each pair of dates, calculated according to the ACT/360 convention.
 """
-@inline function day_count_fraction(start_dates, end_dates, ::ACT360)
+@inline function day_count_fraction(start_dates::Vector{T}, end_dates::Vector{T}, ::ACT360) where T
     return (Dates.value.(end_dates .- start_dates)) ./ 360
 end
 
@@ -101,7 +101,7 @@ Calculates the day count fractions between multiple pairs of start and end dates
 # Returns
 - `Vector{Float64}`: A vector of day count fractions for each pair of dates, calculated according to the ACT/365 convention.
 """
-@inline function day_count_fraction(start_dates, end_dates, ::ACT365)
+@inline function day_count_fraction(start_dates::Vector{T}, end_dates::Vector{T}, ::ACT365) where T
     return (Dates.value.(end_dates .- start_dates)) ./ 365
 end
 

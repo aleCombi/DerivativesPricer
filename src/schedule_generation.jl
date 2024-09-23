@@ -16,12 +16,13 @@ Represents the configuration for generating a payment schedule in a stream of ca
 - `schedule_rule::ScheduleRule`: The rule for generating the schedule (e.g., monthly, quarterly).
 - `day_count_convention::DayCountConvention`: The convention for calculating time fractions between accrual periods (e.g., ACT/360, ACT/365).
 """
-struct ScheduleConfig
-    start_date::Date
-    end_date::Date
-    schedule_rule::ScheduleRule
-    day_count_convention::DayCountConvention
+struct ScheduleConfig{T<:TimeType, S<:ScheduleRule, D<:DayCountConvention}
+    start_date::T
+    end_date::T
+    schedule_rule::S
+    day_count_convention::D
 end
+
 
 """
     Daily <: ScheduleRule
@@ -64,7 +65,7 @@ Generates a sequence of dates between `start_date` and `end_date` based on the s
 # Returns
 - `Vector{Date}`: A vector of generated dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, ::Daily)::StepRange{Date}
+function generate_schedule(start_date, end_date, ::Daily)
     return start_date:Day(1):end_date
 end
 
@@ -81,7 +82,7 @@ Generates a sequence of monthly dates between `start_date` and `end_date`.
 # Returns
 - `Vector{Date}`: A vector of generated monthly dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, ::Monthly)::StepRange{Date}
+function generate_schedule(start_date, end_date, ::Monthly)
     return start_date:Month(1):end_date
 end
 
@@ -96,7 +97,7 @@ Generates a sequence of quarterly dates between `start_date` and `end_date`.
 - `end_date::Date`: The ending date of the schedule.
 - `rule::Quarterly`: The rule for generating quarterly dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, ::Quarterly)::StepRange{Date}
+function generate_schedule(start_date, end_date, ::Quarterly)
     return start_date:Month(3):end_date
 end
 
@@ -110,7 +111,7 @@ Generates a sequence of yearly dates between `start_date` and `end_date`.
 - `end_date::Date`: The ending date of the schedule.
 - `rule::Annual`: The rule for generating yearly dates.
 """
-function generate_schedule(start_date::Date, end_date::Date, ::Annual)::StepRange{Date}
+function generate_schedule(start_date, end_date, ::Annual)
     return start_date:Year(1):end_date
 end
 
