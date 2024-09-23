@@ -85,7 +85,7 @@ Calculates the day count fraction between two dates according to the ACT/365 con
 - `Float64`: The day count fraction calculated according to the ACT/365 convention.
 """
 @inline function day_count_fraction(start_date, end_date, ::ACT365)
-    return Dates.value(end_date - start_date) / 365
+    return Dates.value.(end_date .- start_date) / 365
 end
 
 """
