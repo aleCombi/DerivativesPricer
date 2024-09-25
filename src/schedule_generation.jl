@@ -6,6 +6,13 @@ Abstract type for schedule generation rules. This is the base type for all speci
 abstract type ScheduleRule end
 
 """
+    AbstractScheduleConfig
+
+Abstract type representing the configuration for generating a payment schedule in a stream of cash flows.
+"""
+abstract type AbstractScheduleConfig end
+
+"""
     ScheduleConfig
 
 Represents the configuration for generating a payment schedule in a stream of cash flows.
@@ -16,7 +23,7 @@ Represents the configuration for generating a payment schedule in a stream of ca
 - `schedule_rule::ScheduleRule`: The rule for generating the schedule (e.g., monthly, quarterly).
 - `day_count_convention::DayCountConvention`: The convention for calculating time fractions between accrual periods (e.g., ACT/360, ACT/365).
 """
-struct ScheduleConfig{T<:TimeType, S<:ScheduleRule, D<:DayCountConvention}
+struct ScheduleConfig{T<:TimeType, S<:ScheduleRule, D<:DayCountConvention} <: AbstractScheduleConfig
     start_date::T
     end_date::T
     schedule_rule::S
@@ -128,6 +135,6 @@ Generate a schedule based on the provided `schedule_config`.
 
 # Example
 """
-function generate_schedule(schedule_config::ScheduleConfig)
+function generate_schedule(schedule_config::T) where T <: AbstractScheduleConfig
     return generate_schedule(schedule_config.start_date, schedule_config.end_date, schedule_config.schedule_rule)
 end

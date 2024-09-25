@@ -34,7 +34,7 @@ const InterpType = Interpolations.InterpolationType
         day_count_convention = ACT365()
 
         # Create RateCurveInputs instance (automatic day count conversion)
-        inputs = RateCurveInputs(times, rates, interp_method, date, day_count_convention)
+        inputs = RateCurveInputs(times, rates, date, interp_method, day_count_convention)
 
         # Test if fields are set correctly and day counts were computed
         @test inputs.times_day_counts == [0.0, 151.0/365, 334.0/365]  # Example conversion based on ACT365
