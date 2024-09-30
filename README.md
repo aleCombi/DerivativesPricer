@@ -1,5 +1,5 @@
 [![Coverage Status](https://coveralls.io/repos/github/aleCombi/juliaExperiment/badge.svg?branch=master&cache-control=no-cache)](https://coveralls.io/github/aleCombi/juliaExperiment?branch=master)
-![Test Passing](https://github.com/github/docs/actions/workflows/main.yml/badge.svg?event=push)
+![Test Passing](https://github.com/aleCombi/DerivativesPricer/actions/workflows/ci.yml/badge.svg?event=push)
 
 This library aims at writing some derivatives pricers
 Main ideas:
