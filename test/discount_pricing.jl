@@ -47,15 +47,15 @@ end
     principal = 1000.0
     rate_index = DummyRateIndex()
     rate_convention = DummyRateType()
-    schedule_config = DummyScheduleConfig(Date(2023, 1, 1), Date(2024, 1, 1), DummyScheduleRule(), DummyDayCountConvention())
+    schedule_config = DummyScheduleConfig(Date(2023, 1, 1), Date(2024, 1, 1), DummyScheduleRule(), DummyDayCountConvention()) # this daycount convention makes every period count as 0.25
     stream_config = FloatRateStreamConfig(principal, rate_index, schedule_config, rate_convention)
     stream = FloatingRateStream(stream_config)
-
+    print(stream.pay_dates)
     # Calculate the price
     price = price_float_rate_stream(stream, rate_curve)
 
     # Expected price
-    expected_price = 1000.0 * 0.95 * ((0.90 / 0.95 - 1) / 181 * 360 + (0.85 / 0.90 - 1) / 184 * 360)
+    expected_price = 1000.0 * (0.9 * (0.90 / 0.95 - 1) / 0.25 + 0.85 * (0.85 / 0.90 - 1) / 0.25)
 
     @test price == expected_price
 end

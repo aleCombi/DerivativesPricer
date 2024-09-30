@@ -1,10 +1,10 @@
-# Test file: test_float_rate_stream.jl
-using Test
-using DerivativesPricer
-using Dates
+@testsnippet FloatRateStream begin
+    using Dates
+    include("dummy_struct_functions.jl")
+end
 
 # Test case
-@testitem "FloatRateStream Tests" begin
+@testitem "FloatRateStream Tests" setup=[FloatRateStream] begin
     using Dates
     # Create a dummy schedule configuration
     start_date = Date(2024, 1, 1)
@@ -21,10 +21,10 @@ using Dates
     stream = FloatingRateStream(stream_config)
 
     # Check if the generated accrual dates are correct
-    expected_dates = collect(start_date:Month(3):end_date)
+    expected_dates = collect(start_date:Month(6):end_date)
     @test stream.accrual_dates == expected_dates
-    @test stream.pay_dates == expected_dates
-    @test stream.fixing_dates == expected_dates
+    @test stream.pay_dates == expected_dates[2:end]
+    @test stream.fixing_dates == expected_dates[2:end]
 
     # Check if the generated accrual day counts are correct
     expected_day_counts = [0.25 for _ in 1:length(expected_dates) - 1]

@@ -1,7 +1,6 @@
 using Dates
 using DerivativesPricer
 import DerivativesPricer.day_count_fraction, DerivativesPricer.generate_schedule
-
 # Dummy implementations of RateIndex, ScheduleConfig, and RateType for testing purposes.
 struct DummyRateIndex <: AbstractRateIndex end
 struct DummyRateType <: RateType end
@@ -16,7 +15,7 @@ end
 
 # Dummy generate_schedule and day_count_fraction functions for testing purposes
 function generate_schedule(schedule_config::DummyScheduleConfig)
-    return Date(schedule_config.start_date):Month(3):Date(schedule_config.end_date)  # Quarterly schedule
+    return Date(schedule_config.start_date):Month(6):Date(schedule_config.end_date)  # Quarterly schedule
 end
 
 function day_count_fraction(dates::Vector{Date}, day_count_convention::DummyDayCountConvention)

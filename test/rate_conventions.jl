@@ -1,6 +1,3 @@
-using Test
-using DerivativesPricer
-
 # Linear Interest Tests
 # This test set validates the `calculate_interest` function for the `Linear` (simple) interest method.
 # The tests cover:
@@ -8,7 +5,7 @@ using DerivativesPricer
 # - Different time fractions (e.g., 6 months).
 # - Edge cases such as zero principal and negative time fractions.
 # - Vectorized calculations for multiple principals, rates, and time fractions.
-@testset "Linear Interest Tests" begin
+@testitem "Linear Interest Tests" begin
     principal = 1000.0
     rate = 0.05  # 5% annual interest
     time_fraction = 1.0  # 1 year
@@ -49,7 +46,7 @@ end
 # - Different compounding frequencies (e.g., quarterly).
 # - Edge cases such as zero principal, zero time fraction, and negative time fractions.
 # - Vectorized calculations for multiple principals, rates, and time fractions.
-@testset "Compounded Interest Tests" begin
+@testitem "Compounded Interest Tests" begin
     principal = 1000.0
     rate = 0.05  # 5% annual interest
     time_fraction = 1.0  # 1 year
@@ -105,7 +102,7 @@ end
 # - Different time fractions (e.g., 6 months).
 # - Edge cases such as zero principal and negative time fractions.
 # - Vectorized calculations for multiple principals, rates, and time fractions.
-@testset "Exponential Interest Tests" begin
+@testitem "Exponential Interest Tests" begin
     principal = 1000.0
     rate = 0.05  # 5% annual interest
     time_fraction = 1.0  # 1 year

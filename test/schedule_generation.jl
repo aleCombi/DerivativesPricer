@@ -1,9 +1,8 @@
-using Test
-using Dates
-using DerivativesPricer
-
+@testsnippet ScheduleGeneration begin
+    using Dates
+end
 # Test for Daily
-@testset "Daily Tests" begin
+@testitem "Daily Tests" setup=[ScheduleGeneration] begin
     start_date = Date(2023, 1, 1)
     end_date = Date(2023, 1, 10)
     
@@ -19,7 +18,7 @@ using DerivativesPricer
 end
 
 # Test for Monthly
-@testset "Monthly Tests" begin
+@testitem "Monthly Tests" setup=[ScheduleGeneration] begin
     start_date = Date(2023, 1, 1)
     end_date = Date(2023, 6, 1)
     
@@ -35,7 +34,7 @@ end
 end
 
 # Test for Quarterly
-@testset "Quarterly Tests" begin
+@testitem "Quarterly Tests" setup=[ScheduleGeneration] begin
     start_date = Date(2023, 1, 1)
     end_date = Date(2023, 12, 1)
     
@@ -51,7 +50,7 @@ end
 end
 
 # Test for Annual
-@testset "Annual Tests" begin
+@testitem "Annual Tests" setup=[ScheduleGeneration] begin
     start_date = Date(2020, 1, 1)
     end_date = Date(2023, 1, 1)
     
