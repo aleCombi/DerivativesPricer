@@ -42,6 +42,7 @@ struct RateCurveInputs{T<:Number, R, I<:InterpType, C<:DayCountConvention, D<:Ti
     interp_method::I
     date::D
     day_count_convention::C
+    times::Vector{D}
 end
 
 """
@@ -60,7 +61,7 @@ Custom constructor for `RateCurveInputs` that converts time points (Dates) to da
 - `RateCurveInputs`: An instance of `RateCurveInputs` with time points converted to day counts.
 """
 RateCurveInputs(times::Vector{D}, rates::Vector{R}, date::D, interp_method::I=Gridded(Interpolations.Linear()), day_count_convention::C = ACT365()) where {D<:TimeType, R, I<:InterpType, C<:DayCountConvention} =
-    RateCurveInputs(day_count_fraction.(date, times, Ref(day_count_convention)), rates, interp_method, date, day_count_convention)
+    RateCurveInputs(day_count_fraction.(date, times, Ref(day_count_convention)), rates, interp_method, date, day_count_convention, times)
 
 """
     discount_factor(rate_curve::RateCurve, date)

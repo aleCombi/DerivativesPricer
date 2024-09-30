@@ -11,13 +11,14 @@ end
 # Test 1: Basic creation of a RateCurveInputs struct using day counts
 @testitem "Basic RateCurveInputs Construction (Day Counts)" setup=[RateCurves] begin
     times_day_counts = [0.1, 0.2, 0.3]
+    times = [Date(2023, 1, 1), Date(2023, 6, 1), Date(2023, 12, 1)] # since we are inputing day_counts, this is not used
     rates = [1.5, 2.0, 2.5]
     interp_method = Gridded(Interpolations.Linear())
     date = Date(2023, 1, 1)
     day_count_convention = ACT365()
 
     # Create RateCurveInputs instance
-    inputs = RateCurveInputs(times_day_counts, rates, interp_method, date, day_count_convention)
+    inputs = RateCurveInputs(times_day_counts, rates, interp_method, date, day_count_convention, times)
 
     # Test if fields are correctly set
     @test inputs.times_day_counts == [0.1, 0.2, 0.3]
@@ -45,13 +46,14 @@ end
 # Test 3: RateCurve construction from RateCurveInputs
 @testitem "RateCurve Construction" setup=[RateCurves] begin
     times_day_counts = [0.1, 0.2, 0.3]
+    times = [Date(2023, 1, 1), Date(2023, 6, 1), Date(2023, 12, 1)] # since we are inputing day_counts, this is not used
     rates = [1.5, 2.0, 2.5]
     interp_method = Gridded(Interpolations.Linear())
     date = Date(2023, 1, 1)
     day_count_convention = ACT365()
 
     # Create RateCurveInputs instance
-    inputs = RateCurveInputs(times_day_counts, rates, interp_method, date, day_count_convention)
+    inputs = RateCurveInputs(times_day_counts, rates, interp_method, date, day_count_convention, times)
 
     # Create the RateCurve
     curve = create_rate_curve(inputs)
@@ -66,13 +68,14 @@ end
 # Test 4: Discount Factor Calculation
 @testitem "Discount Factor Calculation" setup=[RateCurves] begin
     times_day_counts = [0.1, 0.2, 3]
+    times = [Date(2023, 1, 1), Date(2023, 6, 1), Date(2023, 12, 1)] # since we are inputing day_counts, this is not used
     rates = [1.5, 2.0, 2.5]
     interp_method = Gridded(Interpolations.Linear())
     date = Date(2023, 1, 1)
     day_count_convention = ACT365()
 
     # Create RateCurveInputs instance
-    inputs = RateCurveInputs(times_day_counts, rates, interp_method, date, day_count_convention)
+    inputs = RateCurveInputs(times_day_counts, rates, interp_method, date, day_count_convention, times)
 
     # Create the RateCurve
     curve = create_rate_curve(inputs)
