@@ -2,7 +2,9 @@ using Test
 using Dates
 using DerivativesPricer
 
-@testset "Discount Pricing Tests" begin
+@testsnippet DiscountPricing begin
+    using Dates
+    include("dummy_struct_functions.jl")
     # Create mock dates and day count convention
     dates = [Date(2023, 1, 1), Date(2023, 7, 1), Date(2024, 1, 1)]
     discount_factors = [0.95, 0.90, 0.85]
@@ -11,32 +13,49 @@ using DerivativesPricer
     # Create a mock RateCurve
     rate_curve_inputs = RateCurveInputs(dates, discount_factors, pricing_date)
     rate_curve = create_rate_curve(rate_curve_inputs)
+end
 
-    # Test for price_fixed_flows_stream
-    @testset "price_fixed_flows_stream" begin
-        # Create a mock FixedRateStream
-        payment_dates = [Date(2023, 1, 1), Date(2023, 7, 1), Date(2024, 1, 1)]
-        cash_flows = [1000.0, 1000.0, 1000.0]
+# Test for price_fixed_flows_stream
+@testitem "price_fixed_flows_stream" setup=[DiscountPricing] begin
+    # Create a mock FixedRateStream
+    payment_dates = [Date(2023, 1, 1), Date(2023, 7, 1), Date(2024, 1, 1)]
+    cash_flows = [1000.0, 1000.0, 1000.0]
 
-        # Calculate the price
-        price = price_fixed_flows_stream(payment_dates, cash_flows, rate_curve)
+    # Calculate the price
+    price = price_fixed_flows_stream(payment_dates, cash_flows, rate_curve)
 
-        # Expected price
-        expected_price = sum(cash_flows .* [0.95, 0.90, 0.85])
+    # Expected price
+    expected_price = sum(cash_flows .* [0.95, 0.90, 0.85])
 
-        @test price == expected_price
-    end
+    @test price == expected_price
+end
 
-    # Test for forward_rates
-    @testset "forward_rates" begin
+# Test for forward_rates
+@testitem "forward_rates" setup=[DiscountPricing] begin
 
-        # Calculate forward rates
-        fwd_rates = forward_rates(rate_curve, dates, ACT360())
+    # Calculate forward rates
+    fwd_rates = calculate_forward_rates(rate_curve, dates, ACT360())
 
-        # Expected forward rates
-        expected_fwd_rates = [(0.90 / 0.95 - 1) / 181 * 360, (0.85 / 0.90 - 1) / 184 * 360]
+    # Expected forward rates
+    expected_fwd_rates = [(0.90 / 0.95 - 1) / 181 * 360, (0.85 / 0.90 - 1) / 184 * 360]
 
-        @test fwd_rates == expected_fwd_rates
-    end
+    @test fwd_rates == expected_fwd_rates
+end
 
+@testitem "float_rate_pricing" setup=[DiscountPricing] begin
+    # Create a mock FloatRateStream
+    principal = 1000.0
+    rate_index = DummyRateIndex()
+    rate_convention = DummyRateType()
+    schedule_config = DummyScheduleConfig(Date(2023, 1, 1), Date(2024, 1, 1), DummyScheduleRule(), DummyDayCountConvention())
+    stream_config = FloatRateStreamConfig(principal, rate_index, schedule_config, rate_convention)
+    stream = FloatingRateStream(stream_config)
+
+    # Calculate the price
+    price = price_float_rate_stream(stream, rate_curve)
+
+    # Expected price
+    expected_price = 1000.0 * 0.95 * ((0.90 / 0.95 - 1) / 181 * 360 + (0.85 / 0.90 - 1) / 184 * 360)
+
+    @test price == expected_price
 end

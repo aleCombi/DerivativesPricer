@@ -1,4 +1,20 @@
-abstract type RateIndex
+"""
+    AbstractRateIndex
+
+An abstract type representing a rate index. This type is used to define the rate index for a floating-rate stream.
+"""
+abstract type AbstractRateIndex end
+
+"""
+    RateIndex
+
+A structure representing a rate index.
+
+# Fields
+- `name::String`: The name of the rate index.
+"""
+struct RateIndex
+    name::String
 end
 
 """
@@ -13,7 +29,7 @@ for the payments, and the convention for calculating interest.
 - `schedule_config::S`: The schedule configuration that defines the start, end, and payment frequency.
 - `rate_convention::T`: The rate convention used to calculate interest (e.g., `Linear`, `Compounded`).
 """
-struct FloatRateStreamConfig{P, R<:RateIndex, S<:AbstractScheduleConfig, T<:RateType} <: FlowStreamConfig
+struct FloatRateStreamConfig{P, R<:AbstractRateIndex, S<:AbstractScheduleConfig, T<:RateType} <: FlowStreamConfig
     principal::P
     rate_index::R
     schedule_config::S
@@ -57,5 +73,5 @@ between accrual periods using the specified day count convention, and initialize
 function FloatingRateStream(stream_config::FloatRateStreamConfig) 
     accrual_dates = generate_schedule(stream_config.schedule_config) |> collect
     accrual_day_counts = day_count_fraction(accrual_dates, stream_config.schedule_config.day_count_convention)
-    return FloatingRateStream(stream_config, accrual_dates, accrual_dates, accrual_dates, accrual_day_counts)
+    return FloatingRateStream(stream_config, accrual_dates[2:end], accrual_dates[2:end], accrual_dates, accrual_day_counts)
 end

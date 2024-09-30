@@ -1,3 +1,8 @@
+import DerivativesPricer
+using Test
+using TestItemRunner
+@run_package_tests
+include("dummy_struct_functions.jl")
 include("test_day_count_conventions.jl")
 include("test_rate_conventions.jl")
 include("test_schedule_generation.jl")

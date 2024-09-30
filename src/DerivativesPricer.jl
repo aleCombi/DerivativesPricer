@@ -20,8 +20,8 @@ export  DayCountConvention, ACT360, ACT365, day_count_fraction,
         # fixed_rate_stream.jl
         RateCurve, RateCurveInputs, create_rate_curve, discount_factor,
         # rate_curves.jl
-        RateIndex, FloatRateStreamConfig, FloatingRateStream,
+        AbstractRateIndex, FloatRateStreamConfig, FloatingRateStream, RateIndex,
         # float_rate_stream.jl
-        price_fixed_flows_stream, forward_rates, price_float_rate_stream
+        price_fixed_flows_stream, calculate_forward_rates, price_float_rate_stream
         # discount_pricing.jl
 end

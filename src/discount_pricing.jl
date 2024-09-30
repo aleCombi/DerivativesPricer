@@ -11,10 +11,11 @@ from the rate curve and returns the total price.
 # Returns
 - The price of the fixed-rate stream of cash flows.
 """
-function price_fixed_flows_stream(payment_dates::D, cash_flows::N, rate_curve::RateCurve) where D<:Vector{<:TimeType} where N<:Vector{<:Number}
+function price_fixed_flows_stream(payment_dates::Vector{D}, cash_flows::Vector{N}, rate_curve::RateCurve) where D<:TimeType where N<:Number
     discount_factors = discount_factor(rate_curve, payment_dates)
     return sum(cash_flows .* discount_factors)
 end
+
 """
     forward_rates(rate_curve::RateCurve, dates, day_count_convention::DayCountConvention)
 
@@ -28,7 +29,7 @@ Calculate the forward rates between the dates in the given rate curve using the 
 # Returns
 - An array of forward rates between the given dates.
 """
-function forward_rates(rate_curve::RateCurve, dates::Vector{D}, day_count_convention::DayCountConvention=rate_curve.day_count_convention) where D<:TimeType
+function calculate_forward_rates(rate_curve::RateCurve, dates::Vector{D}, day_count_convention::DayCountConvention=rate_curve.day_count_convention) where D<:TimeType
     day_counts = day_count_fraction(dates, day_count_convention)
     discount_factors = discount_factor(rate_curve, dates)
     return map(x -> (discount_factors[x+1] / discount_factors[x] - 1) / day_counts[x], 1:length(discount_factors)-1)
@@ -48,7 +49,7 @@ for each accrual period, discounts the cash flows using the discount factors fro
 - The price of the floating-rate stream of cash flows.
 """
 function price_float_rate_stream(stream::FloatingRateStream, rate_curve::RateCurve)
-    forward_rates = forward_rates(rate_curve, stream.accrual_dates, stream.config.day_count_convention)
+    forward_rates = calculate_forward_rates(rate_curve, stream.accrual_dates, stream.config.schedule_config.day_count_convention)
     discount_factors = discount_factor(rate_curve, stream.pay_dates)
     return sum(stream.config.principal .* discount_factors .* forward_rates)
 end
