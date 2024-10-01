@@ -36,7 +36,7 @@ end
     stream = FixedRateStream(stream_config)
 
     # Expected number of accrual dates (12 months)
-    expected_dates = generate_schedule(start_date, end_date, Monthly())[2:end] |> collect
+    expected_dates = generate_schedule(start_date, end_date, Monthly()) |> collect
 
     # Check that the generated accrual dates match the expected dates
     @test stream.accrual_dates == expected_dates
@@ -59,7 +59,7 @@ end
 
     # Check that the cash flows are calculated correctly
     # For ACT/360, we need the actual number of days in each month to calculate the time fraction
-    months = 2:12
+    months = 1:12
     actual_days_in_month = [daysinmonth(Date(2023, m, 1)) for m in months]
     
     # Calculate the time fraction for each month (actual days / 360)
@@ -68,7 +68,7 @@ end
     # Calculate the expected cash flows
     expected_cash_flows = principal .* rate .* time_fractions
 
-    @test length(stream.cash_flows) == 11  # Ensure there are 11 cash flows
+    @test length(stream.cash_flows) == 12  # Ensure there are 11 cash flows
     @test stream.cash_flows ≈ expected_cash_flows  # Ensure cash flows are as expected
 end
 
@@ -88,7 +88,7 @@ end
     stream = FixedRateStream(stream_config)
 
     # Cash flows should all be zero
-    expected_cash_flows = fill(0.0, 11)
+    expected_cash_flows = fill(0.0, 12)
     
     @test stream.cash_flows == expected_cash_flows  # Cash flows should all be zero
 end
@@ -109,7 +109,7 @@ end
     stream = FixedRateStream(stream_config)
 
     # For ACT/365, we need the actual number of days in each month to calculate the time fraction
-    months = 2:12
+    months = 1:12
     actual_days_in_month = [daysinmonth(Date(2023, m, 1)) for m in months]
     
     # Calculate the time fraction for each month (actual days / 365)

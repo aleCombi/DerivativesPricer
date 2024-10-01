@@ -1,3 +1,4 @@
+using Base.Iterators
 """
     ScheduleRule
 
@@ -118,7 +119,7 @@ Generates a sequence of dates between `start_date` and `end_date` based on the s
 # Returns
 - `Vector{Date}`: A vector of generated dates.
 """
-function generate_schedule(start_date, end_date, rule::S) where S<:ScheduleRule
+function generate_schedule(start_date, end_date, rule::S) where S <: ScheduleRule
     return start_date:period(rule):end_date
 end
 
