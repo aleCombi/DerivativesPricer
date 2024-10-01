@@ -64,9 +64,9 @@ between accrual periods using the specified day count convention, and computes t
 - config = FixedRateStreamConfig( 100000, 0.05, ScheduleConfig(Date(2023, 1, 1), Date(2024, 1, 1), Monthly(), ACT360()), Linear() ) stream = FixedRateStream(config)
 """
 function FixedRateStream(stream_config::FixedRateStreamConfig)
-    accrual_dates = generate_schedule(stream_config.schedule_config) |> collect
+    accrual_dates, pay_dates = generate_schedule(stream_config.schedule_config) .|> collect
     time_fractions = day_count_fraction(accrual_dates, stream_config.schedule_config.day_count_convention)
     cash_flows = calculate_interest([stream_config.principal], [stream_config.rate], time_fractions, stream_config.rate_convention)
 
-    return FixedRateStream(accrual_dates, accrual_dates, cash_flows)
+    return FixedRateStream(pay_dates, accrual_dates, cash_flows)
 end

@@ -13,6 +13,29 @@ Abstract type representing the configuration for generating a payment schedule i
 abstract type AbstractScheduleConfig end
 
 """
+    AbstractShift
+
+Abstract type representing a shift in time by a specified period.
+"""
+abstract type AbstractShift end
+
+"""
+    TimeShift
+
+Represents a shift in time by a specified period.
+"""
+struct TimeShift{T<:Period} <: AbstractShift
+    shift::T
+    from_end::Bool
+end
+
+struct NoShift <: AbstractShift
+    from_end::Bool
+end
+
+shift(time::T, shift::TimeShift) where T <: TimeType = time + shift.shift
+
+"""
     ScheduleConfig
 
 Represents the configuration for generating a payment schedule in a stream of cash flows.
@@ -23,11 +46,29 @@ Represents the configuration for generating a payment schedule in a stream of ca
 - `schedule_rule::ScheduleRule`: The rule for generating the schedule (e.g., monthly, quarterly).
 - `day_count_convention::DayCountConvention`: The convention for calculating time fractions between accrual periods (e.g., ACT/360, ACT/365).
 """
-struct ScheduleConfig{T<:TimeType, S<:ScheduleRule, D<:DayCountConvention} <: AbstractScheduleConfig
+struct ScheduleConfig{T<:TimeType, S<:ScheduleRule, D<:DayCountConvention, R<:AbstractShift} <: AbstractScheduleConfig
     start_date::T
     end_date::T
     schedule_rule::S
     day_count_convention::D
+    payment_shift_rule::R
+end 
+
+function ScheduleConfig(start_date::T, end_date::T, schedule_rule::S, day_count_convention::D) where {T<:TimeType, S<:ScheduleRule, D<:DayCountConvention}
+    return ScheduleConfig(start_date, end_date, schedule_rule, day_count_convention, NoShift(true))
+end
+
+function ScheduleConfig(start_date::T, end_date::T, schedule_rule::S) where {T<:TimeType, S<:ScheduleRule}
+    return ScheduleConfig(start_date, end_date, schedule_rule, ACT365(), NoShift(true))
+end
+
+function ScheduleConfig(start_date::T, end_date::T, schedule_rule::S, payment_shift_rule::R) where {T<:TimeType, S<:ScheduleRule, R<:AbstractShift}
+    return ScheduleConfig(start_date, end_date, schedule_rule, ACT365(), payment_shift_rule)
+end
+
+struct FloatScheduleConfig{T<:AbstractShift} <: AbstractScheduleConfig
+    schedule_config::ScheduleConfig
+    fixing_shift_rule::T
 end
 
 
@@ -59,6 +100,11 @@ A concrete type representing a rule that generates schedules annually.
 """
 struct Annual <: ScheduleRule end
 
+period(::Daily) = Day(1)
+period(::Monthly) = Month(1)
+period(::Quarterly) = Month(3)
+period(::Annual) = Year(1)
+
 """
     generate_schedule(start_date::Date, end_date::Date, rule::ScheduleRule) -> Vector{Date}
 
@@ -72,54 +118,8 @@ Generates a sequence of dates between `start_date` and `end_date` based on the s
 # Returns
 - `Vector{Date}`: A vector of generated dates.
 """
-function generate_schedule(start_date, end_date, ::Daily)
-    return start_date:Day(1):end_date
-end
-
-"""
-    generate_schedule(start_date::Date, end_date::Date, rule::Monthly) -> Vector{Date}
-
-Generates a sequence of monthly dates between `start_date` and `end_date`.
-
-# Arguments
-- `start_date::Date`: The starting date of the schedule.
-- `end_date::Date`: The ending date of the schedule.
-- `rule::Monthly`: The rule for generating monthly schedules.
-
-# Returns
-- `Vector{Date}`: A vector of generated monthly dates.
-"""
-function generate_schedule(start_date, end_date, ::Monthly)
-    return start_date:Month(1):end_date
-end
-
-
-"""
-    generate_schedule(start_date::Date, end_date::Date, rule::Quarterly) -> Vector{Date}
-
-Generates a sequence of quarterly dates between `start_date` and `end_date`.
-
-# Arguments
-- `start_date::Date`: The starting date of the schedule.
-- `end_date::Date`: The ending date of the schedule.
-- `rule::Quarterly`: The rule for generating quarterly dates.
-"""
-function generate_schedule(start_date, end_date, ::Quarterly)
-    return start_date:Month(3):end_date
-end
-
-"""
-    generate_schedule(start_date::Date, end_date::Date, rule::Annual) -> Vector{Date}
-
-Generates a sequence of yearly dates between `start_date` and `end_date`.
-
-# Arguments
-- `start_date::Date`: The starting date of the schedule.
-- `end_date::Date`: The ending date of the schedule.
-- `rule::Annual`: The rule for generating yearly dates.
-"""
-function generate_schedule(start_date, end_date, ::Annual)
-    return start_date:Year(1):end_date
+function generate_schedule(start_date, end_date, rule::S) where S<:ScheduleRule
+    return start_date:period(rule):end_date
 end
 
 """
@@ -135,6 +135,23 @@ Generate a schedule based on the provided `schedule_config`.
 
 # Example
 """
-function generate_schedule(schedule_config::T) where T <: AbstractScheduleConfig
-    return generate_schedule(schedule_config.start_date, schedule_config.end_date, schedule_config.schedule_rule)
+function generate_schedule(schedule_config::ScheduleConfig)
+    accrual_schedule = generate_schedule(schedule_config.start_date, schedule_config.end_date, schedule_config.schedule_rule)
+    pay_schedule = relative_schedule(accrual_schedule, schedule_config.payment_shift_rule)
+    return pay_schedule, accrual_schedule
 end
+
+function generate_schedule(float_schedule_config::FloatScheduleConfig)
+    schedule_config = float_schedule_config.schedule_config
+    accrual_schedule = generate_schedule(schedule_config.start_date, schedule_config.end_date, schedule_config.schedule_rule)
+    pay_schedule = relative_schedule(accrual_schedule, schedule_config.payment_shift_rule)
+    fixing_schedule = relative_schedule(accrual_schedule, float_schedule_config.fixing_shift_rule)
+    return pay_schedule, accrual_schedule, fixing_schedule
+end
+
+function relative_schedule(schedule, shift_rule::TimeShift)
+    origin_schedule = shift_rule.from_end ? schedule[1:end-1] : schedule[2:end]
+    return map(d -> shift(d, shift_rule), origin_schedule)
+end
+
+relative_schedule(schedule, shift::NoShift) = shift.from_end ? schedule[2:end] : schedule[1:end-1]
