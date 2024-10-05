@@ -9,6 +9,11 @@ include("rate_curves.jl")
 include("float_rate_stream.jl")
 include("discount_pricing.jl")
 
+if isdefined(@__MODULE__,:LanguageServer)
+    include("../test/runtests.jl")
+    include("../notebook/notebook.jl")
+end
+
 # Export relevant functions and types for external use
 export  DayCountConvention, ACT360, ACT365, day_count_fraction,
         # day_count_conventions.jl
