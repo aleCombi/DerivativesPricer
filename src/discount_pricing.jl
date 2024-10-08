@@ -1,5 +1,5 @@
 """
-    price_fixed_flows_stream(stream_config::FixedRateStream, rate_curve::RateCurve)
+    price_fixed_flows_stream(payment_dates::Vector{D}, cash_flows::Vector{N}, rate_curve::RateCurve)
 
 Calculate the price of a fixed-rate stream of cash flows using a given rate curve. This function discounts the cash flows using the discount factors
 from the rate curve and returns the total price.
@@ -11,7 +11,7 @@ from the rate curve and returns the total price.
 # Returns
 - The price of the fixed-rate stream of cash flows.
 """
-function price_fixed_flows_stream(payment_dates::Vector{D}, cash_flows::Vector{N}, rate_curve::RateCurve) where D<:TimeType where N<:Number
+function price_fixed_flows_stream(payment_dates::Vector{D}, cash_flows::Vector{N}, rate_curve) where D<:TimeType where N<:Number
     discount_factors = discount_factor(rate_curve, payment_dates)
     return sum(cash_flows .* discount_factors)
 end

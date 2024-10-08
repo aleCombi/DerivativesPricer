@@ -95,3 +95,16 @@ function create_rate_curve(inputs::RateCurveInputs)
     interpolation = interpolate((inputs.times_day_counts,), inputs.rates, inputs.interp_method)
     return RateCurve("Curve_$(randstring(5))", inputs.date, interpolation, inputs.day_count_convention)
 end
+
+struct FlatRateCurve{D<:TimeType, T, C<:DayCountConvention, R<:RateType}
+    name::String
+    date::D
+    rate::T
+    day_count_convention::C
+    rate_type::R
+end
+
+function discount_factor(rate_curve::FlatRateCurve, date)
+    delta = day_count_fraction(rate_curve.date, date, rate_curve.day_count_convention)
+    return 1 ./ (calculate_interest(1, rate_curve.rate, delta, rate_curve.rate_type) .+ 1)
+end
