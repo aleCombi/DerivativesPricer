@@ -44,8 +44,8 @@ Calculates interest for multiple principals using the linear (simple) interest m
 # Returns
 - `Vector{Float64}`: A vector of calculated simple interest for each investment.
 """
-function calculate_interest(principal, rate, time_fraction, ::Linear)
-    return principal .* rate .* time_fraction
+function calculate_interest(principal, rate, time_fractions, ::Linear)
+    return principal .* rate .* time_fractions
 end
 
 """

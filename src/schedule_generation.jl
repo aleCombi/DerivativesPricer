@@ -16,14 +16,14 @@ abstract type AbstractScheduleConfig end
 """
     AbstractShift
 
-Abstract type representing a shift in time by a specified period.
+Abstract type representing a shift in time by a specified period from an accrual period.
 """
 abstract type AbstractShift end
 
 """
     TimeShift
 
-Represents a shift in time by a specified period.
+Represents a shift in time by a specified period from an accrual period start or end.
 """
 struct TimeShift{T<:Period} <: AbstractShift
     shift::T

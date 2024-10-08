@@ -18,16 +18,16 @@ struct RateIndex
 end
 
 """
-    FloatRateStreamConfig{P, R<:RateIndex, S<:ScheduleConfig, T<:RateType} <: FlowStreamConfig
+        FloatRateStreamConfig{P, R<:RateIndex, S<:ScheduleConfig, T<:RateType} <: FlowStreamConfig
 
-Configuration for a floating-rate stream of cash flows. This includes the principal amount, the rate index, the schedule
-for the payments, and the convention for calculating interest.
+    Configuration for a floating-rate stream of cash flows. This includes the principal amount, the rate index, the schedule
+    for the payments, and the convention for calculating interest.
 
-# Fields
-- `principal::P`: The principal amount for the floating-rate cash flows.
-- `rate_index::R`: The rate index used for the floating rate (e.g., LIBOR, EURIBOR).
-- `schedule_config::S`: The schedule configuration that defines the start, end, and payment frequency.
-- `rate_convention::T`: The rate convention used to calculate interest (e.g., `Linear`, `Compounded`).
+    # Fields
+    - `principal::P`: The principal amount for the floating-rate cash flows.
+    - `rate_index::R`: The rate index used for the floating rate (e.g., LIBOR, EURIBOR).
+    - `schedule_config::S`: The schedule configuration that defines the start, end, and payment frequency.
+    - `rate_convention::T`: The rate convention used to calculate interest (e.g., `Linear`, `Compounded`).
 """
 struct FloatRateStreamConfig{P, R<:AbstractRateIndex, S<:AbstractScheduleConfig, T<:RateType} <: FlowStreamConfig
     principal::P
@@ -37,16 +37,16 @@ struct FloatRateStreamConfig{P, R<:AbstractRateIndex, S<:AbstractScheduleConfig,
 end
 
 """
-    FloatingRateStream{D, T} <: FlowStream
+        FloatingRateStream{D, T} <: FlowStream
 
-A concrete type representing a stream of floating-rate cash flows. This includes the payment dates, accrual dates, fixing dates,
-and the calculated day counts for each period.
+    A concrete type representing a stream of floating-rate cash flows. This includes the payment dates, accrual dates, fixing dates,
+    and the calculated day counts for each period.
 
-# Fields
-- `config::FloatRateStreamConfig`: The configuration for the floating-rate stream.
-- `pay_dates::Vector{D}`: A vector of payment dates.
-- `accrual_day_counts::Vector{T}`: A vector of calculated day counts for each accrual period.
-"""
+    # Fields
+    - `config::FloatRateStreamConfig`: The configuration for the floating-rate stream.
+    - `pay_dates::Vector{D}`: A vector of payment dates.
+    - `accrual_day_counts::Vector{T}`: A vector of calculated day counts for each accrual period.
+    """
 struct FloatingRateStream{D, T} <: FlowStream
     config::FloatRateStreamConfig
     pay_dates::Vector{D}
