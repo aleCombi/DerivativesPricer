@@ -12,6 +12,7 @@ include("discount_pricing.jl")
 # include runtests in VSCODE: necessary to have code completion
 if isdefined(@__MODULE__,:LanguageServer)
     include("../test/runtests.jl")
+    include("../notebook/notebook.jl")
 end
 
 # Export relevant functions and types for external use

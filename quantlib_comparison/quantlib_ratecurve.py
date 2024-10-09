@@ -39,7 +39,10 @@ def setup_pricer_without_engine():
     swap = ql.Swap(fixed_rate_leg, ql.Leg())  # Only a fixed-rate leg, no floating leg
 
     rate_curve_handle = ql.YieldTermStructureHandle(rate_curve)
-    return swap, rate_curve_handle
+    swap_engine = ql.DiscountingSwapEngine(rate_curve_handle)
+
+    swap.setPricingEngine(swap_engine)
+    return swap, rate_curve_handle, schedule
 
 # Isolate setPricingEngine execution
 def set_engine_only(swap, rate_curve_handle):
@@ -50,34 +53,35 @@ def set_engine_only(swap, rate_curve_handle):
 def calculate_npv(swap):
     return swap.NPV()  # This is where the actual NPV is computed
 
-# Define an overall function that does both setup and NPV calculation
-def overall_npv():
-    swap, rate_curve_handle = setup_pricer_without_engine()
-    set_engine_only(swap, rate_curve_handle)
-    return calculate_npv(swap)
+# Discount factor calculation for the payment dates in the schedule
+def calculate_discount_factors(rate_curve_handle, schedule):
+    return [rate_curve_handle.discount(date) for date in schedule]
 
-# Run the setup without the engine, only once and store the result
-swap, rate_curve_handle = setup_pricer_without_engine()
 
-# Now benchmark the setPricingEngine step only
+# Setup the environment (done only once)
+swap, rate_curve_handle, schedule = setup_pricer_without_engine()
+# set_engine_only(swap, rate_curve_handle)
 samples = 10000
 
 # Benchmark setPricingEngine alone
 engine_time = timeit.timeit("set_engine_only(swap, rate_curve_handle)", 
                             setup="from __main__ import set_engine_only, swap, rate_curve_handle", 
+                            globals=globals(),
                             number=samples)
 
-# Time the calculation phase separately
+# Time the NPV calculation separately
 calculation_time = timeit.timeit("calculate_npv(swap)", 
                                  setup="from __main__ import calculate_npv, swap", 
+                                 globals=globals(),
                                  number=samples)
 
-# Time the combined setup (without engine) + NPV calculation phase
-overall_time = timeit.timeit("overall_npv()", 
-                             setup="from __main__ import overall_npv", 
-                             number=samples)
+# Time only the discount factor calculation (no setup involved)
+discount_time = timeit.timeit("calculate_discount_factors(rate_curve_handle, schedule)", 
+                              setup="from __main__ import calculate_discount_factors, rate_curve_handle, schedule", 
+                              globals=globals(),
+                              number=samples)
 
-# Print the average execution times for setPricingEngine, NPV calculation, and overall
+# Print the average execution times for setPricingEngine, NPV calculation, and discount factor calculation
 print(f"Average setPricingEngine time over {samples} runs: {engine_time / samples * 1000000:.12f} microseconds")
 print(f"Average NPV calculation time over {samples} runs: {calculation_time / samples * 1000000:.12f} microseconds")
-print(f"Average overall time (setup without engine + NPV) over {samples} runs: {overall_time / samples * 1000000:.12f} microseconds")
+print(f"Average discount factor calculation time over {samples} runs: {discount_time / samples * 1000000:.12f} microseconds")
