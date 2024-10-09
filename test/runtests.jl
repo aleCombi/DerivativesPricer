@@ -9,5 +9,6 @@ if isdefined(@__MODULE__,:LanguageServer)
     include("rate_curves.jl")
     include("float_rate_stream.jl")
     include("discount_pricing.jl")
-    
+end
+
 @run_package_tests
