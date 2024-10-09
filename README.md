@@ -17,8 +17,9 @@ The library has Symbolics.jl as a dependency with the purpose of running calcula
 
 # Roadmap
 
-  1. Support Rate Curves interpolation in the space of rates rather than discount factors directly, based on a selected RateType.
-  2. Develop a calibration routine for a single curve.
-  3. Setup for MultiCurve pricing in a single currency.
-  4. Proper testing and benchmarking with Quantlib.py. (See Issue [#2](#2))
-  5. Setup Documenter.jl (See Issue [#1](#1))
+- Decouple modules low level functionality for better unit testing, write orchestrators separately.
+- Support Rate Curves interpolation in the space of rates rather than discount factors directly, based on a selected RateType.
+- Develop a calibration routine for a single curve.
+- Setup for MultiCurve pricing in a single currency.
+- Proper testing and benchmarking with Quantlib.py. (See Issue [#2](#2))
+- Setup Documenter.jl (See Issue [#1](#1))
