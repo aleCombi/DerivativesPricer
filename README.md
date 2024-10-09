@@ -2,14 +2,23 @@
 |:--------:|:------------:|
 | [![Test Passing](https://github.com/aleCombi/DerivativesPricer/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/aleCombi/DerivativesPricer/actions) | [![Coverage Status](https://coveralls.io/repos/github/aleCombi/juliaExperiment/badge.svg?branch=master&cache-control=no-cache)](https://coveralls.io/github/aleCombi/juliaExperiment?branch=master) |
 
+This library aims at pricing linear interest rates (IR) derivatives using a multi-curve framework.
 
-This library aims at writing some derivatives pricers
-Main ideas:
-  1. Using symbolic calculus, storing symbolic expressions for products and the reevaluating them when need be.
-  2. Start from linear derivatives.
-  3. Write rate curves objects.
-  4. Separate structures for payoffs (as in list of symbolic cash flows) and for evaluations (sums of discounted cash flows)
-  5. In the demo the model should be single curve, without convexity adjustments.
-  6. Next up we can add FX conversions.
-  7. Benchmark for accuracy and performance against Quantlib.jl.
-  8. Move this list into a number of Issues and give descriptive text here
+# Features
+
+  1. Daycount conventions,
+  2. Schedules generation,
+  3. Discount factors and forward rates calculations,
+  4. Representation of fixed and floating rate swap legs,
+  5. Rate curves based on a flat rate or an interpolation,
+  6. Pricing of fixed and floating rate swap legs using rate curves.
+
+The library has Symbolics.jl as a dependency with the purpose of running calculations symbolically for debugging or validation purposes.
+
+# Roadmap
+
+  1. Support Rate Curves interpolation in the space of rates rather than discount factors directly, based on a selected RateType.
+  2. Develop a calibration routine for a single curve.
+  3. Setup for MultiCurve pricing in a single currency.
+  4. Proper testing and benchmarking with Quantlib.py.
+  5. Setup Documenter.jl ([text](https://github.com/aleCombi/DerivativesPricer/issues/1))
