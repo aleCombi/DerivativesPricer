@@ -106,5 +106,5 @@ end
 
 function discount_factor(rate_curve::FlatRateCurve, date)
     delta = day_count_fraction(rate_curve.date, date, rate_curve.day_count_convention)
-    return 1 ./ (calculate_interest(1, rate_curve.rate, delta, rate_curve.rate_type) .+ 1)
+    return discount_interest(rate_curve.rate, delta, rate_curve.rate_type)
 end

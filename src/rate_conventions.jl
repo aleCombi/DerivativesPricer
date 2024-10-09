@@ -48,6 +48,10 @@ function calculate_interest(principal, rate, time_fractions, ::Linear)
     return principal .* rate .* time_fractions
 end
 
+function discount_interest(rate, time_fractions, ::Linear)
+    return 1 / (1 + rate .* time_fractions)
+end
+
 """
     calculate_interest(principals::Vector{Float64}, rates::Vector{Float64}, time_fractions::Vector{Float64}, rate_type::Compounded) -> Vector{Float64}
 
@@ -66,6 +70,10 @@ function calculate_interest(principal, rate, time_fraction, rate_type::Compounde
     return principal .* ((1 .+ rate ./ rate_type.frequency) .^ (rate_type.frequency .* time_fraction)) .- principal
 end
 
+function discount_interest(rate, time_fraction, rate_type::Compounded)
+    return (1 .+ rate ./ rate_type.frequency) .^ (- rate_type.frequency .* time_fraction)
+end
+
 """
     calculate_interest(principals::Vector{Float64}, rates::Vector{Float64}, time_fractions::Vector{Float64}, ::Exponential) -> Vector{Float64}
 
@@ -81,4 +89,8 @@ Calculates exponential interest for multiple principals. This vectorized version
 """
 function calculate_interest(principal, rate, time_fraction, ::Exponential)
     return principal .* (exp.(rate .* time_fraction)) .- principal
+end
+
+function discount_interest(rate, time_fraction, ::Exponential)
+    return exp.(-rate .* time_fraction)
 end

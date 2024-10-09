@@ -1,8 +1,7 @@
 using DerivativesPricer
 using Dates
 using BenchmarkTools
-using InteractiveUtils
-using Profile
+using ProfileView
 # Setup phase (construct the curve, schedule, and stream)
 function setup_pricer()
     # Market rates
@@ -47,3 +46,15 @@ calculation_benchmark = @benchmark calculate_npv($fixed_rate_stream, $rate_curve
 # Display the benchmark results
 display(setup_benchmark)
 display(calculation_benchmark)
+
+# ProfileView.@profview price_fixed_flows_stream(fixed_rate_stream.pay_dates, fixed_rate_stream.cash_flows, rate_curve)
+
+
+@benchmark price_fixed_flows_stream($fixed_rate_stream.pay_dates, $fixed_rate_stream.cash_flows, $rate_curve)
+
+# @benchmark discount_factor($rate_curve, $fixed_rate_stream.pay_dates)
+
+# @benchmark day_count_fraction($rate_curve.date, $fixed_rate_stream.pay_dates, $rate_curve.day_count_convention)
+# @benchmark day_count_fraction($rate_curve.date, $fixed_rate_stream.pay_dates, $rate_curve.day_count_convention)
+
+# @benchmark DerivativesPricer.discount_interest($rate_curve.rate, delta, $rate_curve.rate_type)
