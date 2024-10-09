@@ -1,6 +1,7 @@
 using TestItemRunner
 using DerivativesPricer
 
+# include test files in VSCODE: necessary to have code completion
 if isdefined(@__MODULE__,:LanguageServer)
     include("day_count_conventions.jl")
     include("rate_conventions.jl")
