@@ -30,9 +30,21 @@ struct TimeShift{T<:Period} <: AbstractShift
     from_end::Bool
 end
 
+"""
+    NoShift
+
+A shift that doesn't shift, just decides to use the start date or end date of each period.
+"""
 struct NoShift <: AbstractShift
     from_end::Bool
 end
+
+"""
+    NoShift()
+
+By default schedules are generated from the end date of each accrual period.
+"""
+NoShift() = NoShift(true)
 
 shift(time::T, shift::TimeShift) where T <: TimeType = time + shift.shift
 
@@ -54,13 +66,8 @@ struct ScheduleConfig{T<:TimeType, S<:ScheduleRule, R<:AbstractShift} <: Abstrac
     payment_shift_rule::R
 end 
 
-function ScheduleConfig(start_date::T, end_date::T, schedule_rule::S) where {T<:TimeType, S<:ScheduleRule, D<:DayCountConvention}
-    return ScheduleConfig(start_date, end_date, schedule_rule, NoShift(true))
-end
-
-struct FloatScheduleConfig{T<:AbstractShift} <: AbstractScheduleConfig
-    schedule_config::ScheduleConfig
-    fixing_shift_rule::T
+function ScheduleConfig(start_date::T, end_date::T, schedule_rule::S) where {T<:TimeType, S<:ScheduleRule}
+    return ScheduleConfig(start_date, end_date, schedule_rule, NoShift())
 end
 
 
@@ -103,12 +110,12 @@ period(::Annual) = Year(1)
 Generates a sequence of dates between `start_date` and `end_date` based on the specified schedule generation rule.
 
 # Arguments
-- `start_date::Date`: The starting date of the schedule.
-- `end_date::Date`: The ending date of the schedule.
+- `start_date`: The starting date of the schedule.
+- `end_date`: The ending date of the schedule.
 - `rule::ScheduleRule`: The rule for schedule generation (e.g., `DailySchedule`, `Monthly`, `Quarterly`, etc.).
 
 # Returns
-- `Vector{Date}`: A vector of generated dates.
+- An iterator of generated dates.
 """
 function generate_schedule(start_date, end_date, rule::S) where S <: ScheduleRule
     return start_date:period(rule):end_date
@@ -123,7 +130,7 @@ Generate a schedule based on the provided `schedule_config`.
 - `schedule_config::ScheduleConfig`: A configuration object containing the start date, end date, and schedule rule.
 
 # Returns
-- A schedule generated according to the specified configuration.
+- A payment schedule and an accrual schedule generated according to the specified configuration.
 
 # Example
 """
@@ -131,14 +138,6 @@ function generate_schedule(schedule_config::ScheduleConfig)
     accrual_schedule = generate_schedule(schedule_config.start_date, schedule_config.end_date, schedule_config.schedule_rule)
     pay_schedule = relative_schedule(accrual_schedule, schedule_config.payment_shift_rule)
     return pay_schedule, accrual_schedule
-end
-
-function generate_schedule(float_schedule_config::FloatScheduleConfig)
-    schedule_config = float_schedule_config.schedule_config
-    accrual_schedule = generate_schedule(schedule_config.start_date, schedule_config.end_date, schedule_config.schedule_rule)
-    pay_schedule = relative_schedule(accrual_schedule, schedule_config.payment_shift_rule)
-    fixing_schedule = relative_schedule(accrual_schedule, float_schedule_config.fixing_shift_rule)
-    return pay_schedule, accrual_schedule, fixing_schedule
 end
 
 """

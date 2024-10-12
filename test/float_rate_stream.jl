@@ -16,7 +16,7 @@ end
     principal = 1000.0  # Assume a principal amount
     rate_index = DummyRateIndex()  # Dummy rate index
     rate_convention = DummyRateType()  # Dummy rate convention
-    stream_config = FloatRateStreamConfig(principal, rate_index, schedule_config, day_count_convention, rate_convention)
+    stream_config = FloatRateStreamConfig(principal, rate_index, schedule_config, day_count_convention, rate_convention, NoShift())
 
     # Create the floating rate stream
     stream = FloatingRateStream(stream_config)
