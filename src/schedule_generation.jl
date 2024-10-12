@@ -9,7 +9,7 @@ abstract type ScheduleRule end
 """
     AbstractScheduleConfig
 
-Abstract type representing the configuration for generating a payment schedule in a stream of cash flows.
+Abstract type representing the configuration for generating an accrual schedule in a stream of cash flows.
 """
 abstract type AbstractScheduleConfig end
 
@@ -47,24 +47,15 @@ Represents the configuration for generating a payment schedule in a stream of ca
 - `schedule_rule::ScheduleRule`: The rule for generating the schedule (e.g., monthly, quarterly).
 - `day_count_convention::DayCountConvention`: The convention for calculating time fractions between accrual periods (e.g., ACT/360, ACT/365).
 """
-struct ScheduleConfig{T<:TimeType, S<:ScheduleRule, D<:DayCountConvention, R<:AbstractShift} <: AbstractScheduleConfig
+struct ScheduleConfig{T<:TimeType, S<:ScheduleRule, R<:AbstractShift} <: AbstractScheduleConfig
     start_date::T
     end_date::T
     schedule_rule::S
-    day_count_convention::D
     payment_shift_rule::R
 end 
 
-function ScheduleConfig(start_date::T, end_date::T, schedule_rule::S, day_count_convention::D) where {T<:TimeType, S<:ScheduleRule, D<:DayCountConvention}
-    return ScheduleConfig(start_date, end_date, schedule_rule, day_count_convention, NoShift(true))
-end
-
-function ScheduleConfig(start_date::T, end_date::T, schedule_rule::S) where {T<:TimeType, S<:ScheduleRule}
-    return ScheduleConfig(start_date, end_date, schedule_rule, ACT365(), NoShift(true))
-end
-
-function ScheduleConfig(start_date::T, end_date::T, schedule_rule::S, payment_shift_rule::R) where {T<:TimeType, S<:ScheduleRule, R<:AbstractShift}
-    return ScheduleConfig(start_date, end_date, schedule_rule, ACT365(), payment_shift_rule)
+function ScheduleConfig(start_date::T, end_date::T, schedule_rule::S) where {T<:TimeType, S<:ScheduleRule, D<:DayCountConvention}
+    return ScheduleConfig(start_date, end_date, schedule_rule, NoShift(true))
 end
 
 struct FloatScheduleConfig{T<:AbstractShift} <: AbstractScheduleConfig
@@ -150,9 +141,21 @@ function generate_schedule(float_schedule_config::FloatScheduleConfig)
     return pay_schedule, accrual_schedule, fixing_schedule
 end
 
-function relative_schedule(schedule, shift_rule::TimeShift)
-    origin_schedule = shift_rule.from_end ? schedule[1:end-1] : schedule[2:end]
+"""
+    relative_schedule(accrual_schedule, shift_rule::TimeShift)
+
+Generate a schedule relative to the accrual schedule, typically payment schedule, fixing schedule or notional schedule.
+
+# Arguments
+- `accrual_schedule`: Origin accrual schedule.
+- `shift_rule`: Rule to shift from the accrual schedule.
+
+# Returns
+- a collection of dates. Note that this collection has one date less than the accrual schedule. That is the result has one date per accrual period.
+"""
+function relative_schedule(accrual_schedule, shift_rule::TimeShift)
+    origin_schedule = shift_rule.from_end ? accrual_schedule[1:end-1] : accrual_schedule[2:end]
     return map(d -> shift(d, shift_rule), origin_schedule)
 end
 
-relative_schedule(schedule, shift::NoShift) = shift.from_end ? schedule[2:end] : schedule[1:end-1]
+relative_schedule(accrual_schedule, shift_rule::NoShift) = shift_rule.from_end ? accrual_schedule[2:end] : accrual_schedule[1:end-1]

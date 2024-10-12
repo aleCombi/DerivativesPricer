@@ -18,10 +18,11 @@ for the payments, along with the convention for calculating interest.
 - `schedule_config::ScheduleConfig`: The schedule configuration that defines the start, end, and payment frequency.
 - `rate_convention::RateType`: The rate convention used to calculate interest (e.g., `Linear`, `Compounded`).
 """
-struct FixedRateStreamConfig{P, R, S<:ScheduleConfig, T<:RateType} <: FlowStreamConfig
+struct FixedRateStreamConfig{P, R, S<:ScheduleConfig, T<:RateType, D<:DayCountConvention} <: FlowStreamConfig
     principal::P
     rate::R
     schedule_config::S
+    day_count_convention::D
     rate_convention::T
 end
 
@@ -38,9 +39,9 @@ abstract type FlowStream end
 A concrete type representing a stream of fixed-rate cash flows. This includes the payment dates, accrual dates, and the calculated cash flows.
 
 # Fields
-- `pay_dates::Vector{Date}`: A vector of payment dates.
-- `accrual_dates::Vector{Date}`: A vector of accrual period start dates.
-- `cash_flows::Vector{Float64}`: A vector of calculated cash flows for each period.
+- `pay_dates`: A vector of payment dates.
+- `accrual_dates`: A vector of accrual period start dates.
+- `cash_flows`: A vector of calculated cash flows for each period.
 """
 struct FixedRateStream{D, T} <: FlowStream
     pay_dates::Vector{D}
@@ -65,7 +66,7 @@ between accrual periods using the specified day count convention, and computes t
 """
 function FixedRateStream(stream_config::FixedRateStreamConfig)
     pay_dates, accrual_dates = generate_schedule(stream_config.schedule_config) .|> collect
-    time_fractions = day_count_fraction(accrual_dates, stream_config.schedule_config.day_count_convention)
+    time_fractions = day_count_fraction(accrual_dates, stream_config.day_count_convention)
     cash_flows = calculate_interest([stream_config.principal], [stream_config.rate], time_fractions, stream_config.rate_convention)
 
     return FixedRateStream(pay_dates, accrual_dates, cash_flows)

@@ -10,7 +10,6 @@ struct DummyScheduleConfig <: AbstractScheduleConfig
     start_date::Date
     end_date::Date
     schedule_rule::DummyScheduleRule
-    day_count_convention::DummyDayCountConvention
 end
 
 # Dummy generate_schedule and day_count_fraction functions for testing purposes

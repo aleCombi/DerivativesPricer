@@ -29,10 +29,11 @@ end
     - `schedule_config::S`: The schedule configuration that defines the start, end, and payment frequency.
     - `rate_convention::T`: The rate convention used to calculate interest (e.g., `Linear`, `Compounded`).
 """
-struct FloatRateStreamConfig{P, R<:AbstractRateIndex, S<:AbstractScheduleConfig, T<:RateType} <: FlowStreamConfig
+struct FloatRateStreamConfig{P, R<:AbstractRateIndex, S<:AbstractScheduleConfig, T<:RateType, D<:DayCountConvention} <: FlowStreamConfig
     principal::P
     rate_index::R
     schedule_config::S
+    day_count_convention::D
     rate_convention::T
 end
 
@@ -72,6 +73,6 @@ between accrual periods using the specified day count convention, and initialize
 
 function FloatingRateStream(stream_config::FloatRateStreamConfig) 
     accrual_dates = generate_schedule(stream_config.schedule_config) |> collect
-    accrual_day_counts = day_count_fraction(accrual_dates, stream_config.schedule_config.day_count_convention)
+    accrual_day_counts = day_count_fraction(accrual_dates, stream_config.day_count_convention)
     return FloatingRateStream(stream_config, accrual_dates[2:end], accrual_dates[2:end], accrual_dates, accrual_day_counts)
 end

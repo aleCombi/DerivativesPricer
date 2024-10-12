@@ -7,11 +7,11 @@ end
     end_date = Date(2024, 1, 1)
     principal = 100000.0
     rate = 0.05
-    schedule_config = ScheduleConfig(start_date, end_date, Monthly(), ACT360())
+    schedule_config = ScheduleConfig(start_date, end_date, Monthly())
     rate_convention = Linear()
-
+    day_count_convention = ACT360()
     # Create a FixedRateStreamConfig
-    stream_config = FixedRateStreamConfig(principal, rate, schedule_config, rate_convention)
+    stream_config = FixedRateStreamConfig(principal, rate, schedule_config, day_count_convention, rate_convention)
 
     # Test that the stream config was created correctly
     @test stream_config.principal == principal
@@ -26,11 +26,12 @@ end
     end_date = Date(2024, 1, 1)
     principal = 100000.0
     rate = 0.05
-    schedule_config = ScheduleConfig(start_date, end_date, Monthly(), ACT360())
+    schedule_config = ScheduleConfig(start_date, end_date, Monthly())
     rate_convention = Linear()
+    day_count_convention = ACT365()
 
     # Create a FixedRateStreamConfig
-    stream_config = FixedRateStreamConfig(principal, rate, schedule_config, rate_convention)
+    stream_config = FixedRateStreamConfig(principal, rate, schedule_config, day_count_convention, rate_convention)
 
     # Generate the FixedRateStream
     stream = FixedRateStream(stream_config)
@@ -48,11 +49,12 @@ end
     end_date = Date(2024, 1, 1)
     principal = 100000.0
     rate = 0.05  # 5% interest
-    schedule_config = ScheduleConfig(start_date, end_date, Monthly(), ACT360())
+    schedule_config = ScheduleConfig(start_date, end_date, Monthly())
+    day_count_convention = ACT360()
     rate_convention = Linear()
 
     # Create a FixedRateStreamConfig
-    stream_config = FixedRateStreamConfig(principal, rate, schedule_config, rate_convention)
+    stream_config = FixedRateStreamConfig(principal, rate, schedule_config, day_count_convention,rate_convention)
 
     # Generate the FixedRateStream
     stream = FixedRateStream(stream_config)
@@ -78,11 +80,13 @@ end
     end_date = Date(2024, 1, 1)
     principal = 0.0  # Zero principal
     rate = 0.05
-    schedule_config = ScheduleConfig(start_date, end_date, Monthly(), ACT360())
+    day_count_convention = ACT360()
+
+    schedule_config = ScheduleConfig(start_date, end_date, Monthly())
     rate_convention = Linear()
 
     # Create a FixedRateStreamConfig
-    stream_config = FixedRateStreamConfig(principal, rate, schedule_config, rate_convention)
+    stream_config = FixedRateStreamConfig(principal, rate, schedule_config, day_count_convention, rate_convention)
 
     # Generate the FixedRateStream
     stream = FixedRateStream(stream_config)
@@ -99,11 +103,12 @@ end
     end_date = Date(2024, 1, 1)
     principal = 100000.0
     rate = 0.05
-    schedule_config = ScheduleConfig(start_date, end_date, Monthly(), ACT365())
+    day_count_convention = ACT365()
+    schedule_config = ScheduleConfig(start_date, end_date, Monthly())
     rate_convention = Linear()
 
     # Create a FixedRateStreamConfig
-    stream_config = FixedRateStreamConfig(principal, rate, schedule_config, rate_convention)
+    stream_config = FixedRateStreamConfig(principal, rate, schedule_config, day_count_convention, rate_convention)
 
     # Generate the FixedRateStream
     stream = FixedRateStream(stream_config)
