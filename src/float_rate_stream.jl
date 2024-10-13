@@ -1,23 +1,4 @@
 """
-    AbstractRateIndex
-
-An abstract type representing a rate index. This type is used to define the rate index for a floating-rate stream.
-"""
-abstract type AbstractRateIndex end
-
-"""
-    RateIndex
-
-A structure representing a rate index.
-
-# Fields
-- `name::String`: The name of the rate index.
-"""
-struct RateIndex
-    name::String
-end
-
-"""
     FloatRateStreamConfig{P, R<:RateIndex, S<:ScheduleConfig, T<:RateType} <: FlowStreamConfig
 
 Configuration for a floating-rate stream of cash flows. This includes the principal amount, the rate index, the schedule

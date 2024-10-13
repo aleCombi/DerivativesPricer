@@ -8,6 +8,7 @@ include("fixed_rate_stream.jl")
 include("rate_curves.jl")
 include("float_rate_stream.jl")
 include("discount_pricing.jl")
+include("float_rate.jl")
 
 # include runtests in VSCODE: necessary to have code completion
 if isdefined(@__MODULE__,:LanguageServer)
@@ -28,6 +29,8 @@ export  DayCountConvention, ACT360, ACT365, day_count_fraction,
         # rate_curves.jl
         AbstractRateIndex, FloatRateStreamConfig, FloatingRateStream, RateIndex,
         # float_rate_stream.jl
-        price_fixed_flows_stream, calculate_forward_rates, price_float_rate_stream
+        price_fixed_flows_stream, calculate_forward_rates, price_float_rate_stream,
         # discount_pricing.jl
+        AbstractRateIndex, RateIndex
+        # float_rate.jl
 end
