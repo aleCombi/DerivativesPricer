@@ -32,65 +32,104 @@ Concrete type representing exponential interest, where the interest is calculate
 struct Exponential <: RateType end
 
 """
-    calculate_interest(principals::Vector{Float64}, rates::Vector{Float64}, time_fractions::Vector{Float64}, ::Linear) -> Vector{Float64}
+    calculate_interest(principal, rate, time_fraction, ::Linear)
 
 Calculates interest for multiple principals using the linear (simple) interest method. This vectorized version handles multiple investments.
 
 # Arguments
-- `principals::Vector{Float64}`: A vector of principal amounts.
-- `rates::Vector{Float64}`: A vector of interest rates for each principal.
-- `time_fractions::Vector{Float64}`: A vector representing the fraction of the year for each investment.
+- `principal`: A vector of principal amounts.
+- `rate`: A vector of interest rates for each principal.
+- `time_fraction`: A vector representing the fraction of the year for each investment.
 
 # Returns
-- `Vector{Float64}`: A vector of calculated simple interest for each investment.
+- A vector of calculated simple interest for each investment.
 """
-function calculate_interest(principal, rate, time_fractions, ::Linear)
-    return principal .* rate .* time_fractions
-end
-
-function discount_interest(rate, time_fractions, ::Linear)
-    return 1 / (1 + rate .* time_fractions)
+function calculate_interest(principal, rate, time_fraction, ::Linear)
+    return principal .* rate .* time_fraction
 end
 
 """
-    calculate_interest(principals::Vector{Float64}, rates::Vector{Float64}, time_fractions::Vector{Float64}, rate_type::Compounded) -> Vector{Float64}
+    discount_interest(rate, time_fraction, ::Linear)
+
+Discounts factor given a rate and time fraction in Linear mode.
+
+# Arguments
+- `rate`: Interest rate for discounting.
+- `time_fraction`: Daycount between the reference date and the discounting date.
+- `::Linear`: An instance of Linear specifying the discount calculation mode.
+
+# Returns
+A set of discount factors.
+"""
+function discount_interest(rate, time_fraction, ::Linear)
+    return 1 / (1 + rate .* time_fraction)
+end
+
+"""
+    calculate_interest(principal, rate, time_fraction, rate_type::Compounded) -> Vector{Float64}
 
 Calculates compound interest for multiple principals. This vectorized version handles multiple investments with compounding.
 
 # Arguments
-- `principals::Vector{Float64}`: A vector of principal amounts.
-- `rates::Vector{Float64}`: A vector of interest rates for each principal.
-- `time_fractions::Vector{Float64}`: A vector representing the fraction of the year for each investment.
+- `principal`: A vector of principal amounts.
+- `rate`: A vector of interest rates for each principal.
+- `time_fraction`: A vector representing the fraction of the year for each investment.
 - `rate_type::Compounded`: An instance of `Compounded` specifying the frequency of compounding.
 
 # Returns
-- `Vector{Float64}`: A vector of calculated compound interest for each investment.
+- A vector of calculated compound interest for each investment.
 """
 function calculate_interest(principal, rate, time_fraction, rate_type::Compounded)
     return principal .* ((1 .+ rate ./ rate_type.frequency) .^ (rate_type.frequency .* time_fraction)) .- principal
 end
 
+"""
+    discount_interest(rate, time_fraction, ::Linear)
+
+Discounts factor given a rate and time fraction in Linear mode.
+
+# Arguments
+- `rate`: Interest rate for discounting.
+- `time_fraction`: Daycount between the reference date and the discounting date.
+- `::Compounded`: An instance of Compounded specifying the discount calculation mode.
+
+# Returns
+A set of discount factors.
+"""
 function discount_interest(rate, time_fraction, rate_type::Compounded)
     return (1 .+ rate ./ rate_type.frequency) .^ (- rate_type.frequency .* time_fraction)
 end
 
 """
-    calculate_interest(principals::Vector{Float64}, rates::Vector{Float64}, time_fractions::Vector{Float64}, ::Exponential) -> Vector{Float64}
+    calculate_interest(principal, rate, time_fraction, ::Exponential)
 
 Calculates exponential interest for multiple principals. This vectorized version handles multiple investments.
 
     # Arguments
-- `principals::Vector{Float64}`: A vector of principal amounts.
-- `rates::Vector{Float64}`: A vector of interest rates for each principal.
-- `time_fractions::Vector{Float64}`: A vector representing the fraction of the year for each investment.
+- `principal`: A vector of principal amounts.
+- `rate`: A vector of interest rates for each principal.
+- `time_fraction`: A vector representing the fraction of the year for each investment.
 
 # Returns
-- `Vector{Float64}`: A vector of calculated exponential interest for each investment.
+- A vector of calculated exponential interest for each investment.
 """
 function calculate_interest(principal, rate, time_fraction, ::Exponential)
     return principal .* (exp.(rate .* time_fraction)) .- principal
 end
 
+"""
+    discount_interest(rate, time_fraction, ::Linear)
+
+Discounts factor given a rate and time fraction in Linear mode.
+
+# Arguments
+- `rate`: Interest rate for discounting.
+- `time_fraction`: Daycount between the reference date and the discounting date.
+- `::Exponential`: An instance of Exponential specifying the discount calculation mode.
+
+# Returns
+A set of discount factors.
+"""
 function discount_interest(rate, time_fraction, ::Exponential)
     return exp.(-rate .* time_fraction)
 end

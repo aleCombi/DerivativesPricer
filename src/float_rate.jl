@@ -17,7 +17,7 @@ struct RateIndex
     name::String
 end
 
-abstract type RateConfig end
+abstract type FloatRateConfig end
 
 abstract type AbstractMarginConfig end
 
@@ -31,10 +31,14 @@ end
 
 abstract type AbstractCompoundMarginMode end
 
-struct MarginOnUnderlying end
-struct MarginOnCompoundedRate end
+struct MarginOnUnderlying{M<:AbstractMarginConfig} <: AbstractCompoundMarginMode
+    marginConfig::M
+end
+struct MarginOnCompoundedRate{M<:AbstractMarginConfig} <: AbstractCompoundMarginMode
+    marginConfig::M
+end
 
-struct LinearRateConfig{R<:AbstractRateIndex, D<:DayCountConvention, C<:AbstractShift, N<:AbstractMarginConfig} <:RateConfig
+struct LinearRateConfig{R<:AbstractRateIndex, D<:DayCountConvention, C<:AbstractShift, N<:AbstractMarginConfig} <:FloatRateConfig
     rate_index::R
     day_count_convention::D
     rate_convention::Linear
@@ -42,14 +46,13 @@ struct LinearRateConfig{R<:AbstractRateIndex, D<:DayCountConvention, C<:Abstract
     margin::N
 end
 
-struct CompoundRateConfig{R<:AbstractRateIndex, D<:DayCountConvention, C<:AbstractShift, S<:AbstractScheduleConfig, M<:AbstractMarginConfig, Mode<:AbstractCompoundMarginMode} <:RateConfig
+struct CompoundRateConfig{R<:AbstractRateIndex, D<:DayCountConvention, C<:AbstractShift, S<:AbstractScheduleConfig, M<:AbstractCompoundMarginMode} <:FloatRateConfig
     rate_index::R
     day_count_convention::D
     rate_convention::Compounded
     fixing_shift::C
     compound_schedule::S
     margin::M
-    marginMode::Mode
 end
 # TODO: Think of good initializers with sensible default arguments (e.g. no margin, no fixing shift), 
 # check if the compound schedule is compatible with the accrual schedule.
