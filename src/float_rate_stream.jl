@@ -75,9 +75,6 @@ between accrual periods using the specified day count convention, and initialize
 
 function FloatingRateStream(stream_config::FloatRateStreamConfig) 
     pay_dates_iter, accrual_dates_iter = generate_schedule(stream_config.schedule_config)
-    println(stream_config.schedule_config)
-    println(pay_dates_iter)
-    println(accrual_dates_iter)
     pay_dates = collect(pay_dates_iter)
     accrual_dates = collect(accrual_dates_iter)
     accrual_day_counts = day_count_fraction(accrual_dates, stream_config.day_count_convention)
