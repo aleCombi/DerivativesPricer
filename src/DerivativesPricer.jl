@@ -5,10 +5,10 @@ include("day_count_conventions.jl")
 include("rate_conventions.jl")
 include("schedule_generation.jl")
 include("fixed_rate_stream.jl")
+include("float_rate.jl")
 include("rate_curves.jl")
 include("float_rate_stream.jl")
 include("discount_pricing.jl")
-include("float_rate.jl")
 
 # include runtests in VSCODE: necessary to have code completion
 if isdefined(@__MODULE__,:LanguageServer)
@@ -27,7 +27,7 @@ export  DayCountConvention, ACT360, ACT365, day_count_fraction,
         # fixed_rate_stream.jl
         RateCurve, RateCurveInputs, create_rate_curve, discount_factor,
         # rate_curves.jl
-        AbstractRateIndex, FloatRateStreamConfig, FloatingRateStream, RateIndex,
+        FloatRateStreamConfig, FloatingRateStream,
         # float_rate_stream.jl
         price_fixed_flows_stream, calculate_forward_rates, price_float_rate_stream,
         # discount_pricing.jl

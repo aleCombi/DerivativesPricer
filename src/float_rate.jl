@@ -19,28 +19,6 @@ end
 
 abstract type RateConfig end
 
-struct LinearRateConfig{P, R<:AbstractRateIndex, D<:DayCountConvention, C<:AbstractShift, N<:AbstractMarginConfig}
-    <:RateConfig
-    rate_index::R
-    day_count_convention::D
-    rate_convention::Linear
-    fixing_shift::C
-    margin::N
-end
-
-struct CompoundRateConfig{P, R<:AbstractRateIndex, D<:DayCountConvention, C<:AbstractShift, S<:AbstractScheduleConfig, M<:AbstractMarginConfig, Mode<:AbstractCompoundMarginMode}
-    <:RateConfig
-    rate_index::R
-    day_count_convention::D
-    rate_convention::Compounded
-    fixing_shift::C
-    compound_schedule::S
-    margin::M
-    marginMode::Mode
-end
-# TODO: Think of good initializers with sensible default arguments (e.g. no margin, no fixing shift), 
-# check if the compound schedule is compatible with the accrual schedule.
-# TODO: Substitute the rate convention? The usefulness of it is that it also applies to fixed rates..
 abstract type AbstractMarginConfig end
 
 struct AdditiveMargin{N<:Number}
@@ -55,3 +33,24 @@ abstract type AbstractCompoundMarginMode end
 
 struct MarginOnUnderlying end
 struct MarginOnCompoundedRate end
+
+struct LinearRateConfig{R<:AbstractRateIndex, D<:DayCountConvention, C<:AbstractShift, N<:AbstractMarginConfig} <:RateConfig
+    rate_index::R
+    day_count_convention::D
+    rate_convention::Linear
+    fixing_shift::C
+    margin::N
+end
+
+struct CompoundRateConfig{R<:AbstractRateIndex, D<:DayCountConvention, C<:AbstractShift, S<:AbstractScheduleConfig, M<:AbstractMarginConfig, Mode<:AbstractCompoundMarginMode} <:RateConfig
+    rate_index::R
+    day_count_convention::D
+    rate_convention::Compounded
+    fixing_shift::C
+    compound_schedule::S
+    margin::M
+    marginMode::Mode
+end
+# TODO: Think of good initializers with sensible default arguments (e.g. no margin, no fixing shift), 
+# check if the compound schedule is compatible with the accrual schedule.
+# TODO: Substitute the rate convention? The usefulness of it is that it also applies to fixed rates..
