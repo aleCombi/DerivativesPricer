@@ -1,160 +1,84 @@
-# using Base.Iterators
-# """
-#     ScheduleRule
+using BusinessDays
 
-# Abstract type for schedule generation rules. This is the base type for all specific schedule generation rules such as `DailySchedule`, `Monthly`, `Quarterly`, etc.
-# """
-# abstract type ScheduleRule end
+"""
+    AbstractScheduleConfig
 
-# """
-#     AbstractScheduleConfig
+Abstract type representing the configuration for generating an accrual schedule in a stream of cash flows.
+"""
+abstract type AbstractScheduleConfig end
 
-# Abstract type representing the configuration for generating an accrual schedule in a stream of cash flows.
-# """
-# abstract type AbstractScheduleConfig end
+"""
+    ScheduleConfig
 
-# """
-#     AbstractShift
+Represents the configuration for generating a payment schedule in a stream of cash flows.
 
-# Abstract type representing a shift in time by a specified period from an accrual period.
-# """
-# abstract type AbstractShift end
+# Fields
+- `start_date::Date`: The start date of the schedule.
+- `end_date::Date`: The end date of the schedule.
+- `schedule_rule::ScheduleRule`: The rule for generating the schedule (e.g., monthly, quarterly).
+- `day_count_convention::DayCountConvention`: The convention for calculating time fractions between accrual periods (e.g., ACT/360, ACT/365).
+"""
+struct ScheduleConfig{P <:Period, R<:RollConvention, B<:BusinessDayConvention, C<:HolidayCalendar} <: AbstractScheduleConfig
+    period::P
+    roll_convention::R
+    business_days_convention::B
+    calendar::C
+    stub_period::StubPeriod
+end 
 
-# """
-#     TimeShift
+"""
+    date_corrector(schedule_config::S)
 
-# Represents a shift in time by a specified period from an accrual period start or end.
-# """
-# struct TimeShift{T<:Period} <: AbstractShift
-#     shift::T
-#     from_end::Bool
-# end
+Returns a function that adjusts a date according to the given schedule configuration, applying first adjustment conventions like EOM and then business day adjustment.
 
-# """
-#     NoShift
+# Arguments
+- `schedule_config::S`: The schedule configuration.
 
-# A shift that doesn't shift, just decides to use the start date or end date of each period.
-# """
-# struct NoShift <: AbstractShift
-#     from_end::Bool
-# end
+# Returns
+- A function that adjusts a date according to the given schedule configuration.
+"""
+function date_corrector(schedule_config::ScheduleConfig)
+    return date -> adjust_date(roll_date(date, schedule_config.roll_convention), schedule_config.calendar, schedule_config.business_days_convention)
+end
 
-# """
-#     NoShift()
+"""
+    generate_unadjusted_dates(start_date, end_date, stub_period::StubPeriod, period::P) where P <: Period
 
-# By default schedules are generated from the end date of each accrual period.
-# """
-# NoShift() = NoShift(true)
+Generates a stream of unadjusted dates according to the given period and stub period.
 
-# shift(time::T, shift::TimeShift) where T <: TimeType = time + shift.shift
+# Arguments
+- `start_date`: The start date of the schedule.
+- `end_date`: The end date of the schedule.
+- `stub_period::StubPeriod`: The stub period configuration.
+- `period::P`: The period.
 
-# """
-#     ScheduleConfig
+# Returns
+- A stream of unadjusted dates.
+"""
+function generate_unadjusted_dates(start_date, end_date, stub_period::StubPeriod, period::P) where P <: Period
+    if isa(stub_period.position, BackStub)
+        return Iterators.flatten((start_date:period:end_date, end_date))
+    elseif isa(stub_period.position, FrontStub)
+        return Iterators.flatten((end_date:-period:start_date, start_date))
+    else
+        throw(ArgumentError("Invalid stub period position."))
+    end
+end
 
-# Represents the configuration for generating a payment schedule in a stream of cash flows.
+"""
+    generate_schedule(unadjusted_dates, schedule_config::S) where S <: AbstractScheduleConfig
 
-# # Fields
-# - `start_date::Date`: The start date of the schedule.
-# - `end_date::Date`: The end date of the schedule.
-# - `schedule_rule::ScheduleRule`: The rule for generating the schedule (e.g., monthly, quarterly).
-# - `day_count_convention::DayCountConvention`: The convention for calculating time fractions between accrual periods (e.g., ACT/360, ACT/365).
-# """
-# struct ScheduleConfig{T<:TimeType, S<:ScheduleRule, R<:AbstractShift} <: AbstractScheduleConfig
-#     start_date::T
-#     end_date::T
-#     schedule_rule::S
-#     payment_shift_rule::R
-# end 
+Generates a schedule of adjusted dates according to the given schedule configuration.
 
-# function ScheduleConfig(start_date::T, end_date::T, schedule_rule::S) where {T<:TimeType, S<:ScheduleRule}
-#     return ScheduleConfig(start_date, end_date, schedule_rule, NoShift())
-# end
+# Arguments
+- `unadjusted_dates`: A stream of unadjusted dates.
+- `schedule_config::S`: The schedule configuration.
 
-
-# """
-#     Daily <: ScheduleRule
-
-# A concrete type representing a rule that generates schedules daily.
-# """
-# struct Daily <: ScheduleRule end
-
-# """
-#     Monthly <: ScheduleRule
-
-# A concrete type representing a rule that generates schedules monthly.
-# """
-# struct Monthly <: ScheduleRule end
-
-# """
-#     Quarterly <: ScheduleRule
-
-# A concrete type representing a rule that generates schedules quarterly.
-# """
-# struct Quarterly <: ScheduleRule end
-
-# """
-#     Annual <: ScheduleRule
-
-# A concrete type representing a rule that generates schedules annually.
-# """
-# struct Annual <: ScheduleRule end
-
-# period(::Daily) = Day(1)
-# period(::Monthly) = Month(1)
-# period(::Quarterly) = Month(3)
-# period(::Annual) = Year(1)
-
-# """
-#     generate_schedule(start_date::Date, end_date::Date, rule::ScheduleRule) -> Vector{Date}
-
-# Generates a sequence of dates between `start_date` and `end_date` based on the specified schedule generation rule.
-
-# # Arguments
-# - `start_date`: The starting date of the schedule.
-# - `end_date`: The ending date of the schedule.
-# - `rule::ScheduleRule`: The rule for schedule generation (e.g., `DailySchedule`, `Monthly`, `Quarterly`, etc.).
-
-# # Returns
-# - An iterator of generated dates.
-# """
-# function generate_schedule(start_date, end_date, rule::S) where S <: ScheduleRule
-#     return start_date:period(rule):end_date
-# end
-
-# """
-#     generate_schedule(schedule_config::ScheduleConfig)
-
-# Generate a schedule based on the provided `schedule_config`.
-
-# # Arguments
-# - `schedule_config::ScheduleConfig`: A configuration object containing the start date, end date, and schedule rule.
-
-# # Returns
-# - A payment schedule and an accrual schedule generated according to the specified configuration.
-
-# # Example
-# """
-# function generate_schedule(schedule_config::ScheduleConfig)
-#     accrual_schedule = generate_schedule(schedule_config.start_date, schedule_config.end_date, schedule_config.schedule_rule)
-#     pay_schedule = relative_schedule(accrual_schedule, schedule_config.payment_shift_rule)
-#     return pay_schedule, accrual_schedule
-# end
-
-# """
-#     relative_schedule(accrual_schedule, shift_rule::TimeShift)
-
-# Generate a schedule relative to the accrual schedule, typically payment schedule, fixing schedule or notional schedule.
-
-# # Arguments
-# - `accrual_schedule`: Origin accrual schedule.
-# - `shift_rule`: Rule to shift from the accrual schedule.
-
-# # Returns
-# - a collection of dates. Note that this collection has one date less than the accrual schedule. That is the result has one date per accrual period.
-# """
-# function relative_schedule(accrual_schedule, shift_rule::TimeShift)
-#     origin_schedule = shift_rule.from_end ? accrual_schedule[1:end-1] : accrual_schedule[2:end]
-#     return map(d -> shift(d, shift_rule), origin_schedule)
-# end
-
-# relative_schedule(accrual_schedule, shift_rule::NoShift) = shift_rule.from_end ? accrual_schedule[2:end] : accrual_schedule[1:end-1]
+# Returns
+- A schedule of adjusted dates.
+"""
+function generate_schedule(unadjusted_dates, schedule_config::S) where S <: AbstractScheduleConfig
+    date_corrector = date_corrector(schedule_config)
+    adjusted_dates = Iterators.map(date_corrector, unadjusted_dates)
+    return adjusted_dates
+end

@@ -21,7 +21,10 @@ for the payments, along with the convention for calculating interest.
 struct FixedRateStreamConfig{P, R, S<:ScheduleConfig, T<:RateType, D<:DayCountConvention} <: FlowStreamConfig
     principal::P
     rate::R
+    start_date
+    end_date
     schedule_config::S
+    pay_shift
     day_count_convention::D
     rate_convention::T
 end
@@ -65,7 +68,8 @@ between accrual periods using the specified day count convention, and computes t
 - config = FixedRateStreamConfig( 100000, 0.05, ScheduleConfig(Date(2023, 1, 1), Date(2024, 1, 1), Monthly(), ACT360()), Linear() ) stream = FixedRateStream(config)
 """
 function FixedRateStream(stream_config::FixedRateStreamConfig)
-    pay_dates, accrual_dates = generate_schedule(stream_config.schedule_config) .|> collect
+    accrual_dates = generate_schedule(stream_config.schedule_config) .|> collect
+    pay_dates = relative_schedule(accrual_dates, stream_config.pay_shift)
     time_fractions = day_count_fraction(accrual_dates, stream_config.day_count_convention)
     cash_flows = calculate_interest([stream_config.principal], [stream_config.rate], time_fractions, stream_config.rate_convention)
 
