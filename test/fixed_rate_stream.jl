@@ -7,11 +7,11 @@ end
     end_date = Date(2024, 1, 1)
     principal = 100000.0
     rate = 0.05
-    schedule_config = ScheduleConfig()
+    schedule_config = ScheduleConfig(Month(1))
     rate_convention = Linear()
     day_count_convention = ACT360()
     # Create a FixedRateStreamConfig
-    stream_config = FixedRateStreamConfig(principal, rate, schedule_config, day_count_convention, rate_convention)
+    stream_config = FixedRateStreamConfig(principal, rate, start_date, end_date, schedule_config, NoShift(), day_count_convention, rate_convention)
 
     # Test that the stream config was created correctly
     @test stream_config.principal == principal
@@ -26,18 +26,18 @@ end
     end_date = Date(2024, 1, 1)
     principal = 100000.0
     rate = 0.05
-    schedule_config = ScheduleConfig(start_date, end_date, Monthly())
+    schedule_config = ScheduleConfig(Month(2))
     rate_convention = Linear()
     day_count_convention = ACT365()
 
     # Create a FixedRateStreamConfig
-    stream_config = FixedRateStreamConfig(principal, rate, schedule_config, day_count_convention, rate_convention)
+    stream_config = FixedRateStreamConfig(principal, rate, start_date, end_date, schedule_config, NoShift(), day_count_convention, rate_convention)
 
     # Generate the FixedRateStream
     stream = FixedRateStream(stream_config)
 
     # Expected number of accrual dates (12 months)
-    expected_dates = generate_schedule(start_date, end_date, Monthly()) |> collect
+    expected_dates = start_date:Month(1):end_date |> collect
 
     # Check that the generated accrual dates match the expected dates
     @test stream.accrual_dates == expected_dates

@@ -32,17 +32,24 @@ Abstract type representing the configuration for generating an accrual schedule 
 """
 abstract type AbstractScheduleConfig end
 
-struct ScheduleConfig{P <:Period, R<:RollConvention, B<:BusinessDayConvention, C<:HolidayCalendar} <: AbstractScheduleConfig
+struct ScheduleConfig{P <: Period, R <: RollConvention, B <: BusinessDayConvention, C <: HolidayCalendar} <: AbstractScheduleConfig
     period::P
     roll_convention::R
     business_days_convention::B
     calendar::C
     stub_period::StubPeriod
-end 
 
-function ScheduleConfig(period; roll_convention=NoRollConvention(), business_days_convention=NoneBusinessDayConvention(), stub_period=StubPeriod())
-    return ScheduleConfig(period, roll_convention, business_days_convention, NoHolidays(), stub_period)
+    # Constructor with default values
+    function ScheduleConfig(period::P;
+                   roll_convention = NoRollConvention(),
+                   business_days_convention = NoneBusinessDayConvention(),
+                   calendar = NoHolidays(),
+                   stub_period = StubPeriod()) where P<:Period
+        return new{P, typeof(roll_convention), typeof(business_days_convention), typeof(calendar)}(
+            period, roll_convention, business_days_convention, calendar, stub_period)
+    end
 end
+
 
 """
     date_corrector(schedule_config::S)
@@ -74,9 +81,9 @@ Generates a stream of unadjusted dates according to the given period and stub pe
 - A stream of unadjusted dates.
 """
 function generate_unadjusted_dates(start_date, end_date, stub_period::StubPeriod, period::P) where P <: Period
-    if isa(stub_period.position, BackStub)
+    if isa(stub_period.position, InArrearsStubPosition)
         return Iterators.flatten((start_date:period:end_date, end_date))
-    elseif isa(stub_period.position, FrontStub)
+    elseif isa(stub_period.position, UpfrontStubPosition)
         return Iterators.flatten((end_date:-period:start_date, start_date))
     else
         throw(ArgumentError("Invalid stub period position."))
