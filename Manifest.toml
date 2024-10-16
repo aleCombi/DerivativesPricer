@@ -2,7 +2,7 @@
 
 julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "832f5b1df0a4e47b7d0fb6e14cf3594670a88687"
+project_hash = "e492af995b3a33c3c95913d67ab299c4defc357a"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "99a6f5d0ce1c7c6afdb759daa30226f71c54f6b0"
@@ -124,6 +124,12 @@ version = "0.1.9"
 git-tree-sha1 = "0691e34b3bb8be9307330f88d1a3c3f25466c24d"
 uuid = "d1d4a3ce-64b1-5f1a-9ba4-7e7e69966f35"
 version = "0.1.9"
+
+[[deps.BusinessDays]]
+deps = ["Dates"]
+git-tree-sha1 = "00e206895eb8d0350149dff15ba1ea9a8f306c63"
+uuid = "4f18b42c-503e-5345-9536-bb0f25fc7038"
+version = "0.9.24"
 
 [[deps.ChainRulesCore]]
 deps = ["Compat", "LinearAlgebra"]

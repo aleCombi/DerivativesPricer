@@ -3,6 +3,8 @@ module DerivativesPricer
 # Include all the required files
 include("day_count_conventions.jl")
 include("rate_conventions.jl")
+include("roll_conventions.jl")
+include("business_days_conventions.jl")
 include("schedule_generation.jl")
 include("fixed_rate_stream.jl")
 include("float_rate.jl")
@@ -21,6 +23,8 @@ export  DayCountConvention, ACT360, ACT365, day_count_fraction,
         # day_count_conventions.jl
         RateType, Linear, Compounded, Exponential, calculate_interest,
         # rate_conventions.jl
+        BusinessDayConvention, Following, ModifiedFollowing, PrecedingBusinessDay, FollowingBusinessDay, ModifiedPreceding, NoneBusinessDayConvention, adjust_date, roll_date, NoRollConvention, EOMRollConvention, RollConvention,
+        # roll_conventions.jl
         ScheduleRule, Daily, Monthly, Quarterly, Annual, generate_schedule, AbstractScheduleConfig, ScheduleConfig, AbstractShift, TimeShift, shift, FloatScheduleConfig, NoShift,
         # schedule_generation.jl
         FlowStream, ScheduleConfig, FixedRateStreamConfig, FixedRateStream,
