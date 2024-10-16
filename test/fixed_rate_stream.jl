@@ -7,7 +7,7 @@ end
     end_date = Date(2024, 1, 1)
     principal = 100000.0
     rate = 0.05
-    schedule_config = ScheduleConfig(start_date, end_date, Monthly())
+    schedule_config = ScheduleConfig()
     rate_convention = Linear()
     day_count_convention = ACT360()
     # Create a FixedRateStreamConfig

@@ -29,8 +29,22 @@ end
 
 By default schedules are generated from the end date of each accrual period.
 """
-NoShift() = NoShift(true)
+function NoShift()
+    return NoShift(true)
+end
 
-shift(time::T, shift::TimeShift) where T <: TimeType = time + shift.shift
+"""
+    relative_schedule(accrual_schedule, shift_rule::NoShift)
 
-relative_schedule(accrual_schedule, shift_rule::NoShift) = shift_rule.from_end ? accrual_schedule[2:end] : accrual_schedule[1:end-1]
+Adjusts the given date to the next business day according to the specified calendar.
+
+# Arguments
+- `accrual_schedule`: The dates to be adjusted.
+- `shift_rule`: Rule defining how to shift from the accrual schedule.
+
+# Returns
+- The shifted dates.
+"""
+function relative_schedule(accrual_schedule, shift_rule::NoShift)
+    return shift_rule.from_end ? accrual_schedule[2:end] : accrual_schedule[1:end-1]
+end

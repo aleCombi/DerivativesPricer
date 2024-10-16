@@ -1,10 +1,6 @@
 using BusinessDays
 using Dates
 
-# Check 
-# <xsd:element name="businessDayConvention" type="BusinessDayConventionEnum"/> on ISDA FPML documentation (https://www.fpml.org/spec/fpml-5-12-4-rec-1/html/confirmation/schemaDocumentation/index.html)
-# It would be useful to have the same naming as ISDA FPML to make it easier to understand the code.
-
 """
     BusinessDayConvention
 
@@ -136,4 +132,3 @@ function adjust_date(date, calendar, ::ModifiedPreceding)
         return previous_business_day
     end
 end
-

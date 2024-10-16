@@ -2,7 +2,6 @@
     using Dates
 end
 
-
 @testitem "NoRollConvention" setup=[RollConventions] begin
     date = Date(2023, 7, 15)  # Any date
     expected_date = date  # No adjustment

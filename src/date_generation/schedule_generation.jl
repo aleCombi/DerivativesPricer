@@ -1,5 +1,30 @@
 using BusinessDays
 
+struct NoHolidays<:HolidayCalendar end
+BusinessDays.isholiday(::NoHolidays, dt::Date) = false
+
+struct WeekendsOnly <: HolidayCalendar end
+BusinessDays.isholiday(::WeekendsOnly, dt::Date) = dayofweek(dt) in [6, 7]  # Monday to Friday 
+
+abstract type StubPosition end
+
+struct UpfrontStubPosition <: StubPosition end
+struct InArrearsStubPosition <: StubPosition end
+
+abstract type StubLength end
+
+struct ShortStubLength <: StubLength end
+struct LongStubLength <: StubLength end
+
+struct StubPeriod{P<:StubPosition, L<:StubLength}
+    position::P
+    length::L
+end
+
+function StubPeriod()
+    return StubPeriod(InArrearsStubPosition(), ShortStubLength())
+end
+
 """
     AbstractScheduleConfig
 
@@ -7,17 +32,6 @@ Abstract type representing the configuration for generating an accrual schedule 
 """
 abstract type AbstractScheduleConfig end
 
-"""
-    ScheduleConfig
-
-Represents the configuration for generating a payment schedule in a stream of cash flows.
-
-# Fields
-- `start_date::Date`: The start date of the schedule.
-- `end_date::Date`: The end date of the schedule.
-- `schedule_rule::ScheduleRule`: The rule for generating the schedule (e.g., monthly, quarterly).
-- `day_count_convention::DayCountConvention`: The convention for calculating time fractions between accrual periods (e.g., ACT/360, ACT/365).
-"""
 struct ScheduleConfig{P <:Period, R<:RollConvention, B<:BusinessDayConvention, C<:HolidayCalendar} <: AbstractScheduleConfig
     period::P
     roll_convention::R
@@ -25,6 +39,10 @@ struct ScheduleConfig{P <:Period, R<:RollConvention, B<:BusinessDayConvention, C
     calendar::C
     stub_period::StubPeriod
 end 
+
+function ScheduleConfig(period; roll_convention=NoRollConvention(), business_days_convention=NoneBusinessDayConvention(), stub_period=StubPeriod())
+    return ScheduleConfig(period, roll_convention, business_days_convention, NoHolidays(), stub_period)
+end
 
 """
     date_corrector(schedule_config::S)
