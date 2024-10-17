@@ -1,26 +1,101 @@
-using BusinessDays
+"""
+    NoHolidays <: HolidayCalendar
 
-struct NoHolidays<:HolidayCalendar end
+A struct representing a holiday calendar with no holidays. All dates are treated as business days.
+"""
+struct NoHolidays <: HolidayCalendar end
+
+"""
+    isholiday(::NoHolidays, dt::Date) -> Bool
+
+Determines if the given date `dt` is a holiday in the `NoHolidays` calendar. 
+Always returns `false` as there are no holidays in this calendar.
+
+# Arguments
+- `dt::Date`: The date to check.
+
+# Returns
+- `false`, indicating that the date is not a holiday.
+"""
 BusinessDays.isholiday(::NoHolidays, dt::Date) = false
 
-struct WeekendsOnly <: HolidayCalendar end
-BusinessDays.isholiday(::WeekendsOnly, dt::Date) = dayofweek(dt) in [6, 7]  # Monday to Friday 
+"""
+    WeekendsOnly <: HolidayCalendar
 
+A struct representing a holiday calendar where only weekends (Saturday and Sunday) are considered holidays.
+"""
+struct WeekendsOnly <: HolidayCalendar end
+
+"""
+    isholiday(::WeekendsOnly, dt::Date) -> Bool
+
+Determines if the given date `dt` is a weekend (Saturday or Sunday) in the `WeekendsOnly` calendar.
+
+# Arguments
+- `dt::Date`: The date to check.
+
+# Returns
+- `true` if the date falls on a weekend, otherwise `false`.
+"""
+BusinessDays.isholiday(::WeekendsOnly, dt::Date) = dayofweek(dt) in [6, 7]  # Monday to Friday
+
+"""
+    Abstract type representing the stub position in a schedule.
+"""
 abstract type StubPosition end
 
+"""
+    UpfrontStubPosition <: StubPosition
+
+Represents the stub position at the start (upfront) of a schedule.
+"""
 struct UpfrontStubPosition <: StubPosition end
+
+"""
+    InArrearsStubPosition <: StubPosition
+
+Represents the stub position at the end (in arrears) of a schedule.
+"""
 struct InArrearsStubPosition <: StubPosition end
 
+"""
+    Abstract type representing the stub length in a schedule.
+"""
 abstract type StubLength end
 
+"""
+    ShortStubLength <: StubLength
+
+Represents a short stub length in a schedule.
+"""
 struct ShortStubLength <: StubLength end
+
+"""
+    LongStubLength <: StubLength
+
+Represents a long stub length in a schedule.
+"""
 struct LongStubLength <: StubLength end
 
+"""
+    StubPeriod{P<:StubPosition, L<:StubLength}
+
+Represents the stub period in a schedule, consisting of a position (`P`) and a length (`L`).
+
+# Fields
+- `position::P`: The position of the stub (e.g., upfront or in arrears).
+- `length::L`: The length of the stub (e.g., short or long).
+"""
 struct StubPeriod{P<:StubPosition, L<:StubLength}
     position::P
     length::L
 end
 
+"""
+    StubPeriod() -> StubPeriod{InArrearsStubPosition, ShortStubLength}
+
+Creates a default `StubPeriod` with the position set to `InArrearsStubPosition` and length set to `ShortStubLength`.
+"""
 function StubPeriod()
     return StubPeriod(InArrearsStubPosition(), ShortStubLength())
 end
@@ -32,10 +107,33 @@ Abstract type representing the configuration for generating an accrual schedule 
 """
 abstract type AbstractScheduleConfig end
 
-struct ScheduleConfig{P <: Period, R <: RollConvention, B <: BusinessDayConvention, C <: HolidayCalendar} <: AbstractScheduleConfig
+"""
+    ScheduleConfig{P <: Period, R <: RollConvention, B <: BusinessDayConvention, D <: BusinessDayConvention, C <: HolidayCalendar} <: AbstractScheduleConfig
+
+Represents the configuration for generating a schedule. It includes the period, roll convention, business day convention, 
+termination business day convention, holiday calendar, and the stub period.
+
+# Fields
+- `period::P`: The period for generating dates.
+- `roll_convention::R`: The roll convention to adjust dates.
+- `business_days_convention::B`: The business day convention for adjusting non-business days.
+- `termination_bd_convention::D`: The convention for adjusting the termination date.
+- `calendar::C`: The holiday calendar.
+- `stub_period::StubPeriod`: The configuration of the stub period.
+
+# Constructor with default values
+- `period::P`: The period (required).
+- `roll_convention`: The roll convention (default `NoRollConvention`).
+- `business_days_convention`: The business day convention (default `NoneBusinessDayConvention`).
+- `termination_bd_convention`: The convention for adjusting the termination date (default `NoneBusinessDayConvention`).
+- `calendar`: The holiday calendar (default `NoHolidays`).
+- `stub_period`: The configuration of the stub period (default to `StubPeriod()`).
+"""
+struct ScheduleConfig{P <: Period, R <: RollConvention, B <: BusinessDayConvention, D <: BusinessDayConvention, C <: HolidayCalendar} <: AbstractScheduleConfig
     period::P
     roll_convention::R
     business_days_convention::B
+    termination_bd_convention::D
     calendar::C
     stub_period::StubPeriod
 
@@ -43,13 +141,36 @@ struct ScheduleConfig{P <: Period, R <: RollConvention, B <: BusinessDayConventi
     function ScheduleConfig(period::P,
                    roll_convention = NoRollConvention(),
                    business_days_convention = NoneBusinessDayConvention(),
+                   termination_bd_convention = NoneBusinessDayConvention(),
                    calendar = NoHolidays(),
                    stub_period = StubPeriod()) where P<:Period
-        return new{P, typeof(roll_convention), typeof(business_days_convention), typeof(calendar)}(
-            period, roll_convention, business_days_convention, calendar, stub_period)
+        return new{P, typeof(roll_convention), typeof(business_days_convention), typeof(termination_bd_convention), typeof(calendar)}(
+            period, roll_convention, business_days_convention, termination_bd_convention, calendar, stub_period)
     end
 end
 
+"""
+    ScheduleConfig(period::P, roll_convention::R, business_days_convention::B, calendar::C, stub_period::StubPeriod) -> ScheduleConfig
+
+Alternate constructor for `ScheduleConfig` with customizable period, roll convention, business day convention, calendar, and stub period.
+
+# Arguments
+- `period::P`: The period.
+- `roll_convention::R`: The roll convention.
+- `business_days_convention::B`: The business day convention.
+- `calendar::C`: The holiday calendar.
+- `stub_period::StubPeriod`: The stub period configuration.
+
+# Returns
+- A `ScheduleConfig` object.
+"""
+function ScheduleConfig(period::P,
+    roll_convention::R = NoRollConvention(),
+    business_days_convention::B = NoneBusinessDayConvention(),
+    calendar::C = NoHolidays(),
+    stub_period::StubPeriod = StubPeriod()) where {P <:Period, R <: RollConvention, B <: BusinessDayConvention, D <: BusinessDayConvention, C <: HolidayCalendar}
+    return ScheduleConfig(period, roll_convention, business_days_convention, business_days_convention, calendar, stub_period)
+end
 
 """
     date_corrector(schedule_config::S)
