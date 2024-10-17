@@ -40,7 +40,7 @@ struct ScheduleConfig{P <: Period, R <: RollConvention, B <: BusinessDayConventi
     stub_period::StubPeriod
 
     # Constructor with default values
-    function ScheduleConfig(period::P;
+    function ScheduleConfig(period::P,
                    roll_convention = NoRollConvention(),
                    business_days_convention = NoneBusinessDayConvention(),
                    calendar = NoHolidays(),
@@ -82,9 +82,9 @@ Generates a stream of unadjusted dates according to the given period and stub pe
 """
 function generate_unadjusted_dates(start_date, end_date, stub_period::StubPeriod, period::P) where P <: Period
     if isa(stub_period.position, InArrearsStubPosition)
-        return Iterators.flatten((start_date:period:end_date, end_date))
+        return Iterators.flatten((start_date:period:(end_date - period), [end_date]))
     elseif isa(stub_period.position, UpfrontStubPosition)
-        return Iterators.flatten((end_date:-period:start_date, start_date))
+        return Iterators.flatten((end_date:-period:(start_date + period), [start_date]))
     else
         throw(ArgumentError("Invalid stub period position."))
     end
@@ -103,7 +103,7 @@ Generates a schedule of adjusted dates according to the given schedule configura
 - A schedule of adjusted dates.
 """
 function generate_schedule(unadjusted_dates, schedule_config::S) where S <: AbstractScheduleConfig
-    date_corrector = date_corrector(schedule_config)
-    adjusted_dates = Iterators.map(date_corrector, unadjusted_dates)
+    corrector = date_corrector(schedule_config)
+    adjusted_dates = Iterators.map(corrector, unadjusted_dates)
     return adjusted_dates
 end

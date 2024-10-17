@@ -69,7 +69,7 @@ between accrual periods using the specified day count convention, and computes t
 """
 function FixedRateStream(stream_config::FixedRateStreamConfig)
     unadjusted_dates = generate_unadjusted_dates(stream_config.start_date, stream_config.end_date, stream_config.schedule_config.stub_period, stream_config.schedule_config.period)
-    accrual_dates = generate_schedule(unadjusted_dates, stream_config.schedule_config) .|> collect
+    accrual_dates = generate_schedule(unadjusted_dates, stream_config.schedule_config) |> collect
     pay_dates = relative_schedule(accrual_dates, stream_config.pay_shift)
     time_fractions = day_count_fraction(accrual_dates, stream_config.day_count_convention)
     cash_flows = calculate_interest([stream_config.principal], [stream_config.rate], time_fractions, stream_config.rate_convention)
