@@ -4,6 +4,7 @@ module DerivativesPricer
 include("day_count_conventions.jl")
 include("rate_conventions.jl")
 include("date_generation/calendars.jl")
+include("date_generation/stub_periods.jl")
 include("date_generation/roll_conventions.jl")
 include("date_generation/business_days_conventions.jl")
 include("date_generation/date_shift.jl")
@@ -22,9 +23,13 @@ end
 
 # Export relevant functions and types for external use
 export  # date_generation/business_days_convention.jl
-        BusinessDayConvention, Following, ModifiedFollowing, PrecedingBusinessDay, FollowingBusinessDay, ModifiedPreceding, NoneBusinessDayConvention, adjust_date, roll_date, NoRollConvention, EOMRollConvention, RollConvention,
+        BusinessDayConvention, Following, ModifiedFollowing, PrecedingBusinessDay, FollowingBusinessDay, ModifiedPreceding, NoneBusinessDayConvention, adjust_date,
+        # date_generation/roll_conventions.jl
+        roll_date, NoRollConvention, EOMRollConvention, RollConvention,
         # date_generation/date_shft.jl
-        AbstractShift, NoShift, TimeShift, relative_schedule, WeekendsOnly, NoHolidays,
+        AbstractShift, NoShift, TimeShift, relative_schedule, 
+        # date_generation/calendars.jl
+        WeekendsOnly, NoHolidays,
         # date_generation/schedule_generation.jl
         AbstractScheduleConfig, ScheduleConfig, date_corrector, generate_unadjusted_dates, generate_schedule, date_corrector,
         StubPosition, UpfrontStubPosition, InArrearsStubPosition, StubLength, ShortStubLength, LongStubLength, StubPeriod,

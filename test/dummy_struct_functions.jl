@@ -14,8 +14,7 @@ end
 
 # Dummy generate_schedule and day_count_fraction functions for testing purposes
 function generate_schedule(schedule_config::DummyScheduleConfig)
-    accrual_schedule = schedule_config.start_date:Month(6):schedule_config.end_date  # Quarterly schedule
-    return accrual_schedule[2:end], accrual_schedule
+    return schedule_config.start_date:Month(6):schedule_config.end_date  # 6 month schedule
 end
 
 function day_count_fraction(dates, day_count_convention::DummyDayCountConvention)
