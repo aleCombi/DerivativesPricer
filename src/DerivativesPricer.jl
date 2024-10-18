@@ -3,42 +3,21 @@ module DerivativesPricer
 # Include all the required files
 include("day_count_conventions.jl")
 include("rate_conventions.jl")
-include("date_generation/calendars.jl")
-include("date_generation/stub_periods.jl")
-include("date_generation/roll_conventions.jl")
-include("date_generation/business_days_conventions.jl")
-include("date_generation/date_shift.jl")
-include("date_generation/schedule_generation.jl")
-include("date_generation/instrument_schedule.jl")
+include("date_generation/include_date_generation.jl")
 include("fixed_rate_stream.jl")
 include("float_rate.jl")
 include("rate_curves.jl")
 include("float_rate_stream.jl")
 include("discount_pricing.jl")
 
-# include runtests in VSCODE: necessary to have code completion
+# fake include statements necessary to have LSP working on VS Code
 if false
     include("../test/runtests.jl")
     include("../notebooks/includer.jl")
 end
 
 # Export relevant functions and types for external use
-export  # date_generation/business_days_convention.jl
-        BusinessDayConvention, Following, ModifiedFollowing, PrecedingBusinessDay, FollowingBusinessDay, ModifiedPreceding, NoneBusinessDayConvention, adjust_date,
-        # date_generation/roll_conventions.jl
-        roll_date, NoRollConvention, EOMRollConvention, RollConvention,
-        # date_generation/date_shft.jl
-        AbstractShift, NoShift, TimeShift, relative_schedule, 
-        # date_generation/calendars.jl
-        WeekendsOnly, NoHolidays,
-        # date_generation/instrument_schedule.jl
-        InstrumentSchedule,
-        # date_generation/schedule_generation.jl
-        AbstractScheduleConfig, ScheduleConfig, date_corrector, generate_unadjusted_dates, generate_schedule, date_corrector,
-        StubPosition, UpfrontStubPosition, InArrearsStubPosition, StubLength, ShortStubLength, LongStubLength, StubPeriod,
-        # date_generation/schedule_generation.jl
-        DayCountConvention, ACT360, ACT365, day_count_fraction,
-        # day_count_conventions.jl
+export  # day_count_conventions.jl
         RateType, Linear, Compounded, Exponential, calculate_interest,
         # rate_conventions.jl
         FlowStream, ScheduleConfig, FixedRateStreamConfig, FixedRateStream,
