@@ -3,6 +3,7 @@ module DerivativesPricer
 # Include all the required files
 include("day_count_conventions.jl")
 include("rate_conventions.jl")
+include("date_generation/calendars.jl")
 include("date_generation/roll_conventions.jl")
 include("date_generation/business_days_conventions.jl")
 include("date_generation/date_shift.jl")
