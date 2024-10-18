@@ -17,8 +17,10 @@ if false
 end
 
 # Export relevant functions and types for external use
-export  # day_count_conventions.jl
-        RateType, Linear, Compounded, Exponential, calculate_interest,
+
+export  DayCountConvention, ACT360, ACT365, day_count_fraction,
+        # day_count_conventions.jl
+        RateType, Linear, Compounded, Exponential, calculate_interest, 
         # rate_conventions.jl
         FlowStream, ScheduleConfig, FixedRateStreamConfig, FixedRateStream,
         # fixed_rate_stream.jl

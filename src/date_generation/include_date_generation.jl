@@ -16,9 +16,7 @@ export
     # date_generation/calendars.jl
     WeekendsOnly, NoHolidays,
     # date_generation/instrument_schedule.jl
-    InstrumentSchedule,
+    InstrumentSchedule, AbstractInstrumentSchedule,
     # date_generation/schedule_generation.jl
     AbstractScheduleConfig, ScheduleConfig, date_corrector, generate_unadjusted_dates, generate_schedule, date_corrector,
-    StubPosition, UpfrontStubPosition, InArrearsStubPosition, StubLength, ShortStubLength, LongStubLength, StubPeriod,
-    # date_generation/schedule_generation.jl
-    DayCountConvention, ACT360, ACT365, day_count_fraction
+    StubPosition, UpfrontStubPosition, InArrearsStubPosition, StubLength, ShortStubLength, LongStubLength, StubPeriod
