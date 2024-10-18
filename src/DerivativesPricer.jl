@@ -9,6 +9,7 @@ include("date_generation/roll_conventions.jl")
 include("date_generation/business_days_conventions.jl")
 include("date_generation/date_shift.jl")
 include("date_generation/schedule_generation.jl")
+include("date_generation/instrument_schedule.jl")
 include("fixed_rate_stream.jl")
 include("float_rate.jl")
 include("rate_curves.jl")
@@ -30,6 +31,8 @@ export  # date_generation/business_days_convention.jl
         AbstractShift, NoShift, TimeShift, relative_schedule, 
         # date_generation/calendars.jl
         WeekendsOnly, NoHolidays,
+        # date_generation/instrument_schedule.jl
+        InstrumentSchedule,
         # date_generation/schedule_generation.jl
         AbstractScheduleConfig, ScheduleConfig, date_corrector, generate_unadjusted_dates, generate_schedule, date_corrector,
         StubPosition, UpfrontStubPosition, InArrearsStubPosition, StubLength, ShortStubLength, LongStubLength, StubPeriod,

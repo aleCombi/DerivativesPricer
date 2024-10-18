@@ -10,13 +10,15 @@ end
     schedule_config = ScheduleConfig(Month(1))
     rate_convention = Linear()
     day_count_convention = ACT360()
+    instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
+
     # Create a FixedRateStreamConfig
-    stream_config = FixedRateStreamConfig(principal, rate, start_date, end_date, schedule_config, NoShift(), day_count_convention, rate_convention)
+    stream_config = FixedRateStreamConfig(principal, rate, instrument_schedule, day_count_convention, rate_convention)
 
     # Test that the stream config was created correctly
     @test stream_config.principal == principal
     @test stream_config.rate == rate
-    @test stream_config.schedule_config == schedule_config
+    @test stream_config.instrument_schedule.schedule_config == schedule_config
     @test stream_config.rate_convention == rate_convention
 end
 
@@ -30,9 +32,10 @@ end
     schedule_config = ScheduleConfig(Month(2))
     rate_convention = Linear()
     day_count_convention = ACT365()
+    instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
 
     # Create a FixedRateStreamConfig
-    stream_config = FixedRateStreamConfig(principal, rate, start_date, end_date, schedule_config, NoShift(), day_count_convention, rate_convention)
+    stream_config = FixedRateStreamConfig(principal, rate, instrument_schedule, day_count_convention, rate_convention)
 
     # Generate the FixedRateStream
     stream = FixedRateStream(stream_config)
@@ -53,9 +56,10 @@ end
     schedule_config = ScheduleConfig(Month(1))
     day_count_convention = ACT360()
     rate_convention = Linear()
+    instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
 
     # Create a FixedRateStreamConfig
-    stream_config = FixedRateStreamConfig(principal, rate, start_date, end_date, schedule_config, NoShift(), day_count_convention,rate_convention)
+    stream_config = FixedRateStreamConfig(principal, rate, instrument_schedule, day_count_convention,rate_convention)
 
     # Generate the FixedRateStream
     stream = FixedRateStream(stream_config)
@@ -85,9 +89,10 @@ end
 
     schedule_config = ScheduleConfig(Month(1))
     rate_convention = Linear()
+    instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
 
     # Create a FixedRateStreamConfig
-    stream_config = FixedRateStreamConfig(principal, rate, start_date, end_date, schedule_config, NoShift(), day_count_convention, rate_convention)
+    stream_config = FixedRateStreamConfig(principal, rate, instrument_schedule, day_count_convention, rate_convention)
 
     # Generate the FixedRateStream
     stream = FixedRateStream(stream_config)
@@ -107,9 +112,10 @@ end
     day_count_convention = ACT365()
     schedule_config = ScheduleConfig(Month(1))
     rate_convention = Linear()
+    instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
 
     # Create a FixedRateStreamConfig
-    stream_config = FixedRateStreamConfig(principal, rate, start_date, end_date, schedule_config, NoShift(), day_count_convention, rate_convention)
+    stream_config = FixedRateStreamConfig(principal, rate, instrument_schedule, day_count_convention, rate_convention)
 
     # Generate the FixedRateStream
     stream = FixedRateStream(stream_config)
