@@ -18,7 +18,7 @@ end
 
 # Export relevant functions and types for external use
 
-export  DayCountConvention, ACT360, ACT365, day_count_fraction,
+export  DayCountConvention, ACT360, ACT365, DayCount30360, day_count_fraction,
         # day_count_conventions.jl
         RateType, Linear, Compounded, Exponential, calculate_interest, 
         # rate_conventions.jl
