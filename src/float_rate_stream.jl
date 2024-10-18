@@ -58,7 +58,7 @@ between accrual periods using the specified day count convention, and initialize
 """ 
 
 function FloatingRateStream(stream_config::FloatRateStreamConfig) 
-    accrual_dates = generate_schedule(stream_config.instrument_schedule) |> collect
+    accrual_dates = generate_schedule(stream_config.instrument_schedule)
     pay_dates = relative_schedule(accrual_dates, stream_config.instrument_schedule.pay_shift)
     accrual_day_counts = day_count_fraction(accrual_dates, stream_config.day_count_convention)
     fixing_dates = relative_schedule(accrual_dates, stream_config.fixing_schedule_shift)

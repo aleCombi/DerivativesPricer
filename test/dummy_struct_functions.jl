@@ -5,6 +5,15 @@ struct DummyRateIndex <: AbstractRateIndex end
 struct DummyRateType <: RateType end
 struct DummyDayCountConvention <: DayCountConvention end
 struct DummyScheduleConfig <: AbstractScheduleConfig end
+struct DummyInstrumentSchedule <: AbstractInstrumentSchedule
+    start_date::Date
+    end_date::Date
+    schedule_config::DummyScheduleConfig
+end
+
+function DerivativesPricer.generate_schedule(instrument_schedule::DummyInstrumentSchedule)
+    return instrument_schedule.start_date:Month(6):instrument_schedule.end_date
+end
 
 # Dummy generate_schedule and day_count_fraction functions for testing purposes
 function DerivativesPricer.generate_unadjusted_dates(start_date, end_date, schedule_config::DummyScheduleConfig)
@@ -12,6 +21,10 @@ function DerivativesPricer.generate_unadjusted_dates(start_date, end_date, sched
 end
 
 function DerivativesPricer.date_corrector(schedule_config::DummyScheduleConfig)
+    return x -> x  # No adjustment
+end
+
+function DerivativesPricer.termination_date_corrector(schedule_config::DummyScheduleConfig)
     return x -> x  # No adjustment
 end
 

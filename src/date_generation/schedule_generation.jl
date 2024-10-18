@@ -86,6 +86,21 @@ function date_corrector(schedule_config::ScheduleConfig)
 end
 
 """
+    date_corrector(schedule_config::S)
+
+Returns a function that adjusts a date according to the given schedule configuration, applying first adjustment conventions like EOM and then the termination date business day adjustment.
+
+# Arguments
+- `schedule_config::S`: The schedule configuration.
+
+# Returns
+- A function that adjusts the termination date according to the given schedule configuration.
+"""
+function termination_date_corrector(schedule_config::ScheduleConfig)
+    return date -> adjust_date(roll_date(date, schedule_config.roll_convention), schedule_config.calendar, schedule_config.termination_bd_convention)
+end
+
+"""
     generate_unadjusted_dates(start_date, end_date, stub_period::StubPeriod, period::P) where P <: Period
 
 Generates a stream of unadjusted dates according to the given period and stub period.
@@ -101,13 +116,18 @@ Generates a stream of unadjusted dates according to the given period and stub pe
 """
 function generate_unadjusted_dates(start_date, end_date, stub_period::StubPeriod, period::P) where P <: Period
     if isa(stub_period.position, InArrearsStubPosition)
-        return Iterators.flatten((start_date:period:(end_date - period), [end_date]))
+        dates = start_date:period:(end_date - period) |> collect
+        push!(dates, end_date)  # Add the end date eagerly
+        return dates
     elseif isa(stub_period.position, UpfrontStubPosition)
-        return Iterators.flatten((end_date:-period:(start_date + period), [start_date]))
+        dates = end_date:-period:(start_date + period) |> collect
+        push!(dates, start_date)  # Add the start date eagerly
+        return reverse(dates)  # Reverse the array to get the correct order
     else
         throw(ArgumentError("Invalid stub period position."))
     end
 end
+
 
 """
     generate_unadjusted_dates(start_date, end_date, schedule_config::S) where S <: AbstractScheduleConfig
@@ -140,7 +160,9 @@ Generates a schedule of adjusted dates according to the given schedule configura
 """
 function generate_schedule(unadjusted_dates, schedule_config::S) where S <: AbstractScheduleConfig
     corrector = date_corrector(schedule_config)
-    adjusted_dates = Iterators.map(corrector, unadjusted_dates)
+    adjusted_dates = map(corrector, unadjusted_dates[1:end-1])
+    adjusted_termination_date = termination_date_corrector(schedule_config)(unadjusted_dates[end])
+    push!(adjusted_dates, adjusted_termination_date)
     return adjusted_dates
 end
 

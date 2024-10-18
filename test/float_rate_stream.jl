@@ -5,7 +5,6 @@ end
 
 # Test case
 @testitem "FloatRateStream Tests" setup=[FloatRateStream] begin
-    using Dates
     # Create a dummy schedule configuration
     start_date = Date(2024, 1, 1)
     end_date = Date(2025, 1, 1)
