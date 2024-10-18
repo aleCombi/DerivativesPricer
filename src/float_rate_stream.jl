@@ -11,10 +11,13 @@ for the payments, and the convention for calculating interest.
 - `rate_convention::T`: The rate convention used to calculate interest (e.g., `Linear`, `Compounded`).
 - `fixing_schedule_shift`: Fixing Schedule shift from the accrual schedule.
 """
-struct FloatRateStreamConfig{P, R<:AbstractRateIndex, S<:AbstractScheduleConfig, T<:RateType, D<:DayCountConvention, C<:AbstractShift} <: FlowStreamConfig
+struct FloatRateStreamConfig{P, R<:AbstractRateIndex, S<:AbstractScheduleConfig, T<:RateType, D<:DayCountConvention, C<:AbstractShift, PS<:AbstractShift} <: FlowStreamConfig
     principal::P
     rate_index::R
+    start_date
+    end_date
     schedule_config::S
+    pay_shift::PS
     day_count_convention::D
     rate_convention::T
     fixing_schedule_shift::C
@@ -55,9 +58,8 @@ between accrual periods using the specified day count convention, and initialize
 """ 
 
 function FloatingRateStream(stream_config::FloatRateStreamConfig) 
-    pay_dates_iter, accrual_dates_iter = generate_schedule(stream_config.schedule_config)
-    pay_dates = collect(pay_dates_iter)
-    accrual_dates = collect(accrual_dates_iter)
+    accrual_dates = generate_schedule(stream_config.start_date, stream_config.end_date, stream_config.schedule_config) |> collect
+    pay_dates = relative_schedule(accrual_dates, stream_config.pay_shift)
     accrual_day_counts = day_count_fraction(accrual_dates, stream_config.day_count_convention)
     fixing_dates = relative_schedule(accrual_dates, stream_config.fixing_schedule_shift)
     return FloatingRateStream(stream_config, pay_dates, fixing_dates, accrual_dates, accrual_day_counts)

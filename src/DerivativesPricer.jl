@@ -10,13 +10,13 @@ include("date_generation/business_days_conventions.jl")
 include("date_generation/date_shift.jl")
 include("date_generation/schedule_generation.jl")
 include("fixed_rate_stream.jl")
-# include("float_rate.jl")
-# include("rate_curves.jl")
-# include("float_rate_stream.jl")
-# include("discount_pricing.jl")
+include("float_rate.jl")
+include("rate_curves.jl")
+include("float_rate_stream.jl")
+include("discount_pricing.jl")
 
 # include runtests in VSCODE: necessary to have code completion
-if isdefined(@__MODULE__,:LanguageServer)
+if false
     include("../test/runtests.jl")
     include("../notebooks/includer.jl")
 end

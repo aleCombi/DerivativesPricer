@@ -9,14 +9,14 @@ end
     # Create a dummy schedule configuration
     start_date = Date(2024, 1, 1)
     end_date = Date(2025, 1, 1)
-    schedule_config = DummyScheduleConfig(start_date, end_date, DummyScheduleRule())
+    schedule_config = DummyScheduleConfig()
     day_count_convention = DummyDayCountConvention()
 
     # Create a dummy floating rate stream configuration
     principal = 1000.0  # Assume a principal amount
     rate_index = DummyRateIndex()  # Dummy rate index
     rate_convention = DummyRateType()  # Dummy rate convention
-    stream_config = FloatRateStreamConfig(principal, rate_index, schedule_config, day_count_convention, rate_convention, NoShift())
+    stream_config = FloatRateStreamConfig(principal, rate_index, start_date, end_date, schedule_config, NoShift(), day_count_convention, rate_convention, NoShift())
 
     # Create the floating rate stream
     stream = FloatingRateStream(stream_config)

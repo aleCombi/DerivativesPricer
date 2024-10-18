@@ -110,6 +110,23 @@ function generate_unadjusted_dates(start_date, end_date, stub_period::StubPeriod
 end
 
 """
+    generate_unadjusted_dates(start_date, end_date, schedule_config::S) where S <: AbstractScheduleConfig
+
+Generates a stream of unadjusted dates according to the given schedule configuration.
+
+# Arguments
+- `start_date`: The start date of the schedule.
+- `end_date`: The end date of the schedule.
+- `schedule_config::S`: The schedule configuration.
+
+# Returns
+- A stream of unadjusted dates.
+"""
+function generate_unadjusted_dates(start_date, end_date, schedule_config::ScheduleConfig)
+    return generate_unadjusted_dates(start_date, end_date, schedule_config.stub_period, schedule_config.period)
+end
+
+"""
     generate_schedule(unadjusted_dates, schedule_config::S) where S <: AbstractScheduleConfig
 
 Generates a schedule of adjusted dates according to the given schedule configuration.
@@ -125,4 +142,21 @@ function generate_schedule(unadjusted_dates, schedule_config::S) where S <: Abst
     corrector = date_corrector(schedule_config)
     adjusted_dates = Iterators.map(corrector, unadjusted_dates)
     return adjusted_dates
+end
+
+"""
+    generate_schedule(schedule_config::S) where S <: AbstractScheduleConfig
+
+Generates a schedule of adjusted dates according to the given schedule configuration.
+
+# Arguments
+- `start_date`: The start date of the schedule.
+- `end_date`: The end date of the schedule.
+- `schedule_config::S`: The schedule configuration.
+
+# Returns
+- A schedule of adjusted dates.
+"""
+function generate_schedule(start_date, end_date, schedule_config::S) where S <: AbstractScheduleConfig
+    return generate_schedule(generate_unadjusted_dates(start_date, end_date, schedule_config), schedule_config)
 end

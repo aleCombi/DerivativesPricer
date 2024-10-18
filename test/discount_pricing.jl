@@ -45,11 +45,13 @@ end
 @testitem "float_rate_pricing" setup=[DiscountPricing] begin
     # Create a mock FloatRateStream
     principal = 1000.0
+    start_date = Date(2023, 1, 1)
+    end_date = Date(2024, 1, 1)
     rate_index = DummyRateIndex()
     rate_convention = DummyRateType()
-    schedule_config = DummyScheduleConfig(Date(2023, 1, 1), Date(2024, 1, 1), DummyScheduleRule()) # this daycount convention makes every period count as 0.25
+    schedule_config = DummyScheduleConfig() # this daycount convention makes every period count as 0.25
     day_count_convention = DummyDayCountConvention()
-    stream_config = FloatRateStreamConfig(principal, rate_index, schedule_config, day_count_convention, rate_convention, NoShift())
+    stream_config = FloatRateStreamConfig(principal, rate_index, start_date, end_date, schedule_config, NoShift(), day_count_convention, rate_convention, NoShift())
     stream = FloatingRateStream(stream_config)
     print(stream.pay_dates)
     # Calculate the price
