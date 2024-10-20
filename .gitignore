@@ -1,6 +1,7 @@
-# Ignore Manifest file
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
 Manifest.toml
-# Ignore docs project manifest file
+docs/build/
+docs/site
 docs/Manifest.toml
-# Ignore everything under test/build/
-docs/build/*
