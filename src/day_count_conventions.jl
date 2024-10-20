@@ -5,14 +5,14 @@ using Dates
 
 Abstract type representing a day count convention. This serves as the base type for all specific day count conventions.
 """
-abstract type DayCountConvention end
+abstract type DayCount end
 
 """
     ACT360 <: DayCountConvention
 
 Concrete type representing the ACT/360 day count convention, where the actual number of days between two dates is divided by 360.
 """
-struct ACT360 <: DayCountConvention end
+struct ACT360 <: DayCount end
 
 """
     day_count_fraction(start_dates::Vector{Date}, end_dates::Vector{Date}, ::ACT360) -> Vector{Float64}
@@ -28,7 +28,7 @@ Calculates the day count fractions between multiple pairs of start and end dates
 - `Vector{Float64}`: A vector of day count fractions for each pair of dates, calculated according to the ACT/360 convention.
 """
 function day_count_fraction(start_dates, end_dates, ::ACT360)
-    return (Dates.value.(end_dates .- start_dates)) ./ 360
+    return Dates.value.(end_dates .- start_dates) ./ 360
 end
 
 """
@@ -52,7 +52,7 @@ end
 
 Concrete type representing the ACT/365 day count convention, where the actual number of days between two dates is divided by 365.
 """
-struct ACT365 <: DayCountConvention end
+struct ACT365 <: DayCount end
 
 """
     day_count_fraction(start_date::Date, end_date::Date, ::ACT365) -> Float64
@@ -88,7 +88,7 @@ function day_count_fraction(dates, ::ACT365)
 end
 
 """
-    DayCount30360 <: DayCountConvention
+    DayCount30360 <: DayCount
 
 Concrete type representing the 30/360 day count convention, where the number of days between two dates is calculated as the difference in days, months, and years, and then divided by 360.
 
@@ -98,7 +98,7 @@ The day count is calculated as follows:
 - The number of years is the difference in years between the two dates.
 - The day count is then calculated as `(years * 360 + months * 30 + days) / 360`.
 """
-struct DayCount30360 <: DayCountConvention end
+struct DayCount30360 <: DayCount end
 
 """
     day_count_fraction(start_date::Date, end_date::Date, ::DayCount30360) -> Float64

@@ -3,7 +3,7 @@ using DerivativesPricer
 # Dummy implementations of RateIndex, ScheduleConfig, and RateType for testing purposes.
 struct DummyRateIndex <: AbstractRateIndex end
 struct DummyRateType <: RateType end
-struct DummyDayCountConvention <: DayCountConvention end
+struct DummyDayCountConvention <: DayCount end
 struct DummyScheduleConfig <: AbstractScheduleConfig end
 struct DummyInstrumentSchedule <: AbstractInstrumentSchedule
     start_date::Date

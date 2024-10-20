@@ -17,19 +17,19 @@ function price_fixed_flows_stream(payment_dates::Vector{D}, cash_flows::Vector{N
 end
 
 """
-    forward_rates(rate_curve::RateCurve, dates, day_count_convention::DayCountConvention)
+    forward_rates(rate_curve::RateCurve, dates, day_count_convention::DayCount)
 
 Calculate the forward rates between the dates in the given rate curve using the specified day count convention.
 
 # Arguments
 - `rate_curve::RateCurve`: The rate curve used to calculate the forward rates.
 - `dates::Vector{Date}`: The dates for which to calculate the forward rates.
-- `day_count_convention::DayCountConvention`: The day count convention used to calculate the time fractions.
+- `day_count_convention::DayCount`: The day count convention used to calculate the time fractions.
 
 # Returns
 - An array of forward rates between the given dates.
 """
-function calculate_forward_rates(rate_curve::RateCurve, dates::Vector{D}, day_count_convention::DayCountConvention=rate_curve.day_count_convention) where D<:TimeType
+function calculate_forward_rates(rate_curve::RateCurve, dates::Vector{D}, day_count_convention::DayCount=rate_curve.day_count_convention) where D<:TimeType
     day_counts = day_count_fraction(dates, day_count_convention)
     discount_factors = discount_factor(rate_curve, dates)
     return map(x -> (discount_factors[x+1] / discount_factors[x] - 1) / day_counts[x], 1:length(discount_factors)-1)

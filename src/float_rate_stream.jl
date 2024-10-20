@@ -12,7 +12,7 @@ for the payments, and the convention for calculating interest.
 - `rate_convention::T`: The rate convention used to calculate interest (e.g., `Linear`, `Compounded`).
 - `fixing_schedule_shift`: Fixing Schedule shift from the accrual schedule.
 """
-struct FloatRateStreamConfig{P, R<:AbstractRateIndex, T<:RateType, I<:AbstractInstrumentSchedule, D<:DayCountConvention, C<:AbstractShift} <: FlowStreamConfig
+struct FloatRateStreamConfig{P, R<:AbstractRateIndex, T<:RateType, I<:AbstractInstrumentSchedule, D<:DayCount, C<:AbstractShift} <: FlowStreamConfig
     principal::P
     rate_index::R
     instrument_schedule::I

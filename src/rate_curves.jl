@@ -17,7 +17,7 @@ A structure representing a rate curve.
 - `interpolation::T`: The interpolation method used for the rate curve.
 - `day_count_convention::C`: The day count convention used for the rate curve.
 """
-struct RateCurve{T<:AbstractInterp,C<:DayCountConvention,D<:TimeType}
+struct RateCurve{T<:AbstractInterp,C<:DayCount,D<:TimeType}
     name::String
     date::D
     interpolation::T
@@ -36,7 +36,7 @@ A structure representing the inputs required to create a rate curve.
 - `date::D`: Reference date for the rate curve.
 - `day_count_convention::C`: Day count convention to be used.
 """
-struct RateCurveInputs{T<:Number, R, I<:InterpType, C<:DayCountConvention, D<:TimeType}
+struct RateCurveInputs{T<:Number, R, I<:InterpType, C<:DayCount, D<:TimeType}
     times_day_counts::Vector{T}
     rates::Vector{R}
     interp_method::I
@@ -60,7 +60,7 @@ Custom constructor for `RateCurveInputs` that converts time points (Dates) to da
 # Returns
 - `RateCurveInputs`: An instance of `RateCurveInputs` with time points converted to day counts.
 """
-RateCurveInputs(times::Vector{D}, rates::Vector{R}, date::D, interp_method::I=Gridded(Interpolations.Linear()), day_count_convention::C = ACT365()) where {D<:TimeType, R, I<:InterpType, C<:DayCountConvention} =
+RateCurveInputs(times::Vector{D}, rates::Vector{R}, date::D, interp_method::I=Gridded(Interpolations.Linear()), day_count_convention::C = ACT365()) where {D<:TimeType, R, I<:InterpType, C<:DayCount} =
     RateCurveInputs(day_count_fraction.(date, times, Ref(day_count_convention)), rates, interp_method, date, day_count_convention, times)
 
 """
@@ -96,7 +96,7 @@ function create_rate_curve(inputs::RateCurveInputs)
     return RateCurve("Curve_$(randstring(5))", inputs.date, interpolation, inputs.day_count_convention)
 end
 
-struct FlatRateCurve{D<:TimeType, T, C<:DayCountConvention, R<:RateType}
+struct FlatRateCurve{D<:TimeType, T, C<:DayCount, R<:RateType}
     name::String
     date::D
     rate::T

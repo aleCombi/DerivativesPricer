@@ -8,7 +8,8 @@ abstract type AbstractRateIndex end
 """
     RateIndex
 
-A structure representing a rate index.
+A structure representing a rate index. 
+This object should be mapped to data sources.
 
 # Fields
 - `name::String`: The name of the rate index.
@@ -19,26 +20,7 @@ end
 
 abstract type FloatRateConfig end
 
-abstract type AbstractMarginConfig end
-
-struct AdditiveMargin{N<:Number}
-    margin::N
-end
-
-struct MultiplicativeMargin{N<:Number}
-    margin::N
-end
-
-abstract type AbstractCompoundMarginMode end
-
-struct MarginOnUnderlying{M<:AbstractMarginConfig} <: AbstractCompoundMarginMode
-    marginConfig::M
-end
-struct MarginOnCompoundedRate{M<:AbstractMarginConfig} <: AbstractCompoundMarginMode
-    marginConfig::M
-end
-
-struct LinearRateConfig{R<:AbstractRateIndex, D<:DayCountConvention, C<:AbstractShift, N<:AbstractMarginConfig} <:FloatRateConfig
+struct LinearRateConfig{R<:AbstractRateIndex, D<:DayCount, C<:AbstractShift, N<:AbstractMarginConfig} <:FloatRateConfig
     rate_index::R
     day_count_convention::D
     rate_convention::Linear
@@ -46,7 +28,7 @@ struct LinearRateConfig{R<:AbstractRateIndex, D<:DayCountConvention, C<:Abstract
     margin::N
 end
 
-struct CompoundRateConfig{R<:AbstractRateIndex, D<:DayCountConvention, C<:AbstractShift, S<:AbstractScheduleConfig, M<:AbstractCompoundMarginMode} <:FloatRateConfig
+struct CompoundRateConfig{R<:AbstractRateIndex, D<:DayCount, C<:AbstractShift, S<:AbstractScheduleConfig, M<:AbstractCompoundMarginMode} <:FloatRateConfig
     rate_index::R
     day_count_convention::D
     rate_convention::Compounded

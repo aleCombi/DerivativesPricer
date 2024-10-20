@@ -18,7 +18,7 @@ for the payments, along with the convention for calculating interest.
 - `schedule_config::ScheduleConfig`: The schedule configuration that defines the start, end, and payment frequency.
 - `rate_convention::RateType`: The rate convention used to calculate interest (e.g., `Linear`, `Compounded`).
 """
-struct FixedRateStreamConfig{P, R, T<:RateType, D<:DayCountConvention, I <: InstrumentSchedule} <: FlowStreamConfig
+struct FixedRateStreamConfig{P, R, T<:RateType, D<:DayCount, I <: InstrumentSchedule} <: FlowStreamConfig
     principal::P
     rate::R
     instrument_schedule::I

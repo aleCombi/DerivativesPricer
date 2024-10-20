@@ -4,8 +4,8 @@ module DerivativesPricer
 include("day_count_conventions.jl")
 include("rate_conventions.jl")
 include("date_generation/include_date_generation.jl")
+include("rate_definition/include_rate_definition.jl")
 include("fixed_rate_stream.jl")
-include("float_rate.jl")
 include("rate_curves.jl")
 include("float_rate_stream.jl")
 include("discount_pricing.jl")
@@ -18,7 +18,7 @@ end
 
 # Export relevant functions and types for external use
 
-export  DayCountConvention, ACT360, ACT365, DayCount30360, day_count_fraction,
+export  DayCount, ACT360, ACT365, DayCount30360, day_count_fraction,
         # day_count_conventions.jl
         RateType, Linear, Compounded, Exponential, calculate_interest, 
         # rate_conventions.jl
