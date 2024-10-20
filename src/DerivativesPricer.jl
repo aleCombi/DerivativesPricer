@@ -2,12 +2,10 @@ module DerivativesPricer
 
 # Include all the required files
 include("day_count_conventions.jl")
-include("rate_conventions.jl")
 include("date_generation/include_date_generation.jl")
 include("rate_definition/include_rate_definition.jl")
-include("fixed_rate_stream.jl")
+include("flow_stream/include_flow_stream.jl")
 include("rate_curves.jl")
-include("float_rate_stream.jl")
 include("discount_pricing.jl")
 
 # fake include statements necessary to have LSP working on VS Code
