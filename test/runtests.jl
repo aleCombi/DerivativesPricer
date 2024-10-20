@@ -1,5 +1,5 @@
 using TestItemRunner
-using DerivativesPricer
+using DerivativesPricer #TODO:explore the use of @testable to avoid exporting everything from the package.
 
 # include test files in VSCODE: necessary to have code completion
 if isdefined(@__MODULE__,:LanguageServer)
