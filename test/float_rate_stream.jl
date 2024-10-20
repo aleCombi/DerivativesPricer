@@ -16,7 +16,9 @@ end
     rate_index = DummyRateIndex()  # Dummy rate index
     rate_convention = DummyRateType()  # Dummy rate convention
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
-    stream_config = FloatRateStreamConfig(principal, rate_index, instrument_schedule, day_count_convention, rate_convention, NoShift())
+    rate_config = SimpleRateConfig(day_count_convention, rate_convention, NoShift(), AdditiveMargin(0))
+    instrument_rate = FloatRate(rate_index, rate_config)
+    stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
 
     # Create the floating rate stream
     stream = FloatingRateStream(stream_config)

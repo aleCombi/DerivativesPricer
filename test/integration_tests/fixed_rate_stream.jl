@@ -13,8 +13,12 @@
     day_count_convention = DayCount30360()
     principal = 41800000.0
     rate = 0.00184
-    fixed_rate_stream_config= FixedRateStreamConfig(principal, rate, instrument_schedule, day_count_convention, Linear()) 
-    fixed_rate_stream = FixedRateStream(fixed_rate_stream_config)
+    rate_config = FixedRateConfig(day_count_convention, Linear())
+    instrument_rate = FixedRate(rate, rate_config)
+    # Create a FixedRateStreamConfig
+    stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
+
+    fixed_rate_stream = FixedRateStream(stream_config)
 
     # Expected accrual dates obtained from QuantLib
     expected_accrual_date_strings = [

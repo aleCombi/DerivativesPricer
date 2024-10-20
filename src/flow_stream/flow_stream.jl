@@ -70,11 +70,11 @@ between accrual periods using the specified day count convention, and initialize
 # Example
 """ 
 
-function FloatingRateStream(stream_config::FlowStreamConfig{P,FloatRate,S}) where {P,S}
+function FloatingRateStream(stream_config::FlowStreamConfig{P,F,S}) where {P,F<:FloatRate,S}
     accrual_dates = generate_schedule(stream_config.schedule)
     pay_dates = relative_schedule(accrual_dates, stream_config.schedule.pay_shift)
-    accrual_day_counts = day_count_fraction(accrual_dates, stream_config.rate.day_count_convention)
-    fixing_dates = relative_schedule(accrual_dates, stream_config.schedule.fixing_shift)
+    accrual_day_counts = day_count_fraction(accrual_dates, stream_config.rate.rate_config.day_count_convention)
+    fixing_dates = relative_schedule(accrual_dates, stream_config.rate.rate_config.fixing_shift)
     return FloatingRateStream(stream_config, pay_dates, fixing_dates, accrual_dates, accrual_day_counts)
 end
 
@@ -109,10 +109,10 @@ between accrual periods using the specified day count convention, and computes t
 # Example
 - config = FixedRateStreamConfig( 100000, 0.05, ScheduleConfig(Date(2023, 1, 1), Date(2024, 1, 1), Monthly(), ACT360()), Linear() ) stream = FixedRateStream(config)
 """
-function FixedRateStream(stream_config::FlowStreamConfig{P, FixedRate, S}) where {P,S}
+function FixedRateStream(stream_config::FlowStreamConfig{P, F, S}) where {P,F<:FixedRate, S}
     accrual_dates = generate_schedule(stream_config.schedule)
     pay_dates = relative_schedule(accrual_dates, stream_config.schedule.pay_shift)
-    accrual_day_counts = day_count_fraction(accrual_dates, stream_config.rate.day_count_convention)
-    cash_flows = calculate_interest([stream_config.principal], [stream_config.rate.rate], time_fractions, stream_config.rate.rate_convention)
+    time_fractions = day_count_fraction(accrual_dates, stream_config.rate.rate_config.day_count_convention)
+    cash_flows = calculate_interest([stream_config.principal], [stream_config.rate.rate], time_fractions, stream_config.rate.rate_config.rate_convention)
     return FixedRateStream(pay_dates, accrual_dates, cash_flows)
 end

@@ -49,7 +49,7 @@ for each accrual period, discounts the cash flows using the discount factors fro
 - The price of the floating-rate stream of cash flows.
 """
 function price_float_rate_stream(stream::FloatingRateStream, rate_curve::RateCurve)
-    forward_rates = calculate_forward_rates(rate_curve, stream.accrual_dates, stream.config.day_count_convention)
+    forward_rates = calculate_forward_rates(rate_curve, stream.accrual_dates, stream.config.rate.rate_config.day_count_convention)
     discount_factors = discount_factor(rate_curve, stream.pay_dates)
     return sum(stream.config.principal .* discount_factors .* forward_rates)
 end

@@ -14,7 +14,7 @@ A concrete type representing an additive margin, where a fixed amount is added t
 # Fields
 - `margin::N`: The margin value to be added, of type `N` (typically a `Float64` or `Int`).
 """
-struct AdditiveMargin{N<:Number}
+struct AdditiveMargin{N<:Number} <: MarginConfig
     margin::N
 end
 
@@ -26,7 +26,7 @@ A concrete type representing a multiplicative margin, where the base rate is mul
 # Fields
 - `margin::N`: The margin value used as a multiplier, of type `N` (typically a `Float64` or `Int`).
 """
-struct MultiplicativeMargin{N<:Number}
+struct MultiplicativeMargin{N<:Number} <: MarginConfig
     margin::N
 end
 
