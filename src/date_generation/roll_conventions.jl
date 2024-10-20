@@ -13,7 +13,7 @@ Roll convention that adjusts a date to the last day of the month.
 
 # Arguments
 - `date`: The date to be adjusted.
-- ::NoRollConvention: No roll date convention.
+- `::NoRollConvention`: No roll date convention.
 
 # Returns
 - The adjusted date as a `Date`.
@@ -29,7 +29,7 @@ Roll convention that adjusts a date to the last day of the month.
 
 # Arguments
 - `date`: The date to be adjusted.
-- ::EOMRollConvention: The End-Of-Month roll convention.
+- `::EOMRollConvention`: The End-Of-Month roll convention.
 
 # Returns
 - The adjusted date as a `Date`.
