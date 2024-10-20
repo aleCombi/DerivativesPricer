@@ -18,7 +18,7 @@ end
 
 export  DayCount, ACT360, ACT365, DayCount30360, day_count_fraction,
         # day_count_conventions.jl
-        RateType, Linear, Compounded, Exponential, calculate_interest, 
+        RateType, Linear, Compounded, Exponential, calculate_interest,
         # rate_conventions.jl
         FlowStream, ScheduleConfig, FixedRateStreamConfig, FixedRateStream,
         # fixed_rate_stream.jl

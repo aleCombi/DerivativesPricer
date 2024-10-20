@@ -64,7 +64,7 @@ between accrual periods using the specified day count convention, and computes t
 # Example
 - config = FixedRateStreamConfig( 100000, 0.05, ScheduleConfig(Date(2023, 1, 1), Date(2024, 1, 1), Monthly(), ACT360()), Linear() ) stream = FixedRateStream(config)
 """
-function FixedRateStream(stream_config::FixedRateStreamConfig)
+function FixedRateStream(stream_config::FlowStreamConfig)
     accrual_dates = generate_schedule(stream_config.instrument_schedule)
     pay_dates = relative_schedule(accrual_dates, stream_config.instrument_schedule.pay_shift)
     time_fractions = day_count_fraction(accrual_dates, stream_config.day_count_convention)

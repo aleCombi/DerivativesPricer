@@ -52,7 +52,9 @@ end
     schedule_config = DummyScheduleConfig() # this daycount convention makes every period count as 0.25
     day_count_convention = DummyDayCountConvention()
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
-    stream_config = FloatRateStreamConfig(principal, rate_index, instrument_schedule, day_count_convention, rate_convention, NoShift())
+    rate_config = SimpleRateConfig(day_count_convention, rate_convention, NoShift())
+    instrument_rate = FloatRate(rate_index, rate_config)
+    stream_config = FlowStreamConfig(principal, rate_index, instrument_schedule, day_count_convention, rate_convention, NoShift())
     stream = FloatingRateStream(stream_config)
     print(stream.pay_dates)
     # Calculate the price
