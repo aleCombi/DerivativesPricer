@@ -7,13 +7,13 @@ struct NoRollConvention <: RollConvention end
 struct EOMRollConvention <: RollConvention end
 
 """
-    roll_date(date, calendar, ::EOMRollConvention)
+    roll_date(date::Date, ::NoRollConvention)
 
 Roll convention that adjusts a date to the last day of the month.
 
 # Arguments
 - `date`: The date to be adjusted.
-- `calendar`: The business days calendar to use for adjustment.
+- ::NoRollConvention: No roll date convention.
 
 # Returns
 - The adjusted date as a `Date`.
@@ -29,7 +29,7 @@ Roll convention that adjusts a date to the last day of the month.
 
 # Arguments
 - `date`: The date to be adjusted.
-- `calendar`: The business days calendar to use for adjustment.
+- ::EOMRollConvention: The End-Of-Month roll convention.
 
 # Returns
 - The adjusted date as a `Date`.

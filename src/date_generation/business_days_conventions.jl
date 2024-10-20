@@ -44,45 +44,48 @@ Roll convention that adjusts a date to the previous business day, unless it fall
 struct ModifiedPreceding <: BusinessDayConvention end
 
 """
-    roll_date(date, calendar, ::PreviousBusinessDay) -> Date
+    adjust_date(date, calendar, ::PreviousBusinessDay) -> Date
 
 Adjusts the given date to the previous business day according to the specified calendar.
 
 # Arguments
 - `date`: The date to be adjusted.
 - `calendar`: The business days calendar to use for adjustment.
+- `::PrecedingBusinessDay`: Preceding Business day convention.
 
 # Returns
-- The adjusted date as a `Date`.
+- The previous business day.
 """
 function adjust_date(date, calendar, ::PrecedingBusinessDay)
     return tobday(calendar, date; forward=false)
 end
 
 """
-    roll_date(date, calendar, ::NextBusinessDay) -> Date
+    adjust_date(date, calendar, ::FollowingBusinessDay) -> Date
 
 Adjusts the given date to the next business day according to the specified calendar.
 
 # Arguments
 - `date`: The date to be adjusted.
 - `calendar`: The business days calendar to use for adjustment.
+- `::FollowingBusinessDay`: Following Business day convention.
 
 # Returns
-- The adjusted date as a `Date`.
+- The following business day.
 """
 function adjust_date(date, calendar, ::FollowingBusinessDay)
     return tobday(calendar, date; forward=true)
 end
 
 """
-    roll_date(date, calendar, ::Indifferent) -> Date
+    adjust_date(date, calendar, ::NoneBusinessDayConvention) -> Date
 
 Returns the given date without any adjustment.
 
 # Arguments
 - `date`: The date to be returned.
 - `calendar`: The business days calendar (not used in this function).
+- `NoneBusinessDayConvention`: None business day convention.
 
 # Returns
 - The original date as a `Date`.
@@ -92,13 +95,14 @@ function adjust_date(date, calendar, ::NoneBusinessDayConvention)
 end
 
 """
-    roll_date(date, calendar, ::ModifiedFollowing) -> Date
+    adjust_date(date, calendar, ::ModifiedFollowing) -> Date
 
 Adjusts the given date to the next business day according to the specified calendar, unless it falls in the next month, in which case it adjusts to the previous business day.
 
 # Arguments
 - `date`: The date to be adjusted.
 - `calendar`: The business days calendar to use for adjustment.
+- `::ModifiedFollowing`: Modified Following business day convention.
 
 # Returns
 - The adjusted date as a `Date`.
@@ -113,13 +117,14 @@ function adjust_date(date, calendar, ::ModifiedFollowing)
 end
 
 """
-    roll_date(date, calendar, ::ModifiedPreceding) -> Date
+    adjust_date(date, calendar, ::ModifiedPreceding) -> Date
 
 Adjusts the given date to the previous business day according to the specified calendar, unless it falls in the previous month, in which case it adjusts to the following business day.
 
 # Arguments
 - `date`: The date to be adjusted.
 - `calendar`: The business days calendar to use for adjustment.
+- `::ModifiedPreceding`: Modified Preceding business day convention.
 
 # Returns
 - The adjusted date as a `Date`.
