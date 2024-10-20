@@ -1,2 +1,2 @@
-# Ignore everything under build/
-build/*
+# Ignore everything under test/build/
+docs/build/*
