@@ -1,2 +1,6 @@
+# Ignore Manifest file
+Manifest.toml
+# Ignore docs project manifest file
+docs/Manifest.toml
 # Ignore everything under test/build/
 docs/build/*
