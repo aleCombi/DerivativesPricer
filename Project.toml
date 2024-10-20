@@ -1,11 +1,13 @@
 name = "DerivativesPricer"
 uuid = "265bde8e-a8a2-4012-a19c-337de8aac561"
+author = "Alessandro Combi"
 version = "0.1.0"
 
 [deps]
 BusinessDays = "4f18b42c-503e-5345-9536-bb0f25fc7038"
 Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
 Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
