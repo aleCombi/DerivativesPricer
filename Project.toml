@@ -3,16 +3,15 @@ uuid = "265bde8e-a8a2-4012-a19c-337de8aac561"
 version = "0.1.0"
 
 [deps]
-BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 BusinessDays = "4f18b42c-503e-5345-9536-bb0f25fc7038"
-Coverage = "a2441757-f6aa-5fb2-8edb-039e3f45d037"
-Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-Debugger = "31a5f54b-26ea-5ae9-a837-f05ce5417438"
 Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
-IterTools = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
+
+[extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Coverage = "a2441757-f6aa-5fb2-8edb-039e3f45d037"
 TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
 TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
+
+[targets]
+test = ["Test"]
