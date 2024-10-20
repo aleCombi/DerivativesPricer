@@ -7,7 +7,7 @@ Any concrete rate configuration (e.g., `FixedRateConfig`) should subtype this.
 abstract type AbstractRateConfig end
 
 """
-    FixedRateConfig{D<:DayCount, R<:RateConvention} <: AbstractRateConfig
+    FixedRateConfig{D<:DayCount, R<:RateType} <: AbstractRateConfig
 
 A concrete type representing a fixed rate configuration, parameterized by the day count convention `D` 
 and the rate convention `R`.
@@ -16,7 +16,7 @@ and the rate convention `R`.
 - `day_count_convention::D`: The day count convention used to calculate time fractions (e.g., 30/360, Actual/360).
 - `rate_convention::R`: The rate convention, which defines whether rates are linear, continuously compounded, etc.
 """
-struct FixedRateConfig{D<:DayCount, R<:RateConvention} <: AbstractRateConfig
+struct FixedRateConfig{D<:DayCount, R<:RateType} <: AbstractRateConfig
     day_count_convention::D
     rate_convention::R
 end
