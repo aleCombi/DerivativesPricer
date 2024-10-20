@@ -46,14 +46,14 @@ struct SimpleRateConfig{D<:DayCount, L<:RateType, C<:AbstractShift, N<:MarginCon
 end
 
 """
-    CompoundRateConfig{D<:DayCount, C<:AbstractShift, S<:AbstractScheduleConfig, M<:CompoundMargin} <: FloatRateConfig
+    struct CompoundRateConfig{D<:DayCount, L<:RateType, C<:AbstractShift, S<:AbstractScheduleConfig, M<:CompoundMargin} <: FloatRateConfig
 
 A concrete configuration for compounded floating rates, parameterized by a day count convention `D`, 
 a fixing shift `C`, a compounding schedule `S`, and a margin configuration `M`.
 
 # Fields
 - `day_count_convention::D`: The day count convention for calculating time fractions.
-- `rate_convention::Compounded`: The convention indicating the rates are compounded.
+- `rate_convention::L`: The convention indicating the rates are compounded.
 - `fixing_shift::C`: A fixing shift for rate determination adjustments.
 - `compound_schedule::S`: A schedule configuration that defines the compounding intervals.
 - `margin::M`: The margin or spread applied over the compounded floating rate.
@@ -61,9 +61,9 @@ a fixing shift `C`, a compounding schedule `S`, and a margin configuration `M`.
 # Notes
 Ensure the compounding schedule is compatible with the accrual schedule.
 """
-struct CompoundRateConfig{D<:DayCount, C<:AbstractShift, S<:AbstractScheduleConfig, M<:CompoundMargin} <: FloatRateConfig
+struct CompoundRateConfig{D<:DayCount, L<:RateType, C<:AbstractShift, S<:AbstractScheduleConfig, M<:CompoundMargin} <: FloatRateConfig
     day_count_convention::D
-    rate_convention::Compounded
+    rate_convention::L
     fixing_shift::C
     compound_schedule::S
     margin::M
