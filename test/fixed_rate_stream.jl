@@ -10,7 +10,7 @@ end
     principal = 100000.0
     rate = 0.05
     schedule_config = ScheduleConfig(Month(2))
-    rate_convention = Linear()
+    rate_convention = LinearRate()
     day_count_convention = ACT365()
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
 
@@ -37,7 +37,7 @@ end
     rate = 0.05  # 5% interest
     schedule_config = ScheduleConfig(Month(1))
     day_count_convention = ACT360()
-    rate_convention = Linear()
+    rate_convention = LinearRate()
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
     rate_config = FixedRateConfig(day_count_convention, rate_convention)
     instrument_rate = FixedRate(rate, rate_config)
@@ -71,7 +71,7 @@ end
     day_count_convention = ACT360()
 
     schedule_config = ScheduleConfig(Month(1))
-    rate_convention = Linear()
+    rate_convention = LinearRate()
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
 
     rate_config = FixedRateConfig(day_count_convention, rate_convention)
@@ -96,7 +96,7 @@ end
     rate = 0.05
     day_count_convention = ACT365()
     schedule_config = ScheduleConfig(Month(1))
-    rate_convention = Linear()
+    rate_convention = LinearRate()
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
 
     rate_config = FixedRateConfig(day_count_convention, rate_convention)

@@ -10,7 +10,7 @@ abstract type RateType end
 
 Concrete type representing linear (simple) interest, where the interest is calculated as a fixed percentage of the principal over time.
 """
-struct Linear <: RateType end
+struct LinearRate <: RateType end
 
 """
     Compounded <: RateType
@@ -44,7 +44,7 @@ Calculates interest for multiple principals using the linear (simple) interest m
 # Returns
 - A vector of calculated simple interest for each investment.
 """
-function calculate_interest(principal, rate, time_fraction, ::Linear)
+function calculate_interest(principal, rate, time_fraction, ::LinearRate)
     return principal .* rate .* time_fraction
 end
 
@@ -61,7 +61,7 @@ Discounts factor given a rate and time fraction in Linear mode.
 # Returns
 A set of discount factors.
 """
-function discount_interest(rate, time_fraction, ::Linear)
+function discount_interest(rate, time_fraction, ::LinearRate)
     return 1 / (1 + rate .* time_fraction)
 end
 

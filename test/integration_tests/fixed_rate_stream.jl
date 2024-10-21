@@ -13,7 +13,7 @@
     day_count_convention = DayCount30360()
     principal = 41800000.0
     rate = 0.00184
-    rate_config = FixedRateConfig(day_count_convention, Linear())
+    rate_config = FixedRateConfig(day_count_convention, LinearRate())
     instrument_rate = FixedRate(rate, rate_config)
     # Create a FixedRateStreamConfig
     stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)

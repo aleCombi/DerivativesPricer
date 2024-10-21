@@ -12,23 +12,23 @@
 
     # Test 1: Standard calculation for 1 year at 5% interest
     # Expected: 1000 * 0.05 * 1 = 50
-    @test calculate_interest(principal, rate, time_fraction, Linear()) == 50.0
+    @test calculate_interest(principal, rate, time_fraction, LinearRate()) == 50.0
 
     # Test 2: Calculation for 6 months (0.5 years)
     time_fraction = 0.5
     # Expected: 1000 * 0.05 * 0.5 = 25
-    @test calculate_interest(principal, rate, time_fraction, Linear()) == 25.0
+    @test calculate_interest(principal, rate, time_fraction, LinearRate()) == 25.0
 
     # Test 3: Edge case with zero principal
     principal = 0.0
     # Expected: 0 * 0.05 * 0.5 = 0
-    @test calculate_interest(principal, rate, time_fraction, Linear()) == 0.0
+    @test calculate_interest(principal, rate, time_fraction, LinearRate()) == 0.0
 
     # Test 4: Edge case with a negative time fraction (e.g., early withdrawal)
     principal = 1000.0
     time_fraction = -0.5
     # Expected: 1000 * 0.05 * -0.5 = -25
-    @test calculate_interest(principal, rate, time_fraction, Linear()) == -25.0
+    @test calculate_interest(principal, rate, time_fraction, LinearRate()) == -25.0
 
     # Test 5: Vectorized calculation for multiple principals, rates, and time fractions
     principals = [1000.0, 500.0]
@@ -36,7 +36,7 @@
     time_fractions = [1.0, 0.5]
     # Expected: [1000 * 0.05 * 1, 500 * 0.04 * 0.5] = [50.0, 10.0]
     expected = [50.0, 10.0]
-    @test calculate_interest(principals, rates, time_fractions, Linear()) == expected
+    @test calculate_interest(principals, rates, time_fractions, LinearRate()) == expected
 end
 
 # Compounded Interest Tests
