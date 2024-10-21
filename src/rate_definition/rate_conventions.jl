@@ -24,6 +24,9 @@ struct Compounded <: RateType
     frequency::Int
 end
 
+struct Yield <: RateType
+end
+
 """
     Exponential <: RateType
 
@@ -83,6 +86,10 @@ function calculate_interest(principal, rate, time_fraction, rate_type::Compounde
     return principal .* ((1 .+ rate ./ rate_type.frequency) .^ (rate_type.frequency .* time_fraction)) .- principal
 end
 
+function calculate_interest(principal, rate, time_fraction, ::Yield)
+    return principal .* (1 .+ rate) .^ time_fraction - principal
+end
+
 """
     discount_interest(rate, time_fraction, ::Linear)
 
@@ -98,6 +105,10 @@ A set of discount factors.
 """
 function discount_interest(rate, time_fraction, rate_type::Compounded)
     return (1 .+ rate ./ rate_type.frequency) .^ (- rate_type.frequency .* time_fraction)
+end
+
+function discount_interest(rate, time_fraction, rate_type::Yield)
+    return (1 .+ rate) .^ (-time_fraction)
 end
 
 """

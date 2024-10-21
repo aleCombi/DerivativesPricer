@@ -5,8 +5,7 @@ include("day_count_conventions.jl")
 include("date_generation/include_date_generation.jl")
 include("rate_definition/include_rate_definition.jl")
 include("flow_stream/include_flow_stream.jl")
-include("rate_curves.jl")
-include("discount_pricing.jl")
+include("pricing_engine/include_pricing_engine.jl")
 
 # fake include statements necessary to have LSP working on VS Code
 if false
@@ -26,7 +25,7 @@ export  DayCount, ACT360, ACT365, DayCount30360, day_count_fraction,
         # rate_curves.jl
         FloatRateStreamConfig, FloatingRateStream,
         # float_rate_stream.jl
-        price_fixed_flows_stream, calculate_forward_rates, price_float_rate_stream,
+        price_fixed_flows_stream, calculate_forward_rate, price_float_rate_stream,
         # discount_pricing.jl
         AbstractRateIndex, RateIndex
         # float_rate.jl

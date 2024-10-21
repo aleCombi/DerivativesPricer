@@ -20,7 +20,7 @@ end
     # Create a mock FixedRateStream
     payment_dates = [Date(2023, 1, 1), Date(2023, 7, 1), Date(2024, 1, 1)]
     cash_flows = [1000.0, 1000.0, 1000.0]
-
+    
     # Calculate the price
     price = price_fixed_flows_stream(payment_dates, cash_flows, rate_curve)
 
@@ -34,7 +34,7 @@ end
 @testitem "forward_rates" setup=[DiscountPricing] begin
 
     # Calculate forward rates
-    fwd_rates = calculate_forward_rates(rate_curve, dates, ACT360())
+    fwd_rates = calculate_forward_rate(rate_curve, dates, ACT360())
 
     # Expected forward rates
     expected_fwd_rates = [(0.90 / 0.95 - 1) / 181 * 360, (0.85 / 0.90 - 1) / 184 * 360]

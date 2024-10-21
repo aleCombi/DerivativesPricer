@@ -66,7 +66,7 @@ function ScheduleConfig(period::P,
     roll_convention::R = NoRollConvention(),
     business_days_convention::B = NoneBusinessDayConvention(),
     calendar::C = NoHolidays(),
-    stub_period::StubPeriod = StubPeriod()) where {P <:Period, R <: RollConvention, B <: BusinessDayConvention, D <: BusinessDayConvention, C <: HolidayCalendar}
+    stub_period::StubPeriod = StubPeriod()) where {P <:Period, R <: RollConvention, B <: BusinessDayConvention, C <: HolidayCalendar}
     return ScheduleConfig(period, roll_convention, business_days_convention, business_days_convention, calendar, stub_period)
 end
 
