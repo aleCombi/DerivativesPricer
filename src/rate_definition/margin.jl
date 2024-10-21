@@ -66,11 +66,36 @@ struct MarginOnCompoundedRate{M<:MarginConfig} <: CompoundMargin
     marginConfig::M
 end
 
+"""
+    apply_margin(rate, margin::AdditiveMargin)
+
+Applies an additive margin to a given rate. This function takes a base rate and 
+adds a specified additive margin to it.
+
+# Arguments
+- `rate`: The base rate to which the margin will be applied.
+- `margin::AdditiveMargin`: An instance of `AdditiveMargin` containing the margin value to add.
+
+# Returns
+- The rate after applying the additive margin (i.e., `rate + margin.margin`).
+"""
 function apply_margin(rate, margin::AdditiveMargin)
     return rate + margin.margin
 end
 
+"""
+    apply_margin(rate, margin::MultiplicativeMargin)
+
+Applies a multiplicative margin to a given rate. This function takes a base rate 
+and multiplies it by `(1 + margin)`.
+
+# Arguments
+- `rate`: The base rate to which the margin will be applied.
+- `margin::MultiplicativeMargin`: An instance of `MultiplicativeMargin` containing the margin value to multiply by.
+
+# Returns
+- The rate after applying the multiplicative margin (i.e., `rate * (1 + margin.margin)`).
+"""
 function apply_margin(rate, margin::MultiplicativeMargin)
     return rate * (1 + margin.margin)
 end
-
