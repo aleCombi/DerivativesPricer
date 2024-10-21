@@ -65,3 +65,12 @@ parameterized by the margin configuration `M`.
 struct MarginOnCompoundedRate{M<:MarginConfig} <: CompoundMargin
     marginConfig::M
 end
+
+function apply_margin(rate, margin::AdditiveMargin)
+    return rate + margin.margin
+end
+
+function apply_margin(rate, margin::MultiplicativeMargin)
+    return rate * (1 + margin.margin)
+end
+
