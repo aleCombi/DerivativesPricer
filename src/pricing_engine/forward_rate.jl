@@ -84,6 +84,7 @@ TODO: Mathematical approximation?
 TODO: add sensible defaults.
 TODO: fixing dates plus schedule period + adjustment, basically same stuff with fixing dates as with accruals, using schedule config.
 This way we get a value schedule to calculate the discount factors ratios.
+Last date of the discount factor ratio should actually be distant from the fixing date as much as the two accrual dates are far apart. This way we have the same tenor, just fixed a few days shifted.
 """
 function calculate_forward_rate(rate_curve::RateCurve, accrual_dates::Vector{D}, fixing_dates::Vector{D}, rate_type::R, day_count::C, margin_config::M=AdditiveMargin(0)) where {D<:TimeType, M<:MarginConfig, R<:RateType, C<:DayCount}
     year_fractions = day_count_fraction(accrual_dates, day_count)
