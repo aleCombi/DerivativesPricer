@@ -14,7 +14,6 @@ function calculate_forward_rate(discount_factor_ratio, year_fraction, rate_type:
     return discount_factor_ratio.^(rate_type.frequency ./ year_fraction) .- 1
 end
 
-
 """
     calculate_forward_rates(rate_curve::RateCurve, dates::Vector{D}, day_count_convention::C, margin_config::M) where {D<:TimeType, M<:MarginConfig, C<:DayCount}
 
@@ -30,7 +29,7 @@ Calculate the forward rates between the dates using a given curve, dates and app
 - An array of forward rates between the given dates with margin applied.
 
 TODO:Mathematical approximation?
-TODO: add sensible defaults, add version for FlowStream struct (orchestrator)
+TODO: add sensible defaults.
 """
 function calculate_forward_rate(rate_curve::RateCurve, dates::Vector{D}, rate_type::R, day_count::C, margin_config::M=AdditiveMargin(0)) where {D<:TimeType, M<:MarginConfig, R<:RateType, C<:DayCount}
     year_fractions = day_count_fraction(dates, day_count)
