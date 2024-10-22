@@ -31,10 +31,9 @@ end
 end
 
 # Test for forward_rates
-@testitem "forward_rates" setup=[DiscountPricing] begin
-
+@testitem "forward_rates"  setup=[DiscountPricing] begin
     # Calculate forward rates
-    fwd_rates = calculate_forward_rate(rate_curve, dates, ACT360())
+    fwd_rates = calculate_forward_rate(rate_curve, dates, LinearRate(), ACT360())
 
     # Expected forward rates
     expected_fwd_rates = [(0.90 / 0.95 - 1) / 181 * 360, (0.85 / 0.90 - 1) / 184 * 360]
@@ -50,9 +49,8 @@ end
     rate_index = DummyRateIndex()
     rate_convention = DummyRateType()
     schedule_config = DummyScheduleConfig() # this daycount convention makes every period count as 0.25
-    day_count_convention = DummyDayCountConvention()
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
-    rate_config = SimpleRateConfig(day_count_convention, rate_convention, NoShift(), AdditiveMargin(0))
+    rate_config = SimpleRateConfig(DummyDayCountConvention(), LinearRate(), NoShift(), AdditiveMargin(0))
     instrument_rate = FloatRate(rate_index, rate_config)
     stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
     stream = FloatingRateStream(stream_config)

@@ -6,6 +6,8 @@ using DerivativesPricer
 const InterpType = Interpolations.InterpolationType
 const AbstractInterp = Interpolations.AbstractInterpolation
 
+abstract type AbstractRateCurve end
+
 """
     struct RateCurve{T<:AbstractInterp,C<:DayCountConvention,D<:TimeType}
 
@@ -17,7 +19,7 @@ A structure representing a rate curve.
 - `interpolation::T`: The interpolation method used for the rate curve.
 - `day_count_convention::C`: The day count convention used for the rate curve.
 """
-struct RateCurve{T<:AbstractInterp,C<:DayCount,D<:TimeType}
+struct RateCurve{T<:AbstractInterp,C<:DayCount,D<:TimeType} <: AbstractRateCurve
     name::String
     date::D
     interpolation::T
@@ -96,7 +98,7 @@ function create_rate_curve(inputs::RateCurveInputs)
     return RateCurve("Curve_$(randstring(5))", inputs.date, interpolation, inputs.day_count_convention)
 end
 
-struct FlatRateCurve{D<:TimeType, T, C<:DayCount, R<:RateType}
+struct FlatRateCurve{D<:TimeType, T, C<:DayCount, R<:RateType} <: AbstractRateCurve
     name::String
     date::D
     rate::T

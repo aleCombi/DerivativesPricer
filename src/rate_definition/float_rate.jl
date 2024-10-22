@@ -40,7 +40,7 @@ a rate type `L`, a shift `C` for fixing, and a margin configuration `N`.
 """
 struct SimpleRateConfig{D<:DayCount, L<:RateType, C<:AbstractShift, N<:MarginConfig} <: FloatRateConfig
     day_count_convention::D
-    rate_convention::L
+    rate_type::L
     fixing_shift::C
     margin::N
 end
