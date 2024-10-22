@@ -1,15 +1,67 @@
+"""
+    calculate_forward_rate(discount_factor_ratio, year_fraction, ::LinearRate)
+
+Calculates the forward rate using a linear rate approach.
+
+# Arguments
+- `discount_factor_ratio`: A numeric value or array representing the ratio of discount factors.
+- `year_fraction`: A numeric value or array representing the time period as a fraction of a year.
+- `::LinearRate`: The rate type, indicating the linear rate model.
+
+# Returns
+- The forward rate calculated as `(discount_factor_ratio - 1) / year_fraction`.
+"""
 function calculate_forward_rate(discount_factor_ratio, year_fraction, ::LinearRate)
     return (discount_factor_ratio .- 1) ./ year_fraction
 end
 
+"""
+    calculate_forward_rate(discount_factor_ratio, year_fraction, ::Exponential)
+
+Calculates the forward rate using an exponential (logarithmic) rate approach.
+
+# Arguments
+- `discount_factor_ratio`: A numeric value or array representing the ratio of discount factors.
+- `year_fraction`: A numeric value or array representing the time period as a fraction of a year.
+- `::Exponential`: The rate type, indicating the exponential rate model.
+
+# Returns
+- The forward rate calculated as `log(discount_factor_ratio) / year_fraction`.
+"""
 function calculate_forward_rate(discount_factor_ratio, year_fraction, ::Exponential)
     return log.(discount_factor_ratio) ./ year_fraction
 end
 
+"""
+    calculate_forward_rate(discount_factor_ratio, year_fraction, ::Yield)
+
+Calculates the forward rate using the yield rate approach.
+
+# Arguments
+- `discount_factor_ratio`: A numeric value or array representing the ratio of discount factors.
+- `year_fraction`: A numeric value or array representing the time period as a fraction of a year.
+- `::Yield`: The rate type, indicating the yield model.
+
+# Returns
+- The forward rate calculated as `discount_factor_ratio^(1 / year_fraction) - 1`.
+"""
 function calculate_forward_rate(discount_factor_ratio, year_fraction, ::Yield)
     return discount_factor_ratio.^(1 ./ year_fraction) .- 1
 end
 
+"""
+    calculate_forward_rate(discount_factor_ratio, year_fraction, rate_type::Compounded)
+
+Calculates the forward rate using a compounded rate approach, adjusting for the frequency of compounding.
+
+# Arguments
+- `discount_factor_ratio`: A numeric value or array representing the ratio of discount factors.
+- `year_fraction`: A numeric value or array representing the time period as a fraction of a year.
+- `rate_type::Compounded`: The rate type, indicating the compounded rate model, including its frequency of compounding.
+
+# Returns
+- The forward rate calculated as `discount_factor_ratio^(frequency / year_fraction) - 1`.
+"""
 function calculate_forward_rate(discount_factor_ratio, year_fraction, rate_type::Compounded)
     return discount_factor_ratio.^(rate_type.frequency ./ year_fraction) .- 1
 end
@@ -39,6 +91,19 @@ function calculate_forward_rate(rate_curve::RateCurve, dates::Vector{D}, rate_ty
     return apply_margin(forward_rates_without_margin, margin_config)
 end
 
+"""
+    calculate_forward_rate(rate_curve::RateCurve, dates::Vector{D}, rate_config::F) where {D<:TimeType, F <: FloatRateConfig}
+
+Calculates the forward rate based on a rate curve, a set of dates, and a rate configuration.
+
+# Arguments
+- `rate_curve::RateCurve`: The rate curve from which discount factors are derived.
+- `dates::Vector{D}`: A vector of date objects representing the time points for forward rate calculation. The type `D` is constrained to `TimeType` (e.g., `Date`, `DateTime`).
+- `rate_config::F`: The rate configuration object, containing parameters such as the rate type, day count convention, and margin. `F` must be a subtype of `FloatRateConfig`.
+
+# Returns
+- The forward rate calculated by delegating to the appropriate method, using the rate configuration's `rate_type`, `day_count_convention`, and margin.
+"""
 function calculate_forward_rate(rate_curve::RateCurve, dates::Vector{D}, rate_config::F) where {D<:TimeType, F <: FloatRateConfig}
     return calculate_forward_rate(rate_curve, dates, rate_config.rate_type, rate_config.day_count_convention, rate_config.margin)
 end
