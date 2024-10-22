@@ -13,20 +13,9 @@ if false
     include("../notebooks/includer.jl")
 end
 
-# Export relevant functions and types for external use
-
-export  DayCount, ACT360, ACT365, DayCount30360, day_count_fraction,
-        # day_count_conventions.jl
-        RateType, LinearRate, Compounded, Exponential, calculate_interest,
-        # rate_conventions.jl
-        FlowStream, ScheduleConfig, FixedRateStreamConfig, FixedRateStream,
-        # fixed_rate_stream.jl
-        RateCurve, RateCurveInputs, create_rate_curve, discount_factor,
-        # rate_curves.jl
-        FloatRateStreamConfig, FloatingRateStream,
-        # float_rate_stream.jl
-        price_fixed_flows_stream, calculate_forward_rate, price_float_rate_stream,
-        # discount_pricing.jl
-        AbstractRateIndex, RateIndex
-        # float_rate.jl
+# Export relevant functions and types for external use. 
+# Remark: Exports of functions contained in sub-directories of src are contained in the include_%Folder file of each of the directories.
+export
+    # day_count_conventions.jl
+    DayCount, ACT360, ACT365, DayCount30360, day_count_fraction
 end

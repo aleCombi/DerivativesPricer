@@ -3,5 +3,12 @@ include("fixed_rate.jl")
 include("margin.jl")
 include("float_rate.jl")
 
-export FloatRate, FloatRateConfig, FixedRateConfig, FixedRate, SimpleRateConfig,
-AdditiveMargin, MultiplicativeMargin
+export 
+    # rate_conventions.jl
+    RateType, LinearRate, Compounded, Exponential, Yield, calculate_interest, discount_interest,
+    # fixed_rate.jl
+    FixedRateConfig, FixedRate,
+    # float_rate.jl
+    FloatRateConfig, SimpleRateConfig, CompoundRateConfig, FloatRate,
+    # margin.jl
+    AdditiveMargin, MultiplicativeMargin
