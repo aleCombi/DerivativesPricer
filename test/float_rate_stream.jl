@@ -1,10 +1,6 @@
-@testsnippet FloatRateStream begin
-    using Dates
-    include("dummy_struct_functions.jl")
-end
-
 # Test case
-@testitem "FloatRateStream Tests" setup=[FloatRateStream] begin
+@testitem "FloatRateStream Tests" begin
+    include("float_rate_stream_setup.jl")
     # Create a dummy schedule configuration
     start_date = Date(2024, 1, 1)
     end_date = Date(2025, 1, 1)

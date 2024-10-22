@@ -182,3 +182,5 @@ Generates a schedule of adjusted dates according to the given schedule configura
 function generate_schedule(start_date, end_date, schedule_config::S) where S <: AbstractScheduleConfig
     return generate_schedule(generate_unadjusted_dates(start_date, end_date, schedule_config), schedule_config)
 end
+
+# TODO: add a function the get end dates from a set of start dates

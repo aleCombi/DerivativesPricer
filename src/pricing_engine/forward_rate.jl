@@ -80,12 +80,14 @@ Calculate the forward rates between the dates using a given curve, dates and app
 # Returns
 - An array of forward rates between the given dates with margin applied.
 
-TODO:Mathematical approximation?
+TODO: Mathematical approximation?
 TODO: add sensible defaults.
+TODO: fixing dates plus schedule period + adjustment, basically same stuff with fixing dates as with accruals, using schedule config.
+This way we get a value schedule to calculate the discount factors ratios.
 """
-function calculate_forward_rate(rate_curve::RateCurve, dates::Vector{D}, rate_type::R, day_count::C, margin_config::M=AdditiveMargin(0)) where {D<:TimeType, M<:MarginConfig, R<:RateType, C<:DayCount}
-    year_fractions = day_count_fraction(dates, day_count)
-    discount_factors = discount_factor(rate_curve, dates)
+function calculate_forward_rate(rate_curve::RateCurve, accrual_dates::Vector{D}, fixing_dates::Vector{D}, rate_type::R, day_count::C, margin_config::M=AdditiveMargin(0)) where {D<:TimeType, M<:MarginConfig, R<:RateType, C<:DayCount}
+    year_fractions = day_count_fraction(accrual_dates, day_count)
+    discount_factors = discount_factor(rate_curve, fixing_dates)
     discount_factor_ratios = map(x -> discount_factors[x+1] / discount_factors[x], 1:length(discount_factors)-1)
     forward_rates_without_margin = calculate_forward_rate(discount_factor_ratios, year_fractions, rate_type)
     return apply_margin(forward_rates_without_margin, margin_config)
@@ -104,8 +106,8 @@ Calculates the forward rate based on a rate curve, a set of dates, and a rate co
 # Returns
 - The forward rate calculated by delegating to the appropriate method, using the rate configuration's `rate_type`, `day_count_convention`, and margin.
 """
-function calculate_forward_rate(rate_curve::RateCurve, dates::Vector{D}, rate_config::F) where {D<:TimeType, F <: FloatRateConfig}
-    return calculate_forward_rate(rate_curve, dates, rate_config.rate_type, rate_config.day_count_convention, rate_config.margin)
+function calculate_forward_rate(rate_curve::RateCurve, accrual_dates::Vector{D}, fixing_dates::Vector{D}, rate_config::F) where {D<:TimeType, F <: FloatRateConfig}
+    return calculate_forward_rate(rate_curve, accrual_dates, fixing_dates, rate_config.rate_type, rate_config.day_count_convention, rate_config.margin)
 end
 
 """
