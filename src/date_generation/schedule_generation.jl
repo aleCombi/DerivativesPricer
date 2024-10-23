@@ -79,7 +79,7 @@ end
 """
     generate_unadjusted_dates(start_date, end_date, stub_period::StubPeriod, period::P) where P <: Period
 
-Generates a stream of unadjusted dates according to the given period and stub period.
+Generates a stream of unadjusted dates according to the given period and stub period, going forward.
 
 # Arguments
 - `start_date`: The start date of the schedule.
@@ -90,20 +90,31 @@ Generates a stream of unadjusted dates according to the given period and stub pe
 # Returns
 - A stream of unadjusted dates.
 """
-function generate_unadjusted_dates(start_date, end_date, stub_period::StubPeriod, period::P) where P <: Period
-    if isa(stub_period.position, InArrearsStubPosition)
+function generate_unadjusted_dates(start_date, end_date, stub_period::StubPeriod{InArrearsStubPosition, L}, period::P) where {P <: Period, L}
         dates = start_date:period:(end_date - period) |> collect
         push!(dates, end_date)  # Add the end date eagerly
         return dates
-    elseif isa(stub_period.position, UpfrontStubPosition)
+end
+
+"""
+    generate_unadjusted_dates(start_date, end_date, stub_period::StubPeriod, period::P) where P <: Period
+
+Generates a stream of unadjusted dates according to the given period and stub period, going backward.
+
+# Arguments
+- `start_date`: The start date of the schedule.
+- `end_date`: The end date of the schedule.
+- `stub_period::StubPeriod`: The stub period configuration.
+- `period::P`: The period.
+
+# Returns
+- A stream of unadjusted dates.
+"""
+function generate_unadjusted_dates(start_date, end_date, stub_period::StubPeriod{UpfrontStubPosition, L}, period::P) where {P <: Period, L}
         dates = end_date:-period:(start_date + period) |> collect
         push!(dates, start_date)  # Add the start date eagerly
         return reverse(dates)  # Reverse the array to get the correct order
-    else
-        throw(ArgumentError("Invalid stub period position."))
-    end
 end
-
 
 """
     generate_unadjusted_dates(start_date, end_date, schedule_config::S) where S <: AbstractScheduleConfig
