@@ -35,3 +35,13 @@ end
     @test date_correction_fn(Date(2023, 1, 7)) == Date(2023, 1, 9)  # Assuming weekend moves to Monday
 end
 
+# Test 2: Test generation of end dates from start dates
+@testitem "Date Correction Tests" setup=[ScheduleGeneration] begin
+    start_dates = [Date(2023, 1, 1), Date(2023, 2, 1), Date(2023, 3, 1)] 
+    schedule_config = ScheduleConfig(Month(1), NoRollConvention(), ModifiedFollowing(), WeekendsOnly(), StubPeriod(UpfrontStubPosition(), ShortStubLength()))
+    
+    end_dates = generate_end_date(start_dates, schedule_config)
+    
+    # Test that date correction moves weekend dates to the next business day
+    @test end_dates == [Date(2023, 2, 1), Date(2023, 3, 1), Date(2023, 4, 3)]  # First of april is a saturday
+end

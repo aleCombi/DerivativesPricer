@@ -18,7 +18,7 @@ Roll convention that adjusts a date to the last day of the month.
 # Returns
 - The adjusted date as a `Date`.
 """
-function roll_date(date::Date, ::NoRollConvention)
+function roll_date(date, ::NoRollConvention)
     return date
 end
 
@@ -34,6 +34,6 @@ Roll convention that adjusts a date to the last day of the month.
 # Returns
 - The adjusted date as a `Date`.
 """
-function roll_date(date::Date, ::EOMRollConvention)
-    return lastdayofmonth(date)
+function roll_date(date, ::EOMRollConvention)
+    return lastdayofmonth.(date)
 end

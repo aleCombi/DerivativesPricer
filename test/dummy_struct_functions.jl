@@ -24,6 +24,10 @@ function DerivativesPricer.date_corrector(schedule_config::DummyScheduleConfig)
     return x -> x  # No adjustment
 end
 
+function DerivativesPricer.generate_end_date(start_date, schedule_config::DummyScheduleConfig)
+    return start_date .+ Month(6)  # No adjustment
+end
+
 function DerivativesPricer.termination_date_corrector(schedule_config::DummyScheduleConfig)
     return x -> x  # No adjustment
 end

@@ -183,4 +183,19 @@ function generate_schedule(start_date, end_date, schedule_config::S) where S <: 
     return generate_schedule(generate_unadjusted_dates(start_date, end_date, schedule_config), schedule_config)
 end
 
-# TODO: add a function the get end dates from a set of start dates
+"""
+    generate_end_date(start_date::D, schedule_config::S) where {D<:TimeType, S<:AbstractScheduleConfig}
+
+Generate the end date of a rate period given the schedule configuration and the start date.
+
+# Arguments
+- `start_date`: The start date of the schedule.
+- `schedule_config::S`: The schedule configuration.
+
+# Returns
+- Shifted, adjusted and rolled date.
+"""
+function generate_end_date(start_date, schedule_config::S) where {S<:AbstractScheduleConfig}
+    corrector = date_corrector(schedule_config)
+    return corrector.(start_date .+ schedule_config.period)
+end

@@ -19,4 +19,4 @@ export
     InstrumentSchedule, AbstractInstrumentSchedule,
     # date_generation/schedule_generation.jl
     AbstractScheduleConfig, ScheduleConfig, date_corrector, generate_unadjusted_dates, generate_schedule, date_corrector,
-    StubPosition, UpfrontStubPosition, InArrearsStubPosition, StubLength, ShortStubLength, LongStubLength, StubPeriod
+    StubPosition, UpfrontStubPosition, InArrearsStubPosition, StubLength, ShortStubLength, LongStubLength, StubPeriod, generate_end_date

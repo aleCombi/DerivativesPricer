@@ -18,7 +18,7 @@ end
 @testitem "forward_rates" begin
     include("discount_pricing_setup.jl")
     # Calculate forward rates
-    fwd_rates = calculate_forward_rate(rate_curve, dates, dates, LinearRate(), ACT360())
+    fwd_rates = calculate_forward_rate(rate_curve, dates, dates[1:end-1], dates[2:end], LinearRate(), ACT360())
 
     # Expected forward rates
     expected_fwd_rates = [(0.90 / 0.95 - 1) / 181 * 360, (0.85 / 0.90 - 1) / 184 * 360]
@@ -36,7 +36,7 @@ end
     rate_convention = DummyRateType()
     schedule_config = DummyScheduleConfig() # this daycount convention makes every period count as 0.25
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
-    rate_config = SimpleRateConfig(DummyDayCountConvention(), LinearRate(), NoShift(), AdditiveMargin(0))
+    rate_config = SimpleRateConfig(DummyDayCountConvention(), LinearRate(), NoShift(false), AdditiveMargin(0))
     instrument_rate = FloatRate(rate_index, rate_config)
     stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
     stream = FloatingRateStream(stream_config)
