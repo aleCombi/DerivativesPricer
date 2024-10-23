@@ -22,5 +22,3 @@ The library has Symbolics.jl as a dependency with the purpose of running calcula
 - Develop a calibration routine for a single curve.
 - Setup for MultiCurve pricing in a single currency.
 - Proper testing and benchmarking with Quantlib.py. (See Issue [#2](#2))
-- Setup Documenter.jl (See Issue [#1](#1))
-
