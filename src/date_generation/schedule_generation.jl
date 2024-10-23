@@ -37,37 +37,13 @@ struct ScheduleConfig{P <: Period, R <: RollConvention, B <: BusinessDayConventi
 
     # Constructor with default values
     function ScheduleConfig(period::P,
-                   roll_convention = NoRollConvention(),
-                   business_days_convention = NoneBusinessDayConvention(),
-                   termination_bd_convention = NoneBusinessDayConvention(),
-                   calendar = NoHolidays(),
-                   stub_period = StubPeriod()) where P<:Period
-        return new{P, typeof(roll_convention), typeof(business_days_convention), typeof(termination_bd_convention), typeof(calendar)}(
-            period, roll_convention, business_days_convention, termination_bd_convention, calendar, stub_period)
+                   roll_convention::R = NoRollConvention(),
+                   business_days_convention::B = NoneBusinessDayConvention(),
+                   calendar::C = NoHolidays(),
+                   stub_period::StubPeriod = StubPeriod();
+                   termination_bd_convention::D = NoneBusinessDayConvention()) where {P <: Period, R <: RollConvention, B <: BusinessDayConvention, D <: BusinessDayConvention, C <: HolidayCalendar}
+        return new{P, R, B, D, C}(period, roll_convention, business_days_convention, termination_bd_convention, calendar, stub_period)
     end
-end
-
-"""
-    ScheduleConfig(period::P, roll_convention::R, business_days_convention::B, calendar::C, stub_period::StubPeriod) -> ScheduleConfig
-
-Alternate constructor for `ScheduleConfig` with customizable period, roll convention, business day convention, calendar, and stub period.
-
-# Arguments
-- `period::P`: The period.
-- `roll_convention::R`: The roll convention.
-- `business_days_convention::B`: The business day convention.
-- `calendar::C`: The holiday calendar.
-- `stub_period::StubPeriod`: The stub period configuration.
-
-# Returns
-- A `ScheduleConfig` object.
-"""
-function ScheduleConfig(period::P,
-    roll_convention::R = NoRollConvention(),
-    business_days_convention::B = NoneBusinessDayConvention(),
-    calendar::C = NoHolidays(),
-    stub_period::StubPeriod = StubPeriod()) where {P <:Period, R <: RollConvention, B <: BusinessDayConvention, C <: HolidayCalendar}
-    return ScheduleConfig(period, roll_convention, business_days_convention, business_days_convention, calendar, stub_period)
 end
 
 """
