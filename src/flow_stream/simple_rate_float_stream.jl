@@ -22,7 +22,7 @@ between accrual periods using the specified day count convention, and initialize
 # Example
 """ 
 
-function SimpleRateStreamSchedules(stream_config::FlowStreamConfig{P,FloatRate{A, SimpleRateConfig{T1, T2, T3, T4}},S}) where {P,A,S,T1, T2, T3, T4}
+function SimpleRateStreamSchedules(stream_config::FlowStreamConfig{P,SimpleInstrumentRate,S}) where {P,S}
     accrual_dates = generate_schedule(stream_config.schedule)
     pay_dates = relative_schedule(accrual_dates, stream_config.schedule.pay_shift)
     fixing_dates = relative_schedule(accrual_dates, stream_config.rate.rate_config.fixing_shift)
@@ -50,11 +50,11 @@ and the calculated day counts for each period.
 - `accrual_dates::Vector{D}`: A vector of accrual period start dates.
 - `accrual_day_counts::Vector{T}`: A vector of calculated day counts for each accrual period.
 """
-struct SimpleFloatRateStream{P,A,S,T1,T2,T3,T4} <: FlowStream where {P,A,S,T1,T2,T3,T4}
-    config::FlowStreamConfig{P,FloatRate{A, SimpleRateConfig{T1,T2,T3,T4}},S}
+struct SimpleFloatRateStream{P,S} <: FlowStream where {P,S}
+    config::FlowStreamConfig{P,SimpleInstrumentRate,S}
     schedules::SimpleRateStreamSchedules
 end
 
-function SimpleFloatRateStream(config::FlowStreamConfig{P,FloatRate{A, SimpleRateConfig{T1,T2,T3,T4}},S}) where {P,A,S,T1,T2,T3,T4}
+function SimpleFloatRateStream(config::FlowStreamConfig{P,SimpleInstrumentRate,S}) where {P,S}
     return SimpleFloatRateStream(config, SimpleRateStreamSchedules(config))
 end

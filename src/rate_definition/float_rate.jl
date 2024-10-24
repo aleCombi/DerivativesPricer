@@ -69,18 +69,7 @@ struct CompoundRateConfig{D<:DayCount, L<:RateType, C<:AbstractShift, S<:Abstrac
     margin::M
 end
 
-"""
-    FloatRate{V<:AbstractRateIndex, R<:AbstractRateConfig} <: AbstractInstrumentRate
-
-A concrete type representing a floating-rate applied to an instrument, parameterized by the rate index `V` and rate configuration `R`.
-
-# Fields
-- `rate_index::V`: The rate index used (e.g., LIBOR, EURIBOR, SOFR).
-- `rate_config::R`: The configuration of the floating rate (e.g., day count convention, fixing shift, margin).
-"""
-struct FloatRate{V<:AbstractRateIndex, R<:AbstractRateConfig} <: AbstractInstrumentRate
-    rate_index::V
-    rate_config::R
+struct SimpleInstrumentRate <: AbstractInstrumentRate
+    rate_index::RateIndex
+    rate_config::SimpleRateConfig
 end
-
-# struct SimpleFloatRate{} <: 
