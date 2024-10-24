@@ -87,7 +87,7 @@ function calculate_forward_rate(rate_curve::RateCurve, accrual_dates::Vector{D},
     year_fractions = day_count_fraction(accrual_dates, day_count)
     end_discount_factors = discount_factor(rate_curve, fixing_end_dates)
     start_discount_factors = discount_factor(rate_curve, fixing_dates)
-    discount_factor_ratios = end_discount_factors ./ start_discount_factors
+    discount_factor_ratios =  start_discount_factors ./ end_discount_factors
     forward_rates_without_margin = calculate_forward_rate(discount_factor_ratios, year_fractions, rate_type)
     return apply_margin(forward_rates_without_margin, margin_config)
 end

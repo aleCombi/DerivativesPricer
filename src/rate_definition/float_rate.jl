@@ -63,7 +63,7 @@ Ensure the compounding schedule is compatible with the accrual schedule.
 """
 struct CompoundRateConfig{D<:DayCount, L<:RateType, C<:AbstractShift, S<:AbstractScheduleConfig, M<:CompoundMargin} <: FloatRateConfig
     day_count_convention::D
-    rate_convention::L
+    rate_type::L
     fixing_shift::C
     compound_schedule::S
     margin::M
