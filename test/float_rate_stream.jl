@@ -17,7 +17,7 @@
     stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
 
     # Create the floating rate stream
-    stream = FloatingRateStream(stream_config)
+    stream = SimpleFloatRateStream(stream_config)
 
     # Check if the generated accrual dates are correct
     expected_dates = collect(start_date:Month(6):end_date)

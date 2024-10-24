@@ -83,12 +83,11 @@ Calculate the forward rates between the dates using a given curve, dates and app
 TODO: Mathematical approximation?
 TODO: add sensible defaults.
 """
-function calculate_forward_rate(rate_curve::RateCurve, accrual_dates::Vector{D}, fixing_dates::Vector{D}, fixing_end_dates::Vector{D}, rate_type::R, day_count::C, margin_config::M=AdditiveMargin(0)) where {D<:TimeType, M<:MarginConfig, R<:RateType, C<:DayCount}
-    year_fractions = day_count_fraction(accrual_dates, day_count)
-    end_discount_factors = discount_factor(rate_curve, fixing_end_dates)
-    start_discount_factors = discount_factor(rate_curve, fixing_dates)
+function calculate_forward_rate(rate_curve::RateCurve, schedules::SimpleRateStreamSchedules, rate_type::R, margin_config::M=AdditiveMargin(0)) where {D<:TimeType, M<:MarginConfig, R<:RateType, C<:DayCount}
+    end_discount_factors = discount_factor(rate_curve, schedules.discount_end_dates)
+    start_discount_factors = discount_factor(rate_curve, schedules.discount_start_dates)
     discount_factor_ratios =  start_discount_factors ./ end_discount_factors
-    forward_rates_without_margin = calculate_forward_rate(discount_factor_ratios, year_fractions, rate_type)
+    forward_rates_without_margin = calculate_forward_rate(discount_factor_ratios, schedules.accrual_day_counts, rate_type)
     return apply_margin(forward_rates_without_margin, margin_config)
 end
 
@@ -105,8 +104,12 @@ Calculates the forward rate based on a rate curve, a set of dates, and a rate co
 # Returns
 - The forward rate calculated by delegating to the appropriate method, using the rate configuration's `rate_type`, `day_count_convention`, and margin.
 """
-function calculate_forward_rate(rate_curve::RateCurve, accrual_dates::Vector{D}, fixing_dates::Vector{D}, fixing_end_dates::Vector{D}, rate_config::F) where {D<:TimeType, F <: FloatRateConfig}
-    return calculate_forward_rate(rate_curve, accrual_dates, fixing_dates, fixing_end_dates, rate_config.rate_type, rate_config.day_count_convention, rate_config.margin)
+function calculate_forward_rate(rate_curve::RateCurve, schedules::SimpleRateStreamSchedules, rate_config::SimpleRateConfig)
+    end_discount_factors = discount_factor(rate_curve, schedules.discount_end_dates)
+    start_discount_factors = discount_factor(rate_curve, schedules.discount_start_dates)
+    discount_factor_ratios =  start_discount_factors ./ end_discount_factors
+    forward_rates_without_margin = calculate_forward_rate(discount_factor_ratios, schedules.accrual_day_counts, rate_config.rate_type)
+    return apply_margin(forward_rates_without_margin, rate_config.margin)
 end
 
 """

@@ -18,8 +18,10 @@ end
 @testitem "forward_rates" begin
     include("discount_pricing_setup.jl")
 
+    rate_config = SimpleRateConfig(ACT360(), LinearRate(), NoShift(), AdditiveMargin(0))
+    schedules = SimpleRateStreamSchedules(dates[2:end], dates[1:end-1], dates[1:end-1], dates[2:end], dates, rate_config.day_count_convention)
     # Calculate forward rates
-    fwd_rates = calculate_forward_rate(rate_curve, dates, dates[1:end-1], dates[2:end], LinearRate(), ACT360())
+    fwd_rates = calculate_forward_rate(rate_curve, schedules, rate_config)
 
     # Expected forward rates
     expected_fwd_rates = [(0.95 / 0.90 - 1) / 181 * 360, (0.90 / 0.85 - 1) / 184 * 360]
@@ -40,7 +42,7 @@ end
     rate_config = SimpleRateConfig(ACT365(), LinearRate(), NoShift(false), AdditiveMargin(0))
     instrument_rate = FloatRate(rate_index, rate_config)
     stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
-    stream = FloatingRateStream(stream_config)
+    stream = SimpleFloatRateStream(stream_config)
     print(stream.schedules.pay_dates)
     # Calculate the price
     price = price_float_rate_stream(stream, rate_curve)

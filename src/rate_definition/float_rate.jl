@@ -82,3 +82,5 @@ struct FloatRate{V<:AbstractRateIndex, R<:AbstractRateConfig} <: AbstractInstrum
     rate_index::V
     rate_config::R
 end
+
+# struct SimpleFloatRate{} <: 

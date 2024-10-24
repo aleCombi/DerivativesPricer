@@ -28,7 +28,7 @@ Calculates the expectation of the floating interest rate flows under the forward
 # Returns
 - The list of expected future cash flows.
 """
-function calculate_expected_flows(stream::FloatingRateStream, forward_rates)
+function calculate_expected_flows(stream::SimpleFloatRateStream, forward_rates)
     return calculate_interest(stream.config.principal, forward_rates, stream.schedules.accrual_day_counts, stream.config.rate.rate_config.rate_type)
 end
 
@@ -45,13 +45,13 @@ for each accrual period, discounts the cash flows using the discount factors fro
 # Returns
 - The price of the floating-rate stream of cash flows.
 """
-function price_float_rate_stream(stream::FloatingRateStream, rate_curve::RateCurve)
+function price_float_rate_stream(stream::SimpleFloatRateStream, rate_curve::RateCurve)
     forward_rates = calculate_forward_rate(stream, rate_curve)
     discount_factors = discount_factor(rate_curve, stream.schedules.pay_dates)
     flows = calculate_expected_flows(stream, forward_rates)
     return sum(discount_factors .* flows)
 end
 
-function calculate_forward_rate(stream::FloatingRateStream, rate_curve::RateCurve)
-    return calculate_forward_rate(rate_curve, stream.schedules.accrual_dates, stream.schedules.discount_start_dates, stream.schedules.discount_end_dates, stream.config.rate.rate_config)
+function calculate_forward_rate(stream::SimpleFloatRateStream, rate_curve::RateCurve)
+    return calculate_forward_rate(rate_curve, stream.schedules, stream.config.rate.rate_config)
 end
