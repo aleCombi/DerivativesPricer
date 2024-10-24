@@ -27,6 +27,40 @@ struct FlowStreamConfig{P<:Number, R<:AbstractInstrumentRate, S<:AbstractInstrum
     schedule::S
 end
 
+struct FloatingStreamSchedules{D, T}
+    pay_dates::Vector{D}
+    fixing_dates::Vector{D}
+    discount_start_dates::Vector{D}
+    discount_end_dates::Vector{D}
+    accrual_dates::Vector{D}
+    accrual_day_counts::Vector{T}
+end
+
+"""
+    FloatRateStream(stream_config::FloatRateStreamConfig) -> FloatingRateStream
+
+Creates a `FloatingRateStream` from a given `FloatRateStreamConfig`. This function generates the accrual schedule, calculates the time fractions
+between accrual periods using the specified day count convention, and initializes the floating-rate stream.
+
+# Arguments
+- `stream_config::FloatRateStreamConfig`: The configuration specifying the parameters for the floating-rate stream.
+
+# Returns
+- A `FloatingRateStream` containing the payment dates, accrual dates, fixing dates, and day counts.
+
+# Example
+""" 
+
+function FloatingStreamSchedules(stream_config::FlowStreamConfig{P,F,S}) where {P,F<:FloatRate,S}
+    accrual_dates = generate_schedule(stream_config.schedule)
+    pay_dates = relative_schedule(accrual_dates, stream_config.schedule.pay_shift)
+    accrual_day_counts = day_count_fraction(accrual_dates, stream_config.rate.rate_config.day_count_convention)
+    fixing_dates = relative_schedule(accrual_dates, stream_config.rate.rate_config.fixing_shift)
+    discount_start_dates = fixing_dates
+    discount_end_dates = generate_end_date(fixing_dates, stream_config.schedule.schedule_config)
+    return FloatingStreamSchedules(pay_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, accrual_day_counts)
+end
+
 """
     FlowStream
 
@@ -47,37 +81,13 @@ and the calculated day counts for each period.
 - `accrual_dates::Vector{D}`: A vector of accrual period start dates.
 - `accrual_day_counts::Vector{T}`: A vector of calculated day counts for each accrual period.
 """
-struct FloatingRateStream{D, T} <: FlowStream
+struct FloatingRateStream <: FlowStream
     config::FlowStreamConfig
-    pay_dates::Vector{D}
-    fixing_dates::Vector{D}
-    fixing_end_dates::Vector{D}
-    accrual_dates::Vector{D}
-    accrual_day_counts::Vector{T}
+    schedules::FloatingStreamSchedules
 end
 
-"""
-    FloatRateStream(stream_config::FloatRateStreamConfig) -> FloatingRateStream
-
-Creates a `FloatingRateStream` from a given `FloatRateStreamConfig`. This function generates the accrual schedule, calculates the time fractions
-between accrual periods using the specified day count convention, and initializes the floating-rate stream.
-
-# Arguments
-- `stream_config::FloatRateStreamConfig`: The configuration specifying the parameters for the floating-rate stream.
-
-# Returns
-- A `FloatingRateStream` containing the payment dates, accrual dates, fixing dates, and day counts.
-
-# Example
-""" 
-
-function FloatingRateStream(stream_config::FlowStreamConfig{P,F,S}) where {P,F<:FloatRate,S}
-    accrual_dates = generate_schedule(stream_config.schedule)
-    pay_dates = relative_schedule(accrual_dates, stream_config.schedule.pay_shift)
-    accrual_day_counts = day_count_fraction(accrual_dates, stream_config.rate.rate_config.day_count_convention)
-    fixing_dates = relative_schedule(accrual_dates, stream_config.rate.rate_config.fixing_shift)
-    fixing_end_dates = generate_end_date(fixing_dates, stream_config.schedule.schedule_config)
-    return FloatingRateStream(stream_config, pay_dates, fixing_dates, fixing_end_dates, accrual_dates, accrual_day_counts)
+function FloatingRateStream(config::FlowStreamConfig)
+    return FloatingRateStream(config, FloatingStreamSchedules(config))
 end
 
 """

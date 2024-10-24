@@ -41,7 +41,7 @@ end
     instrument_rate = FloatRate(rate_index, rate_config)
     stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
     stream = FloatingRateStream(stream_config)
-    print(stream.pay_dates)
+    print(stream.schedules.pay_dates)
     # Calculate the price
     price = price_float_rate_stream(stream, rate_curve)
 
