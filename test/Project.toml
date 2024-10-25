@@ -1,5 +1,6 @@
 [deps]
 BusinessDays = "4f18b42c-503e-5345-9536-bb0f25fc7038"
+Coverage = "a2441757-f6aa-5fb2-8edb-039e3f45d037"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DerivativesPricer = "265bde8e-a8a2-4012-a19c-337de8aac561"
 Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
