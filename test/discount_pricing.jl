@@ -19,7 +19,8 @@ end
     include("discount_pricing_setup.jl")
 
     rate_config = SimpleRateConfig(ACT360(), LinearRate(), NoShift(), AdditiveMargin(0))
-    schedules = SimpleRateStreamSchedules(dates[2:end], dates[1:end-1], dates[1:end-1], dates[2:end], dates, rate_config.day_count_convention)
+    day_counts = day_count_fraction(dates, rate_config.day_count_convention)
+    schedules = SimpleRateStreamSchedules(dates[2:end], dates[1:end-1], dates[1:end-1], dates[2:end], dates, day_counts)
     # Calculate forward rates
     fwd_rates = calculate_forward_rate(rate_curve, schedules, rate_config)
 
