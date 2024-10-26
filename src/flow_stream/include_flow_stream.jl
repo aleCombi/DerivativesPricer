@@ -9,4 +9,6 @@ export
     # fixed_rate_stream.jl
     FixedRateStream,
     # simple_rate_float_stream.jl
-    SimpleRateStreamSchedules, SimpleFloatRateStream
+    SimpleRateStreamSchedules, SimpleFloatRateStream,
+    # compound_rate_float_stream.jl
+    CompoundedRateStreamSchedules

@@ -9,6 +9,6 @@ export
     # fixed_rate.jl
     FixedRateConfig, FixedRate,
     # float_rate.jl
-    AbstractRateIndex, RateIndex, FloatRateConfig, SimpleRateConfig, CompoundRateConfig, SimpleInstrumentRate,
+    AbstractRateIndex, RateIndex, FloatRateConfig, SimpleRateConfig, CompoundRateConfig, SimpleInstrumentRate, CompoundInstrumentRate,
     # margin.jl
     AdditiveMargin, MultiplicativeMargin
