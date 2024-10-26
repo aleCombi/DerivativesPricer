@@ -1,7 +1,13 @@
-struct CompoundedRateStreamSchedules{D, A, B}
+struct CompoundedRateStreamSchedules{D, A, B, N}
     pay_dates::Vector{D}
     compounding_schedules::Vector{SimpleRateStreamSchedules{A,B}}
+    accrual_day_counts::Vector{N}
     #this schedules also define pay dates which dont have a meaning in this context
+end
+
+function CompoundedRateStreamSchedules(pay_dates::Vector{D}, compounding_schedules::Vector{SimpleRateStreamSchedules{A,B}}) where {D,A,B}
+    accrual_day_counts = [sum(schedule.accrual_day_counts) for schedule in compounding_schedules]
+    return CompoundedRateStreamSchedules(pay_dates, compounding_schedules, accrual_day_counts)
 end
 
 function CompoundedRateStreamSchedules(stream_config::FlowStreamConfig{P,CompoundInstrumentRate,S}) where {P,S}
@@ -18,5 +24,5 @@ struct CompoundFloatRateStream{P,S} <: FlowStream where {P,S}
 end
 
 function CompoundFloatRateStream(stream_config::FlowStreamConfig{P,CompoundInstrumentRate,S}) where {P,S}
-    return CompoundedRateStreamSchedules(stream_config, CompoundedRateStreamSchedules(stream_config))
+    return CompoundFloatRateStream(stream_config, CompoundedRateStreamSchedules(stream_config))
 end

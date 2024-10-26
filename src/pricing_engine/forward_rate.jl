@@ -83,7 +83,7 @@ Calculate the forward rates between the dates using a given curve, dates and app
 TODO: Mathematical approximation?
 TODO: add sensible defaults.
 """
-function calculate_forward_rate(rate_curve::A, schedules::SimpleRateStreamSchedules, rate_type::R, margin_config::M=AdditiveMargin(0)) where {D<:TimeType, M<:MarginConfig, R<:RateType, C<:DayCount, A<:AbstractRateCurve}
+function calculate_forward_rate(rate_curve::A, schedules::SimpleRateStreamSchedules, rate_type::R, margin_config::M=AdditiveMargin(0)) where {M<:MarginConfig, R<:RateType, A<:AbstractRateCurve}
     end_discount_factors = discount_factor(rate_curve, schedules.discount_end_dates)
     start_discount_factors = discount_factor(rate_curve, schedules.discount_start_dates)
     discount_factor_ratios =  start_discount_factors ./ end_discount_factors
@@ -105,7 +105,7 @@ Calculates the forward rate based on a rate curve, a set of dates, and a rate co
 - The forward rate calculated by delegating to the appropriate method, using the rate configuration's `rate_type`, `day_count_convention`, and margin.
 """
 function calculate_forward_rate(rate_curve::C, schedules::SimpleRateStreamSchedules, rate_config::SimpleRateConfig) where C<:AbstractRateCurve
-    return calculate_forward_rate(rate_curve, schedule, rate_config.rate_type, rate_config.margin)
+    return calculate_forward_rate(rate_curve, schedules, rate_config.rate_type, rate_config.margin)
 end
 
 function calculate_forward_rate(rate_curve::C, schedules::SimpleRateStreamSchedules, rate_type::R, margin::M) where {R<:RateType, M<:MarginConfig, C<:AbstractRateCurve}
@@ -137,15 +137,12 @@ function calculate_forward_rate(rate_curve::R, schedules::CompoundedRateStreamSc
         error("Not implemented margin on underlying coumpounded rates")
     end
     interest_accruals = []
-    year_fractions = []
     for i in 1:length( schedules.compounding_schedules)
         forward_rates = calculate_forward_rate(rate_curve, schedules.compounding_schedules[i], rate_config.rate_type, rate_config.margin.margin_config)
         compound_factors = 1 ./ discount_interest(forward_rates, schedules.compounding_schedules[i].accrual_day_counts, rate_config.rate_type)
         interest_accrual = prod(compound_factors) 
-        year_fraction = sum(schedules.compounding_schedules[i].accrual_day_counts)
         push!(interest_accruals, interest_accrual)
-        push!(year_fractions, year_fraction)
     end
 
-    return calculate_forward_rate(interest_accruals, year_fractions, rate_config.rate_type)
+    return calculate_forward_rate(interest_accruals, schedules.accrual_day_counts, rate_config.rate_type)
 end
