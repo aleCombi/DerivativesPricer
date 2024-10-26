@@ -6,7 +6,7 @@
 
     start_date = Date(2019, 6, 27)
     end_date = Date(2029, 6, 27)
-    schedule_config = ScheduleConfig(Year(1), NoRollConvention(), ModifiedFollowing(), BusinessDays.TARGET(), StubPeriod())
+    schedule_config = ScheduleConfig(Year(1); business_days_convention=ModifiedFollowing(), calendar=BusinessDays.TARGET())
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
     generate_schedule(instrument_schedule)
 

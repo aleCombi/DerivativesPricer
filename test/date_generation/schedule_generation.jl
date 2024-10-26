@@ -15,7 +15,7 @@ end
     stub_period = StubPeriod(InArrearsStubPosition(), ShortStubLength())
     
     # Create a ScheduleConfig
-    schedule_config = ScheduleConfig(period, roll_convention, business_days_convention, calendar, stub_period)
+    schedule_config = ScheduleConfig(period; roll_convention=roll_convention, business_days_convention=business_days_convention, calendar=calendar, stub_period=stub_period)
     
     # Assert that the schedule config was created correctly
     @test schedule_config.period == period
@@ -27,7 +27,8 @@ end
 # Test 2: Test date correction logic
 @testitem "Date Correction Tests" setup=[ScheduleGeneration] begin
     start_date = Date(2023, 1, 1)
-    schedule_config = ScheduleConfig(Month(1), NoRollConvention(), ModifiedFollowing(), WeekendsOnly(), StubPeriod(UpfrontStubPosition(), ShortStubLength()))
+    stub_period = StubPeriod(UpfrontStubPosition(), ShortStubLength())
+    schedule_config = ScheduleConfig(Month(1), business_days_convention=ModifiedFollowing(), calendar=WeekendsOnly(), stub_period=stub_period)
     
     date_correction_fn = date_corrector(schedule_config)
     
@@ -38,7 +39,8 @@ end
 # Test 2: Test generation of end dates from start dates
 @testitem "Date Correction Tests" setup=[ScheduleGeneration] begin
     start_dates = [Date(2023, 1, 1), Date(2023, 2, 1), Date(2023, 3, 1)] 
-    schedule_config = ScheduleConfig(Month(1), NoRollConvention(), ModifiedFollowing(), WeekendsOnly(), StubPeriod(UpfrontStubPosition(), ShortStubLength()))
+    stub_period = StubPeriod(UpfrontStubPosition(), ShortStubLength())
+    schedule_config = ScheduleConfig(Month(1), business_days_convention=ModifiedFollowing(), calendar=WeekendsOnly(), stub_period=stub_period)
     
     end_dates = generate_end_date(start_dates, schedule_config)
     

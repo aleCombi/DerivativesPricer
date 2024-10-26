@@ -12,12 +12,11 @@ principal = 1
 day_count_convention = ACT360()
 rate_type = LinearRate()
 fixing_shift = NoShift()
-compound_schedule = ScheduleConfig(Month(1), NoRollConvention(), NoneBusinessDayConvention(), BusinessDays.TARGET(), StubPeriod())
+compound_schedule = ScheduleConfig(Month(1))
 compound_margin = DerivativesPricer.MarginOnCompoundedRate(AdditiveMargin(0))
 rate_config = CompoundRateConfig(day_count_convention, rate_type, fixing_shift, compound_schedule, compound_margin)
 instrument_rate = DerivativesPricer.CompoundInstrumentRate(rate_index, rate_config)
-main_schedule = ScheduleConfig(Year(1), NoRollConvention(), NoneBusinessDayConvention(), BusinessDays.TARGET(), StubPeriod())
-instrument_schedule = InstrumentSchedule(start_date, end_date, main_schedule)
+instrument_schedule = InstrumentSchedule(start_date, end_date, Year(1))
 stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
 
 # schedule generation
