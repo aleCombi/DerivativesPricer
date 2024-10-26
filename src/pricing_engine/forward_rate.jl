@@ -131,7 +131,6 @@ end
 Calculate the forward rates between the provided dates using the given RateCurve, for a compounded floating rate with the selected compound margin convention.
 
 TODO:Mathematical approximation? Should this depend on the rate convention? 2 dispatches needed
-TODO:Implement this one.
 """
 function calculate_forward_rate(rate_curve::R, schedules::CompoundedRateStreamSchedules, rate_config::CompoundRateConfig) where R<:AbstractRateCurve
     if isa(rate_config.margin, MarginOnUnderlying)
