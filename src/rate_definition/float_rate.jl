@@ -73,3 +73,8 @@ struct SimpleInstrumentRate <: AbstractInstrumentRate
     rate_index::RateIndex
     rate_config::SimpleRateConfig
 end
+
+struct CompoundInstrumentRate <: AbstractInstrumentRate
+    rate_index::RateIndex
+    rate_config::CompoundRateConfig
+end
