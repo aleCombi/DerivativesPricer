@@ -23,19 +23,17 @@ between accrual periods using the specified day count convention, and initialize
 """ 
 
 function SimpleRateStreamSchedules(stream_config::FlowStreamConfig{P,SimpleInstrumentRate,S}) where {P,S}
-    accrual_dates = generate_schedule(stream_config.schedule)
-    pay_dates = relative_schedule(accrual_dates, stream_config.schedule.pay_shift)
-    fixing_dates = relative_schedule(accrual_dates, stream_config.rate.rate_config.fixing_shift)
+    return SimpleRateStreamSchedules(stream_config.schedule, stream_config.rate.rate_config)
+end
+
+function SimpleRateStreamSchedules(schedule::I, rate_config::R) where {I <: InstrumentSchedule, R<:FloatRateConfig}
+    accrual_dates = generate_schedule(schedule)
+    pay_dates = relative_schedule(accrual_dates, schedule.pay_shift)
+    fixing_dates = relative_schedule(accrual_dates, rate_config.fixing_shift)
     discount_start_dates = fixing_dates
-    discount_end_dates = generate_end_date(fixing_dates, stream_config.schedule.schedule_config)
-    return SimpleRateStreamSchedules(pay_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, stream_config.rate.rate_config.day_count_convention)
+    discount_end_dates = generate_end_date(fixing_dates, schedule.schedule_config)
+    return SimpleRateStreamSchedules(pay_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, rate_config.day_count_convention)
 end
-
-function SimpleRateStreamSchedules(pay_dates::Vector{D}, fixing_dates::Vector{D}, discount_start_dates::Vector{D}, discount_end_dates::Vector{D}, accrual_dates::Vector{D}, day_count_convention::C) where {C<:DayCount, D<:TimeType}
-    accrual_day_counts = day_count_fraction(accrual_dates, day_count_convention)
-    return SimpleRateStreamSchedules(pay_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, accrual_day_counts)
-end
-
 
 """
     FloatingRateStream{D, T} <: FlowStream
