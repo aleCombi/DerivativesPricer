@@ -18,10 +18,5 @@ struct CompoundFloatRateStream{P,S} <: FlowStream where {P,S}
 end
 
 function CompoundFloatRateStream(stream_config::FlowStreamConfig{P,CompoundInstrumentRate,S}) where {P,S}
-    accrual_dates = generate_schedule(stream_config.schedule)
-    pay_dates = relative_schedule(accrual_dates, stream_config.schedule.pay_shift)
-    fixing_dates = relative_schedule(accrual_dates, stream_config.rate.rate_config.fixing_shift)
-    discount_start_dates = fixing_dates
-    discount_end_dates = generate_end_date(fixing_dates, stream_config.schedule.schedule_config)
-    return SimpleRateStreamSchedules(pay_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, stream_config.rate.rate_config.day_count_convention)
+    return CompoundedRateStreamSchedules(stream_config, CompoundedRateStreamSchedules(stream_config))
 end
