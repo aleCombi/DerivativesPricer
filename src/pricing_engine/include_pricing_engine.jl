@@ -4,7 +4,7 @@ include("forward_rate.jl")
 
 export
     # rate_curves.jl
-    RateCurve, RateCurveInputs, create_rate_curve, discount_factor,
+    AbstractRateCurve, FlatRateCurve, RateCurve, RateCurveInputs, create_rate_curve, discount_factor,
     # discount_pricing.jl
     price_fixed_flows_stream, 
     # forward_rate.jl

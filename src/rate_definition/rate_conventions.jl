@@ -65,7 +65,7 @@ Discounts factor given a rate and time fraction in Linear mode.
 A set of discount factors.
 """
 function discount_interest(rate, time_fraction, ::LinearRate)
-    return 1 / (1 + rate .* time_fraction)
+    return 1 ./ (1 .+ rate .* time_fraction)
 end
 
 """

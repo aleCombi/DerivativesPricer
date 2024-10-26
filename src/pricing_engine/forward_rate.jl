@@ -83,7 +83,7 @@ Calculate the forward rates between the dates using a given curve, dates and app
 TODO: Mathematical approximation?
 TODO: add sensible defaults.
 """
-function calculate_forward_rate(rate_curve::RateCurve, schedules::SimpleRateStreamSchedules, rate_type::R, margin_config::M=AdditiveMargin(0)) where {D<:TimeType, M<:MarginConfig, R<:RateType, C<:DayCount}
+function calculate_forward_rate(rate_curve::A, schedules::SimpleRateStreamSchedules, rate_type::R, margin_config::M=AdditiveMargin(0)) where {D<:TimeType, M<:MarginConfig, R<:RateType, C<:DayCount, A<:AbstractRateCurve}
     end_discount_factors = discount_factor(rate_curve, schedules.discount_end_dates)
     start_discount_factors = discount_factor(rate_curve, schedules.discount_start_dates)
     discount_factor_ratios =  start_discount_factors ./ end_discount_factors
@@ -104,11 +104,11 @@ Calculates the forward rate based on a rate curve, a set of dates, and a rate co
 # Returns
 - The forward rate calculated by delegating to the appropriate method, using the rate configuration's `rate_type`, `day_count_convention`, and margin.
 """
-function calculate_forward_rate(rate_curve::RateCurve, schedules::SimpleRateStreamSchedules, rate_config::SimpleRateConfig)
+function calculate_forward_rate(rate_curve::C, schedules::SimpleRateStreamSchedules, rate_config::SimpleRateConfig) where C<:AbstractRateCurve
     return calculate_forward_rate(rate_curve, schedule, rate_config.rate_type, rate_config.margin)
 end
 
-function calculate_forward_rate(rate_curve::RateCurve, schedules::SimpleRateStreamSchedules, rate_type::R, margin::M) where {R<:RateType, M<:MarginConfig}
+function calculate_forward_rate(rate_curve::C, schedules::SimpleRateStreamSchedules, rate_type::R, margin::M) where {R<:RateType, M<:MarginConfig, C<:AbstractRateCurve}
     end_discount_factors = discount_factor(rate_curve, schedules.discount_end_dates)
     start_discount_factors = discount_factor(rate_curve, schedules.discount_start_dates)
     discount_factor_ratios =  start_discount_factors ./ end_discount_factors
@@ -133,13 +133,20 @@ Calculate the forward rates between the provided dates using the given RateCurve
 TODO:Mathematical approximation? Should this depend on the rate convention? 2 dispatches needed
 TODO:Implement this one.
 """
-function calculate_forward_rate(rate_curve::RateCurve, schedules::CompoundedRateStreamSchedules, rate_config::CompoundRateConfig)
+function calculate_forward_rate(rate_curve::R, schedules::CompoundedRateStreamSchedules, rate_config::CompoundRateConfig) where R<:AbstractRateCurve
     if isa(rate_config.margin, MarginOnUnderlying)
         error("Not implemented margin on underlying coumpounded rates")
     end
-    forward_rates = [calculate_forward_rate(rate_curve, schedules.compounding_schedules[i], rate_config.rate_type, rate_config.margin.margin_config) for i in 1:length(schedules.compounding_schedules)]
-    compound_factors = 1 ./ [discount_interest(forward_rates, schedules.compounding_schedules[i].accrual_day_counts, rate_config.rate_type) for i in 1:length(schedules.compounding_schedules)]
-    interest_accrual = Base.product(compound_factors)
-    year_fraction = sum([schedules.compounding_schedules[i].accrual_day_counts for i in 1:length(schedules.compounding_schedules)])
-    return calculate_forward_rate(interest_accrual, year_fraction, rate_type::Compounded)
+    interest_accruals = []
+    year_fractions = []
+    for i in 1:length( schedules.compounding_schedules)
+        forward_rates = calculate_forward_rate(rate_curve, schedules.compounding_schedules[i], rate_config.rate_type, rate_config.margin.margin_config)
+        compound_factors = 1 ./ discount_interest(forward_rates, schedules.compounding_schedules[i].accrual_day_counts, rate_config.rate_type)
+        interest_accrual = prod(compound_factors) 
+        year_fraction = sum(schedules.compounding_schedules[i].accrual_day_counts)
+        push!(interest_accruals, interest_accrual)
+        push!(year_fractions, year_fraction)
+    end
+
+    return calculate_forward_rate(interest_accruals, year_fractions, rate_config.rate_type)
 end
