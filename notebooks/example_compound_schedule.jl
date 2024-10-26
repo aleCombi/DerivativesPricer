@@ -5,8 +5,8 @@ using BusinessDays
 # example of the full pricing of a compounded rate stream.
 # some calculations are redundant for the sake of showing the intermediate results here
 # configuration
-start_date = Date(2022,1,1)
-end_date = Date(2025,1,1)
+start_date = Date(2022, 1, 1)
+end_date = Date(2025, 1, 1)
 rate_index = RateIndex("dummy rate index")
 principal = 1
 day_count_convention = ACT360()
@@ -36,5 +36,5 @@ stream = DerivativesPricer.CompoundFloatRateStream(stream_config)
 
 # pricing the stream
 forward_rates = calculate_forward_rate(rate_curve, schedules, rate_config)
-expected_flows = DerivativesPricer.calculate_expected_flows(stream,forward_rates)
+expected_flows = DerivativesPricer.calculate_expected_flows(stream, forward_rates)
 npv = price_float_rate_stream(stream, rate_curve)

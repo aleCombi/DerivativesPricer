@@ -38,12 +38,12 @@ end
 
 # Constructor with default values
 function ScheduleConfig(period::P;
-	roll_convention::R = NoRollConvention(),
-	business_days_convention::B = NoneBusinessDayConvention(),
-	calendar::C = NoHolidays(),
-	stub_period::StubPeriod = StubPeriod(),
-	termination_bd_convention::D = NoneBusinessDayConvention()) where {P <: Period, R <: RollConvention, B <: BusinessDayConvention, D <: BusinessDayConvention, C <: HolidayCalendar}
-	return ScheduleConfig(period, roll_convention, business_days_convention, termination_bd_convention, calendar, stub_period)
+    roll_convention::R=NoRollConvention(),
+    business_days_convention::B=NoneBusinessDayConvention(),
+    calendar::C=NoHolidays(),
+    stub_period::StubPeriod=StubPeriod(),
+    termination_bd_convention::D=NoneBusinessDayConvention()) where {P<:Period,R<:RollConvention,B<:BusinessDayConvention,D<:BusinessDayConvention,C<:HolidayCalendar}
+    return ScheduleConfig(period, roll_convention, business_days_convention, termination_bd_convention, calendar, stub_period)
 end
 
 """
