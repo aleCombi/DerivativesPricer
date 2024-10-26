@@ -49,7 +49,7 @@ parameterized by the margin configuration `M`.
   typically of type `AdditiveMargin` or `MultiplicativeMargin`.
 """
 struct MarginOnUnderlying{M<:MarginConfig} <: CompoundMargin
-    marginConfig::M
+    margin_config::M
 end
 
 """
@@ -63,7 +63,7 @@ parameterized by the margin configuration `M`.
   typically of type `AdditiveMargin` or `MultiplicativeMargin`.
 """
 struct MarginOnCompoundedRate{M<:MarginConfig} <: CompoundMargin
-    marginConfig::M
+    margin_config::M
 end
 
 """

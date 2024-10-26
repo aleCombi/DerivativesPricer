@@ -105,11 +105,15 @@ Calculates the forward rate based on a rate curve, a set of dates, and a rate co
 - The forward rate calculated by delegating to the appropriate method, using the rate configuration's `rate_type`, `day_count_convention`, and margin.
 """
 function calculate_forward_rate(rate_curve::RateCurve, schedules::SimpleRateStreamSchedules, rate_config::SimpleRateConfig)
+    return calculate_forward_rate(rate_curve, schedule, rate_config.rate_type, rate_config.margin)
+end
+
+function calculate_forward_rate(rate_curve::RateCurve, schedules::SimpleRateStreamSchedules, rate_type::R, margin::M) where {R<:RateType, M<:MarginConfig}
     end_discount_factors = discount_factor(rate_curve, schedules.discount_end_dates)
     start_discount_factors = discount_factor(rate_curve, schedules.discount_start_dates)
     discount_factor_ratios =  start_discount_factors ./ end_discount_factors
-    forward_rates_without_margin = calculate_forward_rate(discount_factor_ratios, schedules.accrual_day_counts, rate_config.rate_type)
-    return apply_margin(forward_rates_without_margin, rate_config.margin)
+    forward_rates_without_margin = calculate_forward_rate(discount_factor_ratios, schedules.accrual_day_counts, rate_type)
+    return apply_margin(forward_rates_without_margin, margin)
 end
 
 """
@@ -129,5 +133,13 @@ Calculate the forward rates between the provided dates using the given RateCurve
 TODO:Mathematical approximation? Should this depend on the rate convention? 2 dispatches needed
 TODO:Implement this one.
 """
-function calculate_forward_rate(rate_curve::RateCurve, dates::Vector{D}, day_count_convention::C, compound_margin::M) where {D<:TimeType, M<:CompoundMargin, C<:DayCount}
+function calculate_forward_rate(rate_curve::RateCurve, schedules::CompoundedRateStreamSchedules, rate_config::CompoundRateConfig)
+    if isa(rate_config.margin, MarginOnUnderlying)
+        error("Not implemented margin on underlying coumpounded rates")
+    end
+    forward_rates = [calculate_forward_rate(rate_curve, schedules.compounding_schedules[i], rate_config.rate_type, rate_config.margin.margin_config) for i in 1:length(schedules.compounding_schedules)]
+    compound_factors = 1 ./ [discount_interest(forward_rates, schedules.compounding_schedules[i].accrual_day_counts, rate_config.rate_type) for i in 1:length(schedules.compounding_schedules)]
+    interest_accrual = Base.product(compound_factors)
+    year_fraction = sum([schedules.compounding_schedules[i].accrual_day_counts for i in 1:length(schedules.compounding_schedules)])
+    return calculate_forward_rate(interest_accrual, year_fraction, rate_type::Compounded)
 end
