@@ -1,5 +1,3 @@
-using BusinessDays
-
 """
     NoHolidays <: HolidayCalendar
 

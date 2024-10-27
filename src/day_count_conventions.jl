@@ -69,7 +69,7 @@ Calculate the day count fraction between two dates using the ACT/365 convention.
 The day count fraction representing the fraction of a year between `start_date` and `end_date`, calculated by dividing the actual days between dates by 365.
 """
 function day_count_fraction(start_date, end_date, ::ACT365)
-    return Dates.value.(end_date .- start_date) / 365
+    return Dates.value.(end_date .- start_date) ./ 365
 end
 
 """
@@ -99,6 +99,8 @@ The day count is calculated as follows:
 - The number of months is the difference in months between the two dates.
 - The number of years is the difference in years between the two dates.
 - The day count is then calculated as `(years * 360 + months * 30 + days) / 360`.
+
+European convention: starting dates or ending dates that occur on the 31st of a month become equal to the 30th of the same month. Also known as "30E/360", or "Eurobond Basis".
 """
 struct Thirty360 <: DayCount end
 
@@ -115,10 +117,12 @@ Calculates the day count fraction between two dates according to the 30/360 conv
 # Returns
 - The day count fraction calculated according to the 30/360 convention.
 """
-function day_count_fraction(start_date, end_date, ::Thirty360)
-    year_diff = Dates.year(end_date) .- Dates.year(start_date)
-    month_diff = Dates.month(end_date) .- Dates.month(start_date)
-    day_diff = Dates.day(end_date) .- Dates.day(start_date)
+function day_count_fraction(start_date, end_date, ::Thirty360) 
+    year_diff = Dates.year.(end_date) .- Dates.year.(start_date)
+    month_diff = Dates.month.(end_date) .- Dates.month.(start_date)
+    adjusted_end_day = min.(Dates.day.(end_date), 30)
+    adjusted_start_day = min.(Dates.day.(start_date), 30)
+    day_diff = adjusted_end_day .- adjusted_start_day
     return (year_diff .* 360 .+ month_diff .* 30 .+ day_diff) ./ 360
 end
 

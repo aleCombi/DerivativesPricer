@@ -1,5 +1,7 @@
 module DerivativesPricer
 
+using BusinessDays, Dates
+
 # Include all the required files
 include("day_count_conventions.jl")
 include("date_generation/include_date_generation.jl")
