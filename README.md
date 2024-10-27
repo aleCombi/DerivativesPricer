@@ -1,6 +1,6 @@
-| **Test** | **Coverage** |
-|:--------:|:------------:|
-| [![Test Passing](https://github.com/aleCombi/DerivativesPricer/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/aleCombi/DerivativesPricer/actions) | [![Coverage Status](https://coveralls.io/repos/github/aleCombi/DerivativesPricer/badge.svg?branch=master&cache-control=no-cache)](https://coveralls.io/github/aleCombi/DerivativesPricer?branch=master) |
+| **Test** | **Coverage** | **License** |
+|:--------:|:------------:|:------------:|
+| [![Test Passing](https://github.com/aleCombi/DerivativesPricer/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/aleCombi/DerivativesPricer/actions) | [![Coverage Status](https://coveralls.io/repos/github/aleCombi/DerivativesPricer/badge.svg?branch=master&cache-control=no-cache)](https://coveralls.io/github/aleCombi/DerivativesPricer?branch=master) | [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This library aims at pricing linear interest rates (IR) derivatives using a multi-curve framework.
 
