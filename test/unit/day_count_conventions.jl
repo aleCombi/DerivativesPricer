@@ -5,6 +5,7 @@
 # ACT/360 Day Count Tests
 # This test set covers the ACT/360 day count convention. It calculates the day count fraction between two dates and verifies the results by comparing them with expected values.
 @testitem "ACT/360 Day Count Tests" begin
+    using Dates
     # Test for a full year (365 days)
     start_date = Dates.Date(2023, 1, 1)
     end_date = Date(2024, 1, 1)  # 365 days
