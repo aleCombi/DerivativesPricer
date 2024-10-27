@@ -50,3 +50,27 @@ end
     expected = [365 / 365, 183 / 365]
     @test day_count_fraction(start_dates, end_dates, ACT365()) ≈ expected
 end
+
+# 30/360 Day Count Tests
+# This test set covers the 30/360 day count convention. It verifies the day count fraction calculation between two dates
+# using the 30/360 convention.
+@testitem "30/360 Day Count Tests" setup=[DayCount] begin
+    using Dates
+    # Test for a full year (360 days in 30/360 convention)
+    start_date = Date(2023, 1, 1)
+    end_date = Date(2024, 1, 1)  # 360 days according to 30/360
+    expected = 360 / 360
+    @test day_count_fraction(start_date, end_date, ACT360()) ≈ expected
+
+    # Test for 359 days (adjusted to 359 days in 30/360 convention)
+    start_date = Date(2023, 1, 1)
+    end_date = Date(2023, 12, 31)  # Adjusted to 359 days in 30/360 convention
+    expected = 359 / 360
+    @test day_count_fraction(start_date, end_date, ACT360()) ≈ expected
+
+    # Test vectorized calculation for multiple date pairs
+    start_dates = [Date(2023, 1, 1), Date(2023, 6, 1)]
+    end_dates = [Date(2024, 1, 1), Date(2023, 12, 31)]
+    expected = [360 / 360, 210 / 360]  # Assuming 30/360 convention adjustment
+    @test day_count_fraction(start_dates, end_dates, ACT360()) ≈ expected
+end

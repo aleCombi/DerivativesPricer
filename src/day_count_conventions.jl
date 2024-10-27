@@ -90,7 +90,7 @@ function day_count_fraction(dates, ::ACT365)
 end
 
 """
-    DayCount30360 <: DayCount
+    Thirty360 <: DayCount
 
 Concrete type representing the 30/360 day count convention, where the number of days between two dates is calculated as the difference in days, months, and years, and then divided by 360.
 
@@ -100,22 +100,22 @@ The day count is calculated as follows:
 - The number of years is the difference in years between the two dates.
 - The day count is then calculated as `(years * 360 + months * 30 + days) / 360`.
 """
-struct DayCount30360 <: DayCount end
+struct Thirty360 <: DayCount end
 
 """
-    day_count_fraction(start_date::Date, end_date::Date, ::DayCount30360)
+    day_count_fraction(start_date::Date, end_date::Date, ::Thirty360)
 
 Calculates the day count fraction between two dates according to the 30/360 convention. The day count is calculated as the difference in days, months, and years between the two dates, divided by 360.
 
 # Arguments
 - `start_date`: The start date.
 - `end_date`: The end date.
-- `::DayCount30360`: The 30/360 convention type.
+- `::Thirty360`: The 30/360 convention type.
 
 # Returns
 - The day count fraction calculated according to the 30/360 convention.
 """
-function day_count_fraction(start_date, end_date, ::DayCount30360)
+function day_count_fraction(start_date, end_date, ::Thirty360)
     year_diff = Dates.year(end_date) .- Dates.year(start_date)
     month_diff = Dates.month(end_date) .- Dates.month(start_date)
     day_diff = Dates.day(end_date) .- Dates.day(start_date)
@@ -123,17 +123,17 @@ function day_count_fraction(start_date, end_date, ::DayCount30360)
 end
 
 """
-    day_count_fraction(dates, ::DayCount30360)
+    day_count_fraction(dates, ::Thirty360)
 
 Calculates the day count fractions between consecutive dates in a vector according to the 30/360 convention.
 
 # Arguments
 - `dates`: A vector of dates.
-- `::DayCount30360`: The 30/360 convention type.
+- `::Thirty360`: The 30/360 convention type.
 
 # Returns
 - A vector of day count fractions for each consecutive pair of dates, calculated according to the 30/360 convention.
 """
-function day_count_fraction(dates, ::DayCount30360)
-    return [day_count_fraction(dates[i], dates[i+1], DayCount30360()) for i in 1:length(dates)-1]
+function day_count_fraction(dates, ::Thirty360)
+    return [day_count_fraction(dates[i], dates[i+1], Thirty360()) for i in 1:length(dates)-1]
 end

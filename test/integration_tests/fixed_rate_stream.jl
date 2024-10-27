@@ -10,7 +10,7 @@
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
     generate_schedule(instrument_schedule)
 
-    day_count_convention = DayCount30360()
+    day_count_convention = Thirty360()
     principal = 41800000.0
     rate = 0.00184
     rate_config = FixedRateConfig(day_count_convention, LinearRate())

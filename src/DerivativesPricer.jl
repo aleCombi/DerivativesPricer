@@ -17,5 +17,5 @@ end
 # Remark: Exports of functions contained in sub-directories of src are contained in the include_%Folder file of each of the directories.
 export
     # day_count_conventions.jl
-    DayCount, ACT360, ACT365, DayCount30360, day_count_fraction
+    DayCount, ACT360, ACT365, Thirty360, day_count_fraction
 end
