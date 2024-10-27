@@ -4,21 +4,19 @@
 
 # ACT/360 Day Count Tests
 # This test set covers the ACT/360 day count convention. It calculates the day count fraction between two dates and verifies the results by comparing them with expected values.
-@testitem "ACT/360 Day Count Tests" begin
+@testitem "QuantLib ACT/360 Day Count Tests" begin
     using PyCall
-    @pyimport QuantLib
+    ql = pyimport("QuantLib")
     using Dates
     # Test for a full year (365 days)
     start_date = Dates.Date(2023, 1, 1)
     end_date = Date(2024, 1, 1)  # 365 days
     actual = day_count_fraction(start_date, end_date, ACT360())
 
-    ql_start = QuantLib.Date(1,1,2023)
-    ql_end = QuantLib.Date(1,1,2024)
-    day_count = QuantLib.Actual360()
+    ql_start = ql.Date(1,1,2023)
+    ql_end = ql.Date(1,1,2024)
+    day_count = ql.Actual360()
     expected = day_count.yearFraction(ql_start, ql_end)
-    println(expected)
-    println(actual)
     @test actual ≈ expected atol=1e-10
 
     # Test for 364 days
@@ -26,11 +24,9 @@
     end_date = Date(2023, 12, 31)  # 364 days
     actual = day_count_fraction(start_date, end_date, ACT360())
     
-    ql_start = QuantLib.Date(1,1,2023)
-    ql_end = QuantLib.Date(31,12,2023)
+    ql_start = ql.Date(1,1,2023)
+    ql_end = ql.Date(31,12,2023)
     expected = day_count.yearFraction(ql_start, ql_end)
-    println(expected)
-    println(actual)
 
     @test actual ≈ expected atol=1e-10
 
@@ -39,11 +35,9 @@
     end_dates = [Date(2024, 1, 1), Date(2023, 12, 31)]
     actual = day_count_fraction(start_dates, end_dates, ACT360())
 
-    ql_start = [QuantLib.Date(1,1,2023), QuantLib.Date(1,7,2023)]
-    ql_end = [QuantLib.Date(1,1,2024), QuantLib.Date(31,12,2023)]
+    ql_start = [ql.Date(1,1,2023), ql.Date(1,7,2023)]
+    ql_end = [ql.Date(1,1,2024), ql.Date(31,12,2023)]
     expected = [day_count.yearFraction(ql_start[i], ql_end[i]) for i in eachindex(ql_start)]
-    println(expected)
-    println(actual)
 
     @test actual ≈ expected atol=1e-10
 end

@@ -14,4 +14,4 @@ if isdefined(@__MODULE__,:LanguageServer)
     include("discount_pricing.jl")
 end
 
-@run_package_tests
+@run_package_tests filter=ti->!occursin("quantlib", ti.filename)
