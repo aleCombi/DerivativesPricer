@@ -9,8 +9,7 @@
   </tr>
   <tr>
     <td><strong>Coverage</strong></td>
-    <td><a href="https://coveralls.io/github/aleCombi/DerivativesPricer?branch=master">
-      <img src="https://coveralls.io/repos/github/aleCombi/DerivativesPricer/badge.svg?branch=master&cache-control=no-cache" alt="Coverage Status"></a>
+    <td><a href='https://coveralls.io/github/aleCombi/DerivativesPricer?branch=master'><img src='https://coveralls.io/repos/github/aleCombi/DerivativesPricer/badge.svg?branch=master' alt='Coverage Status' /></a>
     </td>
   </tr>
   <tr>
