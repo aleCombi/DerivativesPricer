@@ -1,15 +1,20 @@
 using BusinessDays
+
 """
     AbstractShift
 
-Abstract type representing a shift in time by a specified period from an accrual period.
+An abstract type representing a time shift by a specified period from an accrual period.
 """
 abstract type AbstractShift end
 
 """
     TimeShift
 
-Represents a shift in time by a specified period from an accrual period start or end.
+Represents a shift in time by a specified period from either the start or end of an accrual period.
+
+# Fields
+- `shift`: The period to shift by, defined as a subtype of `Period`.
+- `from_end`: A boolean indicating whether the shift is applied from the end of the accrual period (`true`) or from the start (`false`).
 """
 struct TimeShift{T<:Period} <: AbstractShift
     shift::T
@@ -19,12 +24,25 @@ end
 """
     NoShift
 
-A shift that doesn't shift, just decides to use the start date or end date of each period.
+A shift type that does not apply any shift, simply selects the start or end date of each period based on `from_end`.
+
+# Fields
+- `from_end`: A boolean indicating whether to use the end date (`true`) or the start date (`false`) of each period.
 """
 struct NoShift <: AbstractShift
     from_end::Bool
 end
 
+"""
+    BusinessDayShift
+
+A shift in time by a specified number of business days, determined by a holiday calendar, from either the start or end of an accrual period.
+
+# Fields
+- `shift`: The number of business days to shift.
+- `calendar`: The holiday calendar used to determine business days.
+- `from_end`: A boolean indicating whether the shift is applied from the end (`true`) or the start (`false`) of the accrual period.
+"""
 struct BusinessDayShift{C <: HolidayCalendar} <: AbstractShift
     shift::Int
     calendar::C
@@ -32,62 +50,81 @@ struct BusinessDayShift{C <: HolidayCalendar} <: AbstractShift
 end
 
 """
-    relative_schedule(accrual_schedule, shift_rule::TimeShift)
-
     NoShift()
 
-By default schedules are generated from the end date of each accrual period.
+Creates a `NoShift` object with default behavior to use the end date of each period.
+
+# Returns
+- An instance of `NoShift`.
 """
 function NoShift()
     return NoShift(true)
 end
 
 """
-    relative_schedule(accrual_schedule, shift_rule::NoShift)
+    shifted_schedule(schedule, shift_rule::NoShift)
 
-Creates a payment or fixing schedule relative to an accrual schedule without shifting.
+Generates a schedule identical to the input schedule, without applying any shift.
+The schedule may use either the start or end date based on `shift_rule.from_end`.
 
 # Arguments
-- `accrual_schedule`: The dates to be adjusted.
-- `shift_rule`: Rule defining how to shift from the accrual schedule.
+- `schedule`: The original schedule of dates.
+- `shift_rule`: A `NoShift` instance indicating whether to use start or end dates.
 
 # Returns
-- The shifted dates.
+- The unshifted schedule of dates.
 """
-function relative_schedule(accrual_schedule, shift_rule::NoShift)
-    return shift_rule.from_end ? accrual_schedule[2:end] : accrual_schedule[1:end-1]
+function shifted_schedule(schedule, ::NoShift)
+    return schedule
 end
 
 """
-    relative_schedule(accrual_schedule, shift_rule::TimeShift)
+    shifted_schedule(schedule, shift_rule::TimeShift)
 
-Shifts the accrual schedule by the specified period to create a payment or fixing schedule.
+Shifts the input schedule by a specified period to create a payment or fixing schedule.
+Applies the shift from either the start or end date of each accrual period based on `shift_rule.from_end`.
 
 # Arguments
-- `accrual_schedule`: The dates to be adjusted.
-- `shift_rule`: Rule defining how to shift from the accrual schedule.
+- `schedule`: The original schedule of dates.
+- `shift_rule`: A `TimeShift` instance specifying the shift period and direction.
 
 # Returns
-- The shifted dates.
+- The shifted schedule of dates.
 """
-function relative_schedule(accrual_schedule, shift_rule::TimeShift)
-    unshifted_schedule = shift_rule.from_end ? accrual_schedule[2:end] : accrual_schedule[1:end-1]
-    return unshifted_schedule .+ shift_rule.shift
+function shifted_schedule(schedule, shift_rule::TimeShift)
+    return schedule .+ shift_rule.shift
 end
 
 """
-    relative_schedule(accrual_schedule, shift_rule::BusinessDayShift)
+    shifted_schedule(schedule, shift_rule::BusinessDayShift)
 
-Shifts the accrual schedule by the specified number of business days to create a payment or fixing schedule.
+Shifts the input schedule by a specified number of business days according to a holiday calendar.
 
 # Arguments
-- `accrual_schedule`: The dates to be adjusted.
-- `shift_rule`: Rule defining how to shift from the accrual schedule.
+- `schedule`: The original schedule of dates.
+- `shift_rule`: A `BusinessDayShift` instance specifying the number of business days to shift and the holiday calendar.
 
 # Returns
-- The shifted dates.
+- The business day-shifted schedule of dates.
 """
-function relative_schedule(accrual_schedule, shift_rule::BusinessDayShift)
+function shifted_schedule(schedule, shift_rule::BusinessDayShift)
+    return advancebdays.(shift_rule.calendar, schedule, shift_rule.shift)
+end
+
+"""
+    shifted_trimmed_schedule(accrual_schedule, shift_rule::BusinessDayShift)
+
+Creates a shifted schedule by moving each date in the accrual schedule by a specified number of business days.
+Trims either the first or last date in the schedule based on `shift_rule.from_end`.
+
+# Arguments
+- `accrual_schedule`: The original schedule of dates.
+- `shift_rule`: A `BusinessDayShift` instance defining the business day shift and calendar.
+
+# Returns
+- The shifted and trimmed schedule of dates.
+"""
+function shifted_trimmed_schedule(accrual_schedule, shift_rule::S) where S <: AbstractShift
     unshifted_schedule = shift_rule.from_end ? accrual_schedule[2:end] : accrual_schedule[1:end-1]
-    return advancebdays.(shift_rule.calendar, unshifted_schedule, shift_rule.shift)
+    return shifted_schedule(unshifted_schedule, shift_rule)
 end

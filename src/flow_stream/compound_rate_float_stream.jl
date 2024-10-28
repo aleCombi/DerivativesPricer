@@ -12,7 +12,7 @@ end
 
 function CompoundedRateStreamSchedules(stream_config::FlowStreamConfig{P,CompoundInstrumentRate,S}) where {P,S}
     accrual_dates = generate_schedule(stream_config.schedule)
-    pay_dates = relative_schedule(accrual_dates, stream_config.schedule.pay_shift)
+    pay_dates = shifted_trimmed_schedule(accrual_dates, stream_config.schedule.pay_shift)
     compounded_instrument_schedules = [InstrumentSchedule(accrual_dates[i], accrual_dates[i+1], stream_config.rate.rate_config.compound_schedule, stream_config.schedule.pay_shift) for i in 1:length(accrual_dates)-1]
     compounding_schedules = [SimpleRateStreamSchedules(compounded_instrument_schedules[i], stream_config.rate.rate_config) for i in 1:length(accrual_dates)-1]
     return CompoundedRateStreamSchedules(pay_dates, compounding_schedules)

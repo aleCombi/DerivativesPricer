@@ -12,7 +12,7 @@ export
     # date_generation/roll_conventions.jl
     roll_date, NoRollConvention, EOMRollConvention, RollConvention,
     # date_generation/date_shft.jl
-    AbstractShift, NoShift, TimeShift, relative_schedule, 
+    AbstractShift, NoShift, TimeShift, BusinessDayShift, shifted_trimmed_schedule, shifted_schedule,
     # date_generation/calendars.jl
     WeekendsOnly, NoHolidays,
     # date_generation/instrument_schedule.jl

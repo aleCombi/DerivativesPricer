@@ -31,7 +31,7 @@ between accrual periods using the specified day count convention, and computes t
 """
 function FixedRateStream(stream_config::FlowStreamConfig{P, F, S}) where {P,F<:FixedRate, S}
     accrual_dates = generate_schedule(stream_config.schedule)
-    pay_dates = relative_schedule(accrual_dates, stream_config.schedule.pay_shift)
+    pay_dates = shifted_trimmed_schedule(accrual_dates, stream_config.schedule.pay_shift)
     time_fractions = day_count_fraction(accrual_dates, stream_config.rate.rate_config.day_count_convention)
     cash_flows = calculate_interest([stream_config.principal], [stream_config.rate.rate], time_fractions, stream_config.rate.rate_config.rate_convention)
     return FixedRateStream(pay_dates, accrual_dates, cash_flows)

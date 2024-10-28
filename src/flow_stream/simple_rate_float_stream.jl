@@ -29,8 +29,8 @@ end
 function SimpleRateStreamSchedules(instrument_schedule::I, rate_config::R) where {I <: InstrumentSchedule, R<:FloatRateConfig}
     accrual_dates = generate_schedule(instrument_schedule)
     time_fractions = day_count_fraction(accrual_dates, rate_config.day_count_convention)
-    pay_dates = relative_schedule(accrual_dates, instrument_schedule.pay_shift)
-    fixing_dates = relative_schedule(accrual_dates, rate_config.fixing_shift)
+    pay_dates = shifted_trimmed_schedule(accrual_dates, instrument_schedule.pay_shift)
+    fixing_dates = shifted_trimmed_schedule(accrual_dates, rate_config.fixing_shift)
     discount_start_dates = fixing_dates
     discount_end_dates = generate_end_date(fixing_dates, instrument_schedule.schedule_config)
     return SimpleRateStreamSchedules(pay_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, time_fractions)
