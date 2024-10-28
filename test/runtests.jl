@@ -4,6 +4,7 @@ using DerivativesPricer #TODO:explore the use of @testable to avoid exporting ev
 # include test files in VSCODE: necessary to have code completion
 if isdefined(@__MODULE__,:LanguageServer)
     include("unit/day_count_conventions.jl")
+    include("unit/date_generation/business_day_conventions.jl")
     include("quantlib/day_count_conventions.jl")
     include("rate_conventions.jl")
     include("date_generation/include_date_generation.jl")

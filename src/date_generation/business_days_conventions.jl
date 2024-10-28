@@ -1,45 +1,42 @@
-using BusinessDays
-using Dates
-
 """
     BusinessDayConvention
 
-Abstract type representing a roll convention for adjusting dates to business days.
+Abstract type representing a convention for adjusting dates to business days.
 """
 abstract type BusinessDayConvention end
 
 """
     PrecedingBusinessDay <: BusinessDayConvention
 
-Roll convention that adjusts a date to the previous business day.
+Business day convention that adjusts a date to the previous business day.
 """
 struct PrecedingBusinessDay <: BusinessDayConvention end
 
 """
     FollowingBusinessDay <: BusinessDayConvention
 
-Roll convention that adjusts a date to the next business day.
+Business day convention that adjusts a date to the next business day.
 """
 struct FollowingBusinessDay <: BusinessDayConvention end
 
 """
     ModifiedFollowing <: BusinessDayConvention
 
-Roll convention that adjusts a date to the next business day, unless it falls in the next month, in which case it adjusts to the previous business day.
+Business day convention that adjusts a date to the next business day, unless it falls in the next month, in which case it adjusts to the previous business day.
 """
 struct ModifiedFollowing <: BusinessDayConvention end
 
 """
     NoneBusinessDayConvention <: BusinessDayConvention
 
-Roll convention that does not adjust the date.
+Business day convention that does not adjust the date.
 """
 struct NoneBusinessDayConvention <: BusinessDayConvention end
 
 """
     ModifiedPreceding <: BusinessDayConvention
 
-Roll convention that adjusts a date to the previous business day, unless it falls in the previous month, in which case it adjusts to the next business day.
+Business day convention that adjusts a date to the previous business day, unless it falls in the previous month, in which case it adjusts to the next business day.
 """
 struct ModifiedPreceding <: BusinessDayConvention end
 
@@ -88,7 +85,7 @@ Returns the given date without any adjustment.
 - `NoneBusinessDayConvention`: None business day convention.
 
 # Returns
-- The original date as a `Date`.
+- The original date.
 """
 function adjust_date(date, calendar, ::NoneBusinessDayConvention)
     return date
@@ -105,7 +102,7 @@ Adjusts the given date to the next business day according to the specified calen
 - `::ModifiedFollowing`: Modified Following business day convention.
 
 # Returns
-- The adjusted date as a `Date`.
+- The adjusted date.
 """
 function adjust_date(date, calendar, ::ModifiedFollowing)
     next_business_day = tobday(calendar, date; forward=true)
