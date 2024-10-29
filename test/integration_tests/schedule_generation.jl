@@ -1,4 +1,4 @@
-@testsnippet ScheduleGeneration begin
+@testsnippet IntegrationScheduleGen begin
     using Dates
     using BusinessDays
     calendar_weekends = WeekendsOnly()
@@ -6,7 +6,7 @@
 end
 
 # Test 1: Generate schedule with short stub, weekend-only calendar, no roll convention, and modified following business day adjustment
-@testitem "Generate Schedule - Short Stub, WeekendsOnly Calendar, No Roll, Modified Following Adjustment" setup=[ScheduleGeneration] begin
+@testitem "Generate Schedule - Short Stub, WeekendsOnly Calendar, No Roll, Modified Following Adjustment" setup=[IntegrationScheduleGen] begin
     start_date = Date(2023, 1, 10)
     end_date = Date(2023, 3, 5)
     period = Month(1)
@@ -29,7 +29,7 @@ end
 end
 
 # Test 2: Generate schedule with long stub, US calendar, EOM roll convention, following business day adjustment
-@testitem "Generate Schedule - Long Stub, US Calendar, EOM Roll, Following Adjustment" setup=[ScheduleGeneration] begin
+@testitem "Generate Schedule - Long Stub, US Calendar, EOM Roll, Following Adjustment" setup=[IntegrationScheduleGen] begin
     start_date = Date(2021, 1, 31)
     end_date = Date(2021, 5, 29)
     period = Month(1)
@@ -52,7 +52,7 @@ end
 end
 
 # Test 3: Generate schedule with short upfront stub, WeekendsOnly calendar, no roll, and preceding business day adjustment for termination date
-@testitem "Generate Schedule - Short Upfront Stub, WeekendsOnly Calendar, No Roll, Preceding Termination Adjustment" setup=[ScheduleGeneration] begin
+@testitem "Generate Schedule - Short Upfront Stub, WeekendsOnly Calendar, No Roll, Preceding Termination Adjustment" setup=[IntegrationScheduleGen] begin
     start_date = Date(2023, 1, 5)
     end_date = Date(2023, 4, 20)
     period = Month(1)
@@ -75,7 +75,7 @@ end
 end
 
 # Test 4: Generate schedule with long upfront stub, US calendar, EOM roll, modified following business day adjustment for both
-@testitem "Generate Schedule - Long Upfront Stub, US Calendar, EOM Roll, Modified Following Adjustment" setup=[ScheduleGeneration] begin
+@testitem "Generate Schedule - Long Upfront Stub, US Calendar, EOM Roll, Modified Following Adjustment" setup=[IntegrationScheduleGen] begin
     start_date = Date(2023, 1, 15)
     end_date = Date(2023, 7, 31)
     period = Month(2)
@@ -98,7 +98,7 @@ end
 end
 
 # Test 5: Generate schedule with short stub, US calendar, no roll, and no business day adjustments
-@testitem "Generate Schedule - Short Stub, US Calendar, No Roll, No Adjustments" setup=[ScheduleGeneration] begin
+@testitem "Generate Schedule - Short Stub, US Calendar, No Roll, No Adjustments" setup=[IntegrationScheduleGen] begin
     start_date = Date(2023, 1, 1)
     end_date = Date(2023, 3, 15)
     period = Month(1)
