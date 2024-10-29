@@ -9,13 +9,14 @@ if false
     include("unit/date_generation/calendar.jl")
     include("unit/date_generation/date_shift.jl")
     include("unit/date_generation/roll_conventions.jl")
-    include("rate_conventions.jl")
-    include("date_generation/schedule_generation.jl")
+    include("unit/date_generation/schedule_generation.jl")
 
+    include("rate_conventions.jl")
     include("fixed_rate_stream.jl")
     include("rate_curves.jl")
     include("float_rate_stream.jl")
     include("discount_pricing.jl")
+    
     # quantlib tests
     include("quantlib/day_count_conventions.jl")
     include("quantlib/date_generation/business_day_conventions.jl")
