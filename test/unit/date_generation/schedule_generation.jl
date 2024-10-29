@@ -132,10 +132,3 @@ end
     # Test that date correction moves weekend dates to the next business day
     @test end_dates == [Date(2023, 2, 1), Date(2023, 3, 1), Date(2023, 4, 3)]  # First of april is a saturday
 end
-
-
-# test termination_date_corrector
-
-# test generate_end_date
-
-# test generate_schedule 
