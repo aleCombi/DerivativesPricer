@@ -22,6 +22,21 @@ struct TimeShift{T<:Period} <: AbstractShift
 end
 
 """
+    TimeShift(period::P) where {P <: Period}
+
+Creates a `TimeShift` with the specified period, applying the shift in the forward direction by default.
+
+# Arguments
+- `period::P`: The period over which the shift is applied (e.g., `Day`, `Month`, `Year`).
+
+# Returns
+- A `TimeShift` object representing the shift with the specified period in the forward direction.
+"""
+function TimeShift(period::P) where {P<:Period}
+    return TimeShift(period, true)
+end
+
+"""
     NoShift
 
 A shift type that does not apply any shift, simply selects the start or end date of each period based on `from_end`.
@@ -31,6 +46,18 @@ A shift type that does not apply any shift, simply selects the start or end date
 """
 struct NoShift <: AbstractShift
     from_end::Bool
+end
+
+"""
+    NoShift()
+
+Creates a `NoShift` object with default behavior to use the end date of each period.
+
+# Returns
+- An instance of `NoShift`.
+"""
+function NoShift()
+    return NoShift(true)
 end
 
 """
@@ -47,18 +74,6 @@ struct BusinessDayShift{C <: HolidayCalendar} <: AbstractShift
     shift::Int
     calendar::C
     from_end::Bool
-end
-
-"""
-    NoShift()
-
-Creates a `NoShift` object with default behavior to use the end date of each period.
-
-# Returns
-- An instance of `NoShift`.
-"""
-function NoShift()
-    return NoShift(true)
 end
 
 """

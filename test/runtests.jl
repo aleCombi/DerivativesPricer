@@ -10,6 +10,7 @@ if false
     include("unit/date_generation/date_shift.jl")
     include("unit/date_generation/roll_conventions.jl")
     include("unit/date_generation/schedule_generation.jl")
+    include("unit/date_generation/instrument_schedule.jl")
 
     include("rate_conventions.jl")
     include("fixed_rate_stream.jl")
