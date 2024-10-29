@@ -68,7 +68,7 @@ Generates a stream of unadjusted dates according to the given period and stub pe
 - A stream of unadjusted dates.
 """
 function generate_unadjusted_dates(start_date, end_date, ::StubPeriod{InArrearsStubPosition, ShortStubLength}, period::P) where {P <: Period}
-	dates = start_date:period:(end_date-period) |> collect
+	dates = start_date:period:(end_date-Day(1)) |> collect
 	push!(dates, end_date)  # Add the end date eagerly
 	return dates
 end
@@ -88,7 +88,7 @@ Generates a stream of unadjusted dates according to the given period and stub pe
 - A stream of unadjusted dates.
 """
 function generate_unadjusted_dates(start_date, end_date, ::StubPeriod{InArrearsStubPosition, LongStubLength}, period::P) where {P <: Period}
-	dates = start_date:period:(end_date-2*period) |> collect
+	dates = start_date:period:(end_date-period-Day(1)) |> collect
 	push!(dates, end_date)  # Add the end date eagerly
 	return dates
 end
@@ -108,7 +108,7 @@ Generates a stream of unadjusted dates according to the given period and stub pe
 - A stream of unadjusted dates.
 """
 function generate_unadjusted_dates(start_date, end_date, ::StubPeriod{UpfrontStubPosition,ShortStubLength}, period::P) where {P<:Period}
-    dates = end_date:-period:(start_date+period) |> collect
+    dates = end_date:-period:(start_date+Day(1)) |> collect
     push!(dates, start_date)  # Add the start date eagerly
     return reverse(dates)  # Reverse the array to get the correct order
 end
@@ -128,7 +128,7 @@ Generates a stream of unadjusted dates according to the given period and stub pe
 - A stream of unadjusted dates.
 """
 function generate_unadjusted_dates(start_date, end_date, ::StubPeriod{UpfrontStubPosition,LongStubLength}, period::P) where {P<:Period}
-    dates = end_date:-period:(start_date+2*period) |> collect
+    dates = end_date:-period:(start_date+period+Day(1)) |> collect
     push!(dates, start_date)  # Add the start date eagerly
     return reverse(dates)  # Reverse the array to get the correct order
 end
