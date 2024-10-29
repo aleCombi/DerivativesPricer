@@ -2,7 +2,7 @@
 @testitem "NoHolidays Calendar" begin
     using Test, Dates, BusinessDays
     calendar = NoHolidays()
-    @test BusinessDays.isholiday(NoHolidays(), Date(2024, 10, 28)) == false  # Any random date
+    @test BusinessDays.isholiday(calendar, Date(2024, 10, 28)) == false  # Any random date
     @test BusinessDays.isholiday(calendar, Date(2024, 12, 25)) == false  # Testing a public holiday
     @test BusinessDays.isholiday(calendar, Date(2024, 1, 1)) == false    # Testing New Year's Day
 end
