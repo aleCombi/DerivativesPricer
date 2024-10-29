@@ -18,14 +18,6 @@ termination business day convention, holiday calendar, and the stub period.
 - `termination_bd_convention::D`: The convention for adjusting the termination date.
 - `calendar::C`: The holiday calendar.
 - `stub_period::StubPeriod`: The configuration of the stub period.
-
-# Constructor with default values
-- `period::P`: The period (required).
-- `roll_convention`: The roll convention (default `NoRollConvention`).
-- `business_days_convention`: The business day convention (default `NoneBusinessDayConvention`).
-- `termination_bd_convention`: The convention for adjusting the termination date (default `NoneBusinessDayConvention`).
-- `calendar`: The holiday calendar (default `NoHolidays`).
-- `stub_period`: The configuration of the stub period (default to `StubPeriod()`).
 """
 struct ScheduleConfig{P <: Period, R <: RollConvention, B <: BusinessDayConvention, D <: BusinessDayConvention, C <: HolidayCalendar} <: AbstractScheduleConfig
 	period::P
@@ -36,7 +28,22 @@ struct ScheduleConfig{P <: Period, R <: RollConvention, B <: BusinessDayConventi
 	stub_period::StubPeriod
 end
 
-# Constructor with default values
+"""
+	ScheduleConfig(period::P; roll_convention, business_days_convention, calendar, stub_period, termination_bd_convention) -> ScheduleConfig
+
+Constructor for `ScheduleConfig`, allowing default values for optional fields.
+
+# Arguments
+- `period::P`: The period for generating dates.
+- `roll_convention::R`: The roll convention to adjust dates (default `NoRollConvention()`).
+- `business_days_convention::B`: The business day convention (default `NoneBusinessDayConvention()`).
+- `calendar::C`: The holiday calendar (default `NoHolidays()`).
+- `stub_period::StubPeriod`: Configuration of the stub period (default `StubPeriod()`).
+- `termination_bd_convention::D`: Convention for adjusting termination date (default `NoneBusinessDayConvention()`).
+
+# Returns
+- A new `ScheduleConfig` instance.
+"""
 function ScheduleConfig(period::P;
     roll_convention::R=NoRollConvention(),
     business_days_convention::B=NoneBusinessDayConvention(),
@@ -62,7 +69,7 @@ function date_corrector(schedule_config::ScheduleConfig)
 end
 
 """
-	date_corrector(schedule_config::S)
+	termination_date_corrector(schedule_config::S)
 
 Returns a function that adjusts a date according to the given schedule configuration, applying first adjustment conventions like EOM and then the termination date business day adjustment.
 
@@ -154,7 +161,7 @@ function generate_schedule(unadjusted_dates, schedule_config::S) where S <: Abst
 end
 
 """
-	generate_schedule(schedule_config::S) where S <: AbstractScheduleConfig
+	generate_schedule(start_date, end_date, schedule_config::S) where S <: AbstractScheduleConfig
 
 Generates a schedule of adjusted dates according to the given schedule configuration.
 
@@ -180,7 +187,7 @@ Generate the end date of a rate period given the schedule configuration and the 
 - `schedule_config::S`: The schedule configuration.
 
 # Returns
-- Shifted, adjusted and rolled date.
+- Shifted, adjusted, and rolled date.
 """
 function generate_end_date(start_date, schedule_config::S) where {S <: AbstractScheduleConfig}
 	corrector = date_corrector(schedule_config)
