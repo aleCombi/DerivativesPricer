@@ -51,7 +51,7 @@ struct StubPeriod{P<:StubPosition, L<:StubLength}
 end
 
 """
-    StubPeriod() -> StubPeriod{InArrearsStubPosition, ShortStubLength}
+    StubPeriod()
 
 Creates a default `StubPeriod` with the position set to `InArrearsStubPosition` and length set to `ShortStubLength`.
 """
