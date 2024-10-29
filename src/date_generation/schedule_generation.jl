@@ -73,6 +73,20 @@ function generate_unadjusted_dates(start_date, end_date, ::StubPeriod{InArrearsS
 	return dates
 end
 
+"""
+	generate_unadjusted_dates(start_date, end_date, stub_period::StubPeriod, period::P) where P <: Period
+
+Generates a stream of unadjusted dates according to the given period and stub period with a long stub, going forward.
+
+# Arguments
+- `start_date`: The start date of the schedule.
+- `end_date`: The end date of the schedule.
+- `stub_period::StubPeriod`: The stub period configuration.
+- `period::P`: The period.
+
+# Returns
+- A stream of unadjusted dates.
+"""
 function generate_unadjusted_dates(start_date, end_date, ::StubPeriod{InArrearsStubPosition, LongStubLength}, period::P) where {P <: Period}
 	dates = start_date:period:(end_date-2*period) |> collect
 	push!(dates, end_date)  # Add the end date eagerly
@@ -99,6 +113,20 @@ function generate_unadjusted_dates(start_date, end_date, ::StubPeriod{UpfrontStu
     return reverse(dates)  # Reverse the array to get the correct order
 end
 
+"""
+	generate_unadjusted_dates(start_date, end_date, stub_period::StubPeriod, period::P) where P <: Period
+
+Generates a stream of unadjusted dates according to the given period and stub period with a long stub, going backward.
+
+# Arguments
+- `start_date`: The start date of the schedule.
+- `end_date`: The end date of the schedule.
+- `stub_period::StubPeriod`: The stub period configuration.
+- `period::P`: The period.
+
+# Returns
+- A stream of unadjusted dates.
+"""
 function generate_unadjusted_dates(start_date, end_date, ::StubPeriod{UpfrontStubPosition,LongStubLength}, period::P) where {P<:Period}
     dates = end_date:-period:(start_date+2*period) |> collect
     push!(dates, start_date)  # Add the start date eagerly
@@ -106,14 +134,14 @@ function generate_unadjusted_dates(start_date, end_date, ::StubPeriod{UpfrontStu
 end
 
 """
-	generate_unadjusted_dates(start_date, end_date, schedule_config::S) where S <: AbstractScheduleConfig
+	generate_unadjusted_dates(start_date, end_date, schedule_config::ScheduleConfig)
 
 Generates a stream of unadjusted dates according to the given schedule configuration.
 
 # Arguments
 - `start_date`: The start date of the schedule.
 - `end_date`: The end date of the schedule.
-- `schedule_config::S`: The schedule configuration.
+- `schedule_config::ScheduleConfig`: The schedule configuration.
 
 # Returns
 - A stream of unadjusted dates.
@@ -123,12 +151,12 @@ function generate_unadjusted_dates(start_date, end_date, schedule_config::Schedu
 end
 
 """
-	date_corrector(schedule_config::S)
+	date_corrector(schedule_config::ScheduleConfig)
 
 Returns a function that adjusts a date according to the given schedule configuration, applying first adjustment conventions like EOM and then business day adjustment.
 
 # Arguments
-- `schedule_config::S`: The schedule configuration.
+- `schedule_config::ScheduleConfig`: The schedule configuration.
 
 # Returns
 - A function that adjusts a date according to the given schedule configuration.
@@ -138,15 +166,16 @@ function date_corrector(schedule_config::ScheduleConfig)
 end
 
 """
-	termination_date_corrector(schedule_config::S)
+	termination_date_corrector(schedule_config::ScheduleConfig)
 
 Returns a function that adjusts a date according to the given schedule configuration, applying first adjustment conventions like EOM and then the termination date business day adjustment.
 
 # Arguments
-- `schedule_config::S`: The schedule configuration.
+- `schedule_config::ScheduleConfig`: The schedule configuration.
 
 # Returns
-- A function that adjusts the termination date according to the given schedule configuration."""
+- A function that adjusts the termination date according to the given schedule configuration.
+"""
 function termination_date_corrector(schedule_config::ScheduleConfig)
 	return date -> adjust_date(roll_date(date, schedule_config.roll_convention), schedule_config.calendar, schedule_config.termination_bd_convention)
 end
