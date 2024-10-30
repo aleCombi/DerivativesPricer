@@ -116,7 +116,7 @@ end
     @test compounding_factor(rate, time_fraction, LinearRate()) == 1.05
 
     # Discount Factor Test
-    @test discount_interest(rate, time_fraction, LinearRate()) ≈ 0.9524
+    @test discount_interest(rate, time_fraction, LinearRate()) ≈ 1/1.05
 
     # Edge Case - Zero Interest Rate
     rate = 0.0

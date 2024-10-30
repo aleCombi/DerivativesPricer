@@ -112,7 +112,7 @@ Calculates the interest accrued over a period for a specified interest rate type
 - The interest amount calculated based on the principal, rate, time, and rate type.
 """
 function calculate_interest(principal, rate, time_fraction, rate_type::R) where {R<:RateType}
-    return principal .* (compounding_factor(rate, time_fraction, rate_type) - 1)
+    return principal .* (compounding_factor(rate, time_fraction, rate_type) .- 1)
 end
 
 """
