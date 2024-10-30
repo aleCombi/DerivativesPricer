@@ -6,7 +6,7 @@ Abstract type representing a rate type. This serves as the base type for all spe
 abstract type RateType end
 
 """
-    Linear <: RateType
+    LinearRate <: RateType
 
 Concrete type representing linear (simple) interest, where the interest is calculated as a fixed percentage of the principal over time.
 """
@@ -15,7 +15,7 @@ struct LinearRate <: RateType end
 """
     Compounded <: RateType
 
-Concrete type representing compound interest, where interest is calculated and added to the principal after each period, and the interest is calculated on the new balance. 
+Concrete type representing compound interest, where interest is calculated and added to the principal after each period, and the interest is calculated on the new balance.
 
 # Fields
 - `frequency::Int`: The number of compounding periods per year (e.g., 12 for monthly compounding).
@@ -31,27 +31,103 @@ Concrete type representing exponential interest, where the interest is calculate
 """
 struct Exponential <: RateType end
 
+"""
+    compounding_factor(rate, time_fraction, ::LinearRate)
 
+Calculates the compounding factor for linear (simple) interest.
+
+# Arguments
+- `rate`: Interest rate as a decimal (e.g., 0.05 for 5%).
+- `time_fraction`: The time fraction over which interest is calculated (e.g., 1 for one year).
+
+# Returns
+- The compounding factor based on the linear interest formula.
+"""
 function compounding_factor(rate, time_fraction, ::LinearRate)
     return (1 .+ rate .* time_fraction)
 end
 
+"""
+    compounding_factor(rate, time_fraction, rate_type::Compounded)
+
+Calculates the compounding factor for compound interest based on compounding periods per year.
+
+# Arguments
+- `rate`: Interest rate as a decimal.
+- `time_fraction`: The time fraction over which interest is calculated.
+- `rate_type::Compounded`: An instance of `Compounded`, which includes the frequency of compounding.
+
+# Returns
+- The compounding factor calculated using compound interest.
+"""
 function compounding_factor(rate, time_fraction, rate_type::Compounded)
     return (1 .+ rate ./ rate_type.frequency) .^ (rate_type.frequency .* time_fraction)
 end
 
+"""
+    compounding_factor(rate, time_fraction, ::Exponential)
+
+Calculates the compounding factor for exponential interest.
+
+# Arguments
+- `rate`: Interest rate as a decimal.
+- `time_fraction`: The time fraction over which interest is calculated.
+
+# Returns
+- The compounding factor based on the exponential interest formula.
+"""
 function compounding_factor(rate, time_fraction, ::Exponential)
     return exp.(rate .* time_fraction)
 end
 
+"""
+    discount_interest(rate, time_fraction, rate_type::R) where {R<:RateType}
+
+Calculates the discount factor for a given interest rate type, which represents the present value of a future cash flow.
+
+# Arguments
+- `rate`: Interest rate as a decimal.
+- `time_fraction`: The time fraction over which interest is discounted.
+- `rate_type::R`: A rate type that inherits from `RateType` (e.g., `LinearRate`, `Compounded`, or `Exponential`).
+
+# Returns
+- The discount factor as the inverse of the compounding factor for the specified rate type.
+"""
 function discount_interest(rate, time_fraction, rate_type::R) where {R<:RateType}
     return 1 ./ compounding_factor(rate, time_fraction, rate_type)
 end
 
+"""
+    calculate_interest(principal, rate, time_fraction, rate_type::R) where {R<:RateType}
+
+Calculates the interest accrued over a period for a specified interest rate type.
+
+# Arguments
+- `principal`: Initial amount on which interest is calculated.
+- `rate`: Interest rate as a decimal.
+- `time_fraction`: The time fraction over which interest is calculated.
+- `rate_type::R`: A rate type that inherits from `RateType` (e.g., `LinearRate`, `Compounded`, or `Exponential`).
+
+# Returns
+- The interest amount calculated based on the principal, rate, time, and rate type.
+"""
 function calculate_interest(principal, rate, time_fraction, rate_type::R) where {R<:RateType}
     return principal .* (compounding_factor(rate, time_fraction, rate_type) - 1)
 end
 
+"""
+    calculate_interest(principal, rate, time_fraction, ::LinearRate)
+
+Calculates the interest accrued over a period for linear (simple) interest.
+
+# Arguments
+- `principal`: Initial amount on which interest is calculated.
+- `rate`: Interest rate as a decimal.
+- `time_fraction`: The time fraction over which interest is calculated.
+
+# Returns
+- The interest amount calculated based on simple interest.
+"""
 function calculate_interest(principal, rate, time_fraction, ::LinearRate)
     return principal .* rate .* time_fraction
 end
