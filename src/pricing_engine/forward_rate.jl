@@ -33,23 +33,6 @@ function calculate_forward_rate(discount_factor_ratio, year_fraction, ::Exponent
 end
 
 """
-    calculate_forward_rate(discount_factor_ratio, year_fraction, ::Yield)
-
-Calculates the forward rate using the yield rate approach.
-
-# Arguments
-- `discount_factor_ratio`: A numeric value or array representing the ratio of discount factors.
-- `year_fraction`: A numeric value or array representing the time period as a fraction of a year.
-- `::Yield`: The rate type, indicating the yield model.
-
-# Returns
-- The forward rate calculated as `discount_factor_ratio^(1 / year_fraction) - 1`.
-"""
-function calculate_forward_rate(discount_factor_ratio, year_fraction, ::Yield)
-    return discount_factor_ratio.^(1 ./ year_fraction) .- 1
-end
-
-"""
     calculate_forward_rate(discount_factor_ratio, year_fraction, rate_type::Compounded)
 
 Calculates the forward rate using a compounded rate approach, adjusting for the frequency of compounding.
