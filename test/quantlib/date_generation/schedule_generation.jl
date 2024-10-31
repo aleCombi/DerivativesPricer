@@ -1,5 +1,8 @@
 # Test Case 1: Short Stub with WeekendsOnly Calendar, No Roll, and Modified Following Adjustment
 @testitem "QuantLib Comparison - Short Stub, WeekendsOnly Calendar, No Roll, Modified Following Adjustment" begin
+    println(@__DIR__)
+    println("Contents of the current directory:")
+    println(readdir(@__DIR__))
     include(joinpath(@__DIR__, "quantlib_conversion_setup.jl"))
     start_date = Date(2023, 1, 10)
     end_date = Date(2023, 3, 5)

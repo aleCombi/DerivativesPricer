@@ -1,5 +1,6 @@
 # Test case
 @testitem "FloatRateStream Tests" begin
+    println("")
     include("float_rate_stream_setup.jl")
     # Create a dummy schedule configuration
     start_date = Date(2024, 1, 1)
