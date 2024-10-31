@@ -11,4 +11,4 @@ export
     # float_rate.jl
     AbstractRateIndex, RateIndex, FloatRateConfig, SimpleRateConfig, CompoundRateConfig, SimpleInstrumentRate, CompoundInstrumentRate,
     # margin.jl
-    AdditiveMargin, MultiplicativeMargin, MarginOnCompoundedRate, MarginOnUnderlying
+    AdditiveMargin, MultiplicativeMargin, MarginOnCompoundedRate, MarginOnUnderlying, apply_margin
