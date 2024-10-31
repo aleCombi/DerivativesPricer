@@ -1,6 +1,23 @@
+@testsnippet QuantlibDateConversion begin
+    using PyCall
+    ql = pyimport("QuantLib")
+
+    function ql_to_julia_date(ql_date)
+        # Extract year, month, and day from the QuantLib.Date object
+        year = Int(ql_date.year())
+        month = Int(ql_date.month())
+        day = Int(ql_date.dayOfMonth())
+        
+        # Construct and return the Julia Date
+        return Date(year, month, day)
+    end
+
+    function julia_to_ql_date(julia_date)
+        return ql.Date(day(julia_date), month(julia_date), year(julia_date))
+    end
+end
 # act360, linear rate, modified following, 1 month
-@testitem "Quantlib: 2 Month, Linear, ACT360, ModifiedFollowing, Target calendar" begin
-    include("../quantlib_helpers.jl")
+@testitem "Quantlib: 2 Month, Linear, ACT360, ModifiedFollowing, Target calendar" setup=[QuantlibDateConversion] begin
     using Dates
     using BusinessDays
     ## Getting DerivativesPricer Results
@@ -38,8 +55,7 @@
     @test isapprox(ql_fixed_flows, fixed_rate_stream.cash_flows; atol=1e-15)
 end
 
-@testitem "Quantlib: 2 Month, Linear, ACT360, ModifiedFollowing, Target calendar" begin
-    include("../quantlib_helpers.jl")
+@testitem "Quantlib: 2 Month, Linear, ACT360, ModifiedFollowing, Target calendar" setup=[QuantlibDateConversion] begin
     using Dates
     using BusinessDays
     ## Getting DerivativesPricer Results
