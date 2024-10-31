@@ -10,7 +10,7 @@ function CompoundedRateStreamSchedules(pay_dates::Vector{D}, compounding_schedul
     return CompoundedRateStreamSchedules(pay_dates, compounding_schedules, accrual_day_counts)
 end
 
-function CompoundedRateStreamSchedules(stream_config::FlowStreamConfig{P,CompoundInstrumentRate,S}) where {P,S}
+function CompoundedRateStreamSchedules(stream_config::FloatStreamConfig{P,CompoundInstrumentRate}) where P
     accrual_dates = generate_schedule(stream_config.schedule)
     pay_dates = shifted_trimmed_schedule(accrual_dates, stream_config.schedule.pay_shift)
     compounded_instrument_schedules = [InstrumentSchedule(accrual_dates[i], accrual_dates[i+1], stream_config.rate.rate_config.compound_schedule, stream_config.schedule.pay_shift) for i in 1:length(accrual_dates)-1]
@@ -18,11 +18,11 @@ function CompoundedRateStreamSchedules(stream_config::FlowStreamConfig{P,Compoun
     return CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
 end
 
-struct CompoundFloatRateStream{P,S} <: FlowStream where {P,S}
-    config::FlowStreamConfig{P,CompoundInstrumentRate,S}
+struct CompoundFloatRateStream{P,S} <: FlowStream where P
+    config::FloatStreamConfig{P,CompoundInstrumentRate}
     schedules::CompoundedRateStreamSchedules
 end
 
-function CompoundFloatRateStream(stream_config::FlowStreamConfig{P,CompoundInstrumentRate,S}) where {P,S}
+function CompoundFloatRateStream(stream_config::FloatStreamConfig{P,CompoundInstrumentRate}) where P
     return CompoundFloatRateStream(stream_config, CompoundedRateStreamSchedules(stream_config))
 end

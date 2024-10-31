@@ -42,7 +42,7 @@ end
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
     rate_config = SimpleRateConfig(ACT365(), LinearRate(), NoShift(false), AdditiveMargin(0))
     instrument_rate = SimpleInstrumentRate(rate_index, rate_config)
-    stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
+    stream_config = FloatStreamConfig(principal, instrument_rate, instrument_schedule)
     stream = SimpleFloatRateStream(stream_config)
     print(stream.schedules.pay_dates)
     # Calculate the price

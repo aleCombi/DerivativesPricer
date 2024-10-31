@@ -17,7 +17,7 @@ compound_margin = DerivativesPricer.MarginOnCompoundedRate(AdditiveMargin(0))
 rate_config = CompoundRateConfig(day_count_convention, rate_type, fixing_shift, compound_schedule, compound_margin)
 instrument_rate = DerivativesPricer.CompoundInstrumentRate(rate_index, rate_config)
 instrument_schedule = InstrumentSchedule(start_date, end_date, Year(1))
-stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
+stream_config = FloatStreamConfig(principal, instrument_rate, instrument_schedule)
 
 # schedule generation
 schedules = CompoundedRateStreamSchedules(stream_config)

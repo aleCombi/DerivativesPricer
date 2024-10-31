@@ -22,7 +22,7 @@ between accrual periods using the specified day count convention, and initialize
 # Example
 """ 
 
-function SimpleRateStreamSchedules(stream_config::FlowStreamConfig{P,SimpleInstrumentRate,S}) where {P,S}
+function SimpleRateStreamSchedules(stream_config::FloatStreamConfig{P,SimpleInstrumentRate}) where P
     return SimpleRateStreamSchedules(stream_config.schedule, stream_config.rate.rate_config)
 end
 
@@ -49,11 +49,11 @@ and the calculated day counts for each period.
 - `accrual_dates::Vector{D}`: A vector of accrual period start dates.
 - `accrual_day_counts::Vector{T}`: A vector of calculated day counts for each accrual period.
 """
-struct SimpleFloatRateStream{P,S} <: FlowStream where {P,S}
-    config::FlowStreamConfig{P,SimpleInstrumentRate,S}
+struct SimpleFloatRateStream{P} <: FlowStream where P
+    config::FloatStreamConfig{P,SimpleInstrumentRate}
     schedules::SimpleRateStreamSchedules
 end
 
-function SimpleFloatRateStream(config::FlowStreamConfig{P,SimpleInstrumentRate,S}) where {P,S}
+function SimpleFloatRateStream(config::FloatStreamConfig{P,SimpleInstrumentRate}) where P
     return SimpleFloatRateStream(config, SimpleRateStreamSchedules(config))
 end

@@ -14,7 +14,7 @@
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
     rate_config = SimpleRateConfig(day_count_convention, rate_convention, NoShift(), AdditiveMargin(0))
     instrument_rate = SimpleInstrumentRate(rate_index, rate_config)
-    stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
+    stream_config = FloatStreamConfig(principal, instrument_rate, instrument_schedule)
 
     # Create the floating rate stream
     stream = SimpleFloatRateStream(stream_config)

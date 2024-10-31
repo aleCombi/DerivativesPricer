@@ -5,7 +5,7 @@ include("compound_rate_float_stream.jl")
 
 export
     # flow_stream.jl
-    AbstractFlowStreamConfig, FlowStreamConfig, FlowStream, 
+    AbstractFlowStreamConfig, FloatStreamConfig, FixedStreamConfig, FlowStream, 
     # fixed_rate_stream.jl
     FixedRateStream,
     # simple_rate_float_stream.jl

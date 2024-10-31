@@ -17,7 +17,7 @@ end
     rate_config = FixedRateConfig(day_count_convention, rate_convention)
     instrument_rate = FixedRate(rate, rate_config)
     # Create a FixedRateStreamConfig
-    stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
+    stream_config = FixedStreamConfig(principal, instrument_rate, instrument_schedule)
 
     # Generate the FixedRateStream
     stream = FixedRateStream(stream_config)
@@ -42,7 +42,7 @@ end
     rate_config = FixedRateConfig(day_count_convention, rate_convention)
     instrument_rate = FixedRate(rate, rate_config)
     # Create a FixedRateStreamConfig
-    stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
+    stream_config = FixedStreamConfig(principal, instrument_rate, instrument_schedule)
 
     # Generate the FixedRateStream
     stream = FixedRateStream(stream_config)
@@ -77,7 +77,7 @@ end
     rate_config = FixedRateConfig(day_count_convention, rate_convention)
     instrument_rate = FixedRate(rate, rate_config)
     # Create a FixedRateStreamConfig
-    stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
+    stream_config = FixedStreamConfig(principal, instrument_rate, instrument_schedule)
 
     # Generate the FixedRateStream
     stream = FixedRateStream(stream_config)
@@ -102,7 +102,7 @@ end
     rate_config = FixedRateConfig(day_count_convention, rate_convention)
     instrument_rate = FixedRate(rate, rate_config)
     # Create a FixedRateStreamConfig
-    stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
+    stream_config = FixedStreamConfig(principal, instrument_rate, instrument_schedule)
 
     # Generate the FixedRateStream
     stream = FixedRateStream(stream_config)

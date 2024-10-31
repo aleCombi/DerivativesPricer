@@ -16,7 +16,7 @@
     rate_config = FixedRateConfig(day_count_convention, LinearRate())
     instrument_rate = FixedRate(rate, rate_config)
     # Create a FixedRateStreamConfig
-    stream_config = FlowStreamConfig(principal, instrument_rate, instrument_schedule)
+    stream_config = FixedStreamConfig(principal, instrument_rate, instrument_schedule)
 
     fixed_rate_stream = FixedRateStream(stream_config)
 
