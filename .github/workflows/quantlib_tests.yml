@@ -24,7 +24,7 @@ jobs:
       # Step 3: Install dependencies (including QuantLib.py)
       - name: Install dependencies
         run: |
-          julia --project=. -e '
+          julia --project=test -e '
             using Pkg;
             Pkg.instantiate();
             Pkg.build();
