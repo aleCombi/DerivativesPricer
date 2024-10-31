@@ -39,6 +39,7 @@ jobs:
 
       # Step 5: Run QuantLib compatibility tests with custom macro
       - name: Run QuantLib compatibility tests
+        working-directory: test
         run: |
           julia --project=. -e '
             using TestItemRunner
