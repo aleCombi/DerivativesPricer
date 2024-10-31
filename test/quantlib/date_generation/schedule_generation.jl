@@ -1,6 +1,6 @@
 # Test Case 1: Short Stub with WeekendsOnly Calendar, No Roll, and Modified Following Adjustment
 @testitem "QuantLib Comparison - Short Stub, WeekendsOnly Calendar, No Roll, Modified Following Adjustment" begin
-    include("quantlib_conversion_setup.jl")
+    include(joinpath(@__DIR__, "quantlib_conversion_setup.jl"))
     start_date = Date(2023, 1, 10)
     end_date = Date(2023, 3, 5)
     period = Month(1)
