@@ -34,7 +34,6 @@ jobs:
           # Instantiate the test project environment (which depends on the main)
           julia --project=test/ -e '
             using Pkg;
-            Pkg.develop(path="../");
             Pkg.instantiate();
             Pkg.build();
           '
