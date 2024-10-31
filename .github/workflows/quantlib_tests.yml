@@ -1,0 +1,47 @@
+name: QuantLib CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  quantlib-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Julia
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v2
+
+      # Step 3: Install dependencies (including QuantLib.py)
+      - name: Install dependencies
+        run: |
+          julia --project=. -e '
+            using Pkg;
+            Pkg.instantiate();
+            Pkg.build();
+          '
+        
+      # Step 4: Install QuantLib.py
+      - name: Install QuantLib.py
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install QuantLib-Python
+
+      # Step 5: Run QuantLib compatibility tests with custom macro
+      - name: Run QuantLib compatibility tests
+        run: |
+          julia --project=. -e '
+            using TestItemRunner
+            using DerivativesPricer
+            @run_package_tests filter=ti -> occursin("quantlib", ti.filename)
+          '
