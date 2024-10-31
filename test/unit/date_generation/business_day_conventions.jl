@@ -1,7 +1,6 @@
 @testsnippet BusinessDayConvention begin
     using Dates
     using BusinessDays
-    using DerivativesPricer
 
     # Define a mock calendar
     struct CustomCalendar <: HolidayCalendar end
