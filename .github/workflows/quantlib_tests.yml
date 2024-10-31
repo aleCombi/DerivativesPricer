@@ -21,15 +21,23 @@ jobs:
       - name: Set up Julia
         uses: julia-actions/setup-julia@v2
 
-      # Step 3: Install dependencies (including QuantLib.py)
-      - name: Install dependencies
+      # Step 3: Install dependencies in the main and test environments
+      - name: Install main and test dependencies
         run: |
-          julia --project=test -e '
+          # Instantiate the main project environment
+          julia --project=. -e '
             using Pkg;
             Pkg.instantiate();
             Pkg.build();
           '
-        
+          
+          # Instantiate the test project environment (which depends on the main)
+          julia --project=test/ -e '
+            using Pkg;
+            Pkg.instantiate();
+            Pkg.build();
+          '
+
       # Step 4: Install QuantLib.py
       - name: Install QuantLib.py
         run: |
@@ -37,7 +45,7 @@ jobs:
           sudo apt-get install -y python3-pip
           pip3 install QuantLib-Python
 
-      # Step 5: Run QuantLib compatibility tests with custom macro
+      # Step 5: Run QuantLib compatibility tests with custom macro in test environment
       - name: Run QuantLib compatibility tests
         working-directory: test
         run: |
