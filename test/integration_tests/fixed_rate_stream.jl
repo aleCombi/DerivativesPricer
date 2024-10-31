@@ -1,23 +1,24 @@
 # Test with TARGET calendar, 30360 day count convention, and ModifiedFollowing business days adjustment.
 @testitem "Fixed rate stream test" begin
-    using DerivativesPricer
     using BusinessDays
     using Dates
 
+    # schedule configuration
     start_date = Date(2019, 6, 27)
     end_date = Date(2029, 6, 27)
     schedule_config = ScheduleConfig(Year(1); business_days_convention=ModifiedFollowing(), calendar=BusinessDays.TARGET())
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
-    generate_schedule(instrument_schedule)
 
-    day_count_convention = Thirty360()
-    principal = 41800000.0
+    # rate configuration
     rate = 0.00184
-    rate_config = FixedRateConfig(day_count_convention, LinearRate())
+    rate_config = FixedRateConfig(Thirty360(), LinearRate())
     instrument_rate = FixedRate(rate, rate_config)
-    # Create a FixedRateStreamConfig
+
+    # fixed rate stream configuration
+    principal = 41800000.0
     stream_config = FixedStreamConfig(principal, instrument_rate, instrument_schedule)
 
+    # fixed rate stream calculations
     fixed_rate_stream = FixedRateStream(stream_config)
 
     # Expected accrual dates obtained from QuantLib
