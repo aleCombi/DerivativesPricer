@@ -24,6 +24,7 @@ if false
     include("quantlib/date_generation/business_day_conventions.jl")
     include("quantlib/date_generation/calendar.jl")
     include("quantlib/date_generation/schedule_generation.jl")
+    include("quantlib/date_generation/quantlib_conversion_setup.jl")
 
     # integration_tests
     include("integration_tests/include_integration_tests.jl")
