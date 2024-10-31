@@ -14,7 +14,7 @@ if false
     include("unit/rate_definition/rate_conventions.jl")
     include("unit/rate_definition/margin.jl")
 
-    include("fixed_rate_stream.jl")
+    include("quantlib/flow_stream/fixed_rate_stream.jl")
     include("rate_curves.jl")
     include("float_rate_stream.jl")
     include("discount_pricing.jl")

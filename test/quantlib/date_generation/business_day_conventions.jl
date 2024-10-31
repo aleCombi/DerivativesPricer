@@ -16,16 +16,7 @@
     ql_calendar.addHoliday(ql.Date(1,1,2023))
     ql_calendar.addHoliday(ql.Date(25,12,2023))
 
-    # Define the conversion function
-    function ql_to_julia_date(ql_date)
-        # Extract year, month, and day from the QuantLib.Date object
-        year = Int(ql_date.year())
-        month = Int(ql_date.month())
-        day = Int(ql_date.dayOfMonth())
-        
-        # Construct and return the Julia Date
-        return Date(year, month, day)
-    end
+    include("../quantlib_helpers.py")
 end
 
 @testitem "Quantlib PreviousBusinessDay" setup=[BusinessDayConvention] begin
