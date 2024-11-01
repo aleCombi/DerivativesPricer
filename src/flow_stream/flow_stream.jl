@@ -41,10 +41,10 @@ It is used for financial modeling, especially when the rate may vary based on ma
 - `rate::F`: A floating rate associated with the financial instrument.
 - `schedule::InstrumentSchedule`: The schedule or timetable for the flow stream.
 """
-struct FloatStreamConfig{P <: Number, F <: AbstractInstrumentRate} <: AbstractFlowStreamConfig
+struct FloatStreamConfig{P <: Number, F <: AbstractInstrumentRate, S <: AbstractInstrumentSchedule} <: AbstractFlowStreamConfig
     principal::P
     rate::F
-    schedule::InstrumentSchedule
+    schedule::S
 end
 
 """

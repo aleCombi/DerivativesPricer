@@ -1,4 +1,19 @@
-struct SimpleRateStreamSchedules{D, T}
+"""
+    struct SimpleRateStreamSchedules{D <: TimeType, T <: Number}
+
+Represents a schedule for simple rate streams, including payment dates, fixing dates, discount dates, and accrual information.
+
+# Fields
+- `pay_dates::Vector{D}`: A vector containing the dates when payments are due.
+- `fixing_dates::Vector{D}`: A vector of dates for fixing rates, typically set in advance of payment dates.
+- `discount_start_dates::Vector{D}`: A vector of start dates for the discounting period.
+- `discount_end_dates::Vector{D}`: A vector of end dates for the discounting period.
+- `accrual_dates::Vector{D}`: A vector of accrual period start dates.
+- `accrual_day_counts::Vector{T}`: A vector of day count fractions for each accrual period, representing the portion of the year.
+
+This struct organizes dates and day count fractions relevant to simple rate calculations, facilitating accurate interest and discount calculations.
+"""
+struct SimpleRateStreamSchedules{D <: TimeType, T <: Number}
     pay_dates::Vector{D}
     fixing_dates::Vector{D}
     discount_start_dates::Vector{D}
@@ -8,25 +23,35 @@ struct SimpleRateStreamSchedules{D, T}
 end
 
 """
-    FloatRateStream(stream_config::FloatRateStreamConfig) -> FloatingRateStream
+    SimpleRateStreamSchedules(stream_config::FloatStreamConfig{P, SimpleInstrumentRate}) -> SimpleRateStreamSchedules
 
-Creates a `FloatingRateStream` from a given `FloatRateStreamConfig`. This function generates the accrual schedule, calculates the time fractions
-between accrual periods using the specified day count convention, and initializes the floating-rate stream.
+Creates a `SimpleRateStreamSchedules` object from a given `FloatStreamConfig`, setting up schedules for payments, fixings, discounts,
+and accruals.
 
 # Arguments
-- `stream_config::FloatRateStreamConfig`: The configuration specifying the parameters for the floating-rate stream.
+- `stream_config::FloatStreamConfig{P, SimpleInstrumentRate}`: Configuration for the floating rate stream, including payment schedules and rate conventions.
 
 # Returns
-- A `FloatingRateStream` containing the payment dates, accrual dates, fixing dates, and day counts.
-
-# Example
-""" 
-
+- A `SimpleRateStreamSchedules` instance with generated payment, fixing, discount, and accrual dates.
+"""
 function SimpleRateStreamSchedules(stream_config::FloatStreamConfig{P,SimpleInstrumentRate}) where P
     return SimpleRateStreamSchedules(stream_config.schedule, stream_config.rate.rate_config)
 end
 
-function SimpleRateStreamSchedules(instrument_schedule::I, rate_config::R) where {I <: InstrumentSchedule, R<:FloatRateConfig}
+"""
+    SimpleRateStreamSchedules(instrument_schedule::S, rate_config::SimpleRateConfig) -> SimpleRateStreamSchedules
+
+Generates a `SimpleRateStreamSchedules` object using an `AbstractInstrumentSchedule` and a `SimpleRateConfig`. The schedule includes payment dates,
+fixing dates, discount dates, accrual dates, and accrual day counts.
+
+# Arguments
+- `instrument_schedule::S <: AbstractInstrumentSchedule`: The instrument schedule containing information on accrual and payment dates.
+- `rate_config::SimpleRateConfig`: Rate configuration specifying day count conventions and fixing shifts.
+
+# Returns
+- A `SimpleRateStreamSchedules` instance containing payment dates, fixing dates, discount start and end dates, accrual dates, and day counts.
+"""
+function SimpleRateStreamSchedules(instrument_schedule::S, rate_config::SimpleRateConfig) where S <: AbstractInstrumentSchedule
     accrual_dates = generate_schedule(instrument_schedule)
     time_fractions = day_count_fraction(accrual_dates, rate_config.day_count_convention)
     pay_dates = shifted_trimmed_schedule(accrual_dates, instrument_schedule.pay_shift)
@@ -37,23 +62,36 @@ function SimpleRateStreamSchedules(instrument_schedule::I, rate_config::R) where
 end
 
 """
-    FloatingRateStream{D, T} <: FlowStream
+    struct FloatingRateStream{D, T} <: FlowStream
 
-A concrete type representing a stream of floating-rate cash flows. This includes the payment dates, accrual dates, fixing dates,
-and the calculated day counts for each period.
+A type representing a stream of floating-rate cash flows with specified dates for payments, accrual, and rate fixings.
 
 # Fields
-- `config::FloatRateStreamConfig`: The configuration for the floating-rate stream.
-- `pay_dates::Vector{D}`: A vector of payment dates.
-- `fixing_dates::Vector{D}`: A vector of fixing dates.
-- `accrual_dates::Vector{D}`: A vector of accrual period start dates.
-- `accrual_day_counts::Vector{T}`: A vector of calculated day counts for each accrual period.
+- `config::FloatRateStreamConfig`: The configuration details for the floating-rate stream.
+- `pay_dates::Vector{D}`: Vector of payment dates.
+- `fixing_dates::Vector{D}`: Vector of fixing dates, determining when rates are set.
+- `accrual_dates::Vector{D}`: Vector of start dates for each accrual period.
+- `accrual_day_counts::Vector{T}`: Vector of day count fractions for each accrual period.
+
+This struct is primarily used to calculate and manage floating-rate payment streams based on predefined schedules and rate conventions.
 """
 struct SimpleFloatRateStream{P} <: FlowStream where P
-    config::FloatStreamConfig{P,SimpleInstrumentRate}
+    config::FloatStreamConfig{P, SimpleInstrumentRate}
     schedules::SimpleRateStreamSchedules
 end
 
-function SimpleFloatRateStream(config::FloatStreamConfig{P,SimpleInstrumentRate}) where P
+"""
+    SimpleFloatRateStream(config::FloatStreamConfig{P, SimpleInstrumentRate}) -> SimpleFloatRateStream
+
+Creates a `SimpleFloatRateStream` using a given `FloatStreamConfig` configuration. The function initializes the schedules
+for payment, fixing, and accrual based on the input configuration.
+
+# Arguments
+- `config::FloatStreamConfig{P, SimpleInstrumentRate}`: The configuration for the floating-rate stream, specifying schedules and rate conventions.
+
+# Returns
+- A `SimpleFloatRateStream` instance with the calculated schedules.
+"""
+function SimpleFloatRateStream(config::FloatStreamConfig{P, SimpleInstrumentRate}) where P
     return SimpleFloatRateStream(config, SimpleRateStreamSchedules(config))
 end
