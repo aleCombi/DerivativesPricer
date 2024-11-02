@@ -44,7 +44,11 @@ Calculates the compounding factor for linear (simple) interest.
 - The compounding factor based on the linear interest formula.
 """
 function compounding_factor(rate, time_fraction, ::LinearRate)
-    return (1 .+ rate .* time_fraction)
+    return 1 .+ rate .* time_fraction
+end
+
+function implied_rate(accrual_ratiao, time_fraction, ::LinearRate)
+    return (accrual_ratio .- 1) ./ time_fraction
 end
 
 """
@@ -64,6 +68,10 @@ function compounding_factor(rate, time_fraction, rate_type::Compounded)
     return (1 .+ rate ./ rate_type.frequency) .^ (rate_type.frequency .* time_fraction)
 end
 
+function implied_rate(accrual_ratio, time_fraction, rate_type::Compounded)
+    return (accrual_ratio .^ (1 ./ rate_type.frequency ./ time_fraction) .- 1) * rate_type.frequency
+end
+
 """
     compounding_factor(rate, time_fraction, ::Exponential)
 
@@ -78,6 +86,10 @@ Calculates the compounding factor for exponential interest.
 """
 function compounding_factor(rate, time_fraction, ::Exponential)
     return exp.(rate .* time_fraction)
+end
+
+function implied_rate(accrual_ratio, time_fraction, ::Exponential)
+    return log.(accrual_ratio) ./ time_fraction
 end
 
 """

@@ -14,17 +14,18 @@ if false
     include("unit/rate_definition/rate_conventions.jl")
     include("unit/rate_definition/margin.jl")
 
-    include("quantlib/flow_stream/fixed_rate_stream.jl")
     include("rate_curves.jl")
     include("float_rate_stream.jl")
     include("discount_pricing.jl")
 
     # quantlib tests
+    include("quantlib/quantlib_setup.jl")
+
     include("quantlib/day_count_conventions.jl")
     include("quantlib/date_generation/business_day_conventions.jl")
     include("quantlib/date_generation/calendar.jl")
     include("quantlib/date_generation/schedule_generation.jl")
-    include("quantlib/quantlib_setup.jl")
+    include("quantlib/flow_stream/fixed_rate_stream.jl")
 
     # integration_tests
     include("integration_tests/include_integration_tests.jl")
