@@ -35,7 +35,7 @@
     yts = ql.YieldTermStructureHandle(ql.FlatForward(2, ql.TARGET(), 0.05, to_ql_day_count(day_count)))
     engine = ql.DiscountingSwapEngine(yts)
 
-    index = ql.Libor("MyIndex", ql.Period(6, ql.Months), 0, ql.USDCurrency(), ql.TARGET(), to_ql_day_count(day_count))
+    index = ql.IborIndex("MyIndex", ql.Period(6, ql.Months), 0, ql.USDCurrency(), ql.TARGET(), ql.Following, false, to_ql_day_count(day_count))
     floating_rate_leg = ql.IborLeg([1], schedule, index)
     coupons = [float_rate_stream.schedules[i] for i in 1:length(float_rate_stream.schedules)]
     # ql coupon
