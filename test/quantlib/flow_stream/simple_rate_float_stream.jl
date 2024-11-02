@@ -1,5 +1,5 @@
 # act360, linear rate, modified following, 1 month
-@testitem "Quantlib: 2 Month, Linear, ACT360, ModifiedFollowing, Target calendar" setup=[QuantlibSetup] begin
+@testitem "Quantlib: 2 Month, Linear, ACT360, ModifiedFollowing, Target calendar, 10 days fixing shifter from start" setup=[QuantlibSetup] begin
     ## Getting DerivativesPricer Results
     # schedule configuration
     start_date = Date(2019, 6, 27)
@@ -14,7 +14,7 @@
     rate = 0.0047
     day_count = ACT360()
     rate_type = LinearRate()
-    rate_config = SimpleRateConfig(day_count, rate_type, BusinessDayShift(0, calendar, false), AdditiveMargin())
+    rate_config = SimpleRateConfig(day_count, rate_type, BusinessDayShift(-10, calendar, false), AdditiveMargin())
     instrument_rate = SimpleInstrumentRate(RateIndex("rate_index"), rate_config)
 
     # fixed rate stream configuration
@@ -35,7 +35,7 @@
     yts = ql.YieldTermStructureHandle(ql.FlatForward(2, ql.TARGET(), 0.05, to_ql_day_count(day_count)))
     engine = ql.DiscountingSwapEngine(yts)
 
-    index = ql.IborIndex("MyIndex", ql.Period(6, ql.Months), 0, ql.USDCurrency(), ql.TARGET(), ql.Following, false, to_ql_day_count(day_count))
+    index = ql.IborIndex("MyIndex", ql.Period(6, ql.Months), 10, ql.USDCurrency(), ql.TARGET(), ql.Following, false, to_ql_day_count(day_count))
     floating_rate_leg = ql.IborLeg([1], schedule, index)
     coupons = [float_rate_stream.schedules[i] for i in 1:length(float_rate_stream.schedules)]
     # ql coupon
@@ -57,7 +57,8 @@
     for (i, (ql_coupon, coupon)) in enumerate(zip(ql_coupons, coupons))
         @assert coupon.accrual_start == to_julia_date(ql_coupon.accrualStartDate())
         @assert coupon.accrual_end == to_julia_date(ql_coupon.accrualEndDate())
-        println(coupon.fixing_date, to_julia_date(ql_coupon.fixingDate()))
+        println(coupon.fixing_date)
+        println(to_julia_date(ql_coupon.fixingDate()))
         @assert coupon.fixing_date == to_julia_date(ql_coupon.fixingDate())
         @assert coupon.pay_date == to_julia_date(ql_coupon.date())
     end
