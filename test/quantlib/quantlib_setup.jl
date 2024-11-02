@@ -12,16 +12,11 @@
     # Define a custom QuantLib calendar with weekends, Christmas and New Year
     ql = pyimport("QuantLib")
     ql_calendar = ql.WeekendsOnly()
-    ql_calendar.addHoliday(ql.Date(1,1,2023))
-    ql_calendar.addHoliday(ql.Date(25,12,2023))
+    ql_calendar.addHoliday(ql.Date(1, 1, 2023))
+    ql_calendar.addHoliday(ql.Date(25, 12, 2023))
 end
 
 @testsnippet QuantlibSetup begin
-    using Dates
-    using BusinessDays
-    using PyCall
-    ql = pyimport("QuantLib")
-
     using Dates
     using BusinessDays
     using PyCall
@@ -41,19 +36,22 @@ end
 
     to_ql_calendar(::WeekendsOnly) = ql.WeekendsOnly()
     to_ql_calendar(::BusinessDays.USGovernmentBond) = ql.UnitedStates(ql.UnitedStates.GovernmentBond)
+    to_ql_calendar(::BusinessDays.TARGET) = ql.TARGET()
+    to_ql_day_count(::ACT360) = ql.Actual360()
+    to_ql_day_count(::ACT365) = ql.Actual365Fixed()
     # Helper function to generate QuantLib schedule for comparison
-    function generate_quantlib_schedule(
-        start_date::Date, 
-        end_date::Date, 
-        period::Period, 
-        calendar, 
-        roll_convention, 
-        business_day_convention, 
-        termination_bd_convention, 
+    function get_quantlib_schedule(
+        start_date::Date,
+        end_date::Date,
+        period::Period,
+        calendar,
+        roll_convention,
+        business_day_convention,
+        termination_bd_convention,
         stub_position;
         first_date=nothing,
         next_to_last_date=nothing)
-        
+
         # Setting first date and penultimate date, this is how quantlib does long stubs
         ql_first_date = isnothing(first_date) ? ql.Date() : to_ql_date(first_date)
         ql_next_to_last_date = isnothing(next_to_last_date) ? ql.Date() : to_ql_date(next_to_last_date)
@@ -65,24 +63,38 @@ end
         ql_calendar = to_ql_calendar(calendar)
         end_of_month = roll_convention isa EOMRollConvention
         ql_business_day_convention = to_ql_business_day_convention(business_day_convention)
-        ql_termination_bd_convention =  to_ql_business_day_convention(termination_bd_convention)
+        ql_termination_bd_convention = to_ql_business_day_convention(termination_bd_convention)
         ql_date_generation_direction = to_ql_date_generation(stub_position)
 
         # Generate the QuantLib schedule
         ql_schedule = ql.Schedule(
-            ql_start, 
-            ql_end, 
-            ql_period, 
-            ql_calendar, 
-            ql_business_day_convention, 
-            ql_termination_bd_convention, 
+            ql_start,
+            ql_end,
+            ql_period,
+            ql_calendar,
+            ql_business_day_convention,
+            ql_termination_bd_convention,
             ql_date_generation_direction,
             end_of_month,
             ql_first_date,
             ql_next_to_last_date
         )
-        
-        # Convert QuantLib Dates back to Julia Dates
+
+        return ql_schedule
+    end
+
+    function generate_quantlib_schedule(
+        start_date::Date,
+        end_date::Date,
+        period::Period,
+        calendar,
+        roll_convention,
+        business_day_convention,
+        termination_bd_convention,
+        stub_position;
+        first_date=nothing,
+        next_to_last_date=nothing)
+        ql_schedule = get_quantlib_schedule(start_date, end_date, period, calendar, roll_convention, business_day_convention, termination_bd_convention, stub_position; first_date=first_date, next_to_last_date=next_to_last_date)
         return [to_julia_date(dt) for dt in ql_schedule]
     end
     calendar_weekends = WeekendsOnly()
