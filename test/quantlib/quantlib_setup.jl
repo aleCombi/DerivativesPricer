@@ -1,4 +1,6 @@
 @testsnippet QuantlibDateConversion begin
+    using Dates
+    using BusinessDays
     using PyCall
     ql = pyimport("QuantLib")
 

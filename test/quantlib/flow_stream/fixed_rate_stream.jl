@@ -1,7 +1,5 @@
 # act360, linear rate, modified following, 1 month
 @testitem "Quantlib: 2 Month, Linear, ACT360, ModifiedFollowing, Target calendar" setup=[QuantlibDateConversion] begin
-    using Dates
-    using BusinessDays
     ## Getting DerivativesPricer Results
     # schedule configuration
     start_date = Date(2019, 6, 27)
@@ -38,8 +36,6 @@
 end
 
 @testitem "Quantlib: 2 Month, Linear, ACT360, ModifiedFollowing, Target calendar" setup=[QuantlibDateConversion] begin
-    using Dates
-    using BusinessDays
     ## Getting DerivativesPricer Results
     # schedule configuration
     start_date = Date(2019, 6, 27)
