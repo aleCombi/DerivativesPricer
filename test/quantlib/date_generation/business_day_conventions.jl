@@ -1,4 +1,4 @@
-@testitem "Quantlib PreviousBusinessDay" setup=[QuantlibBusinessDayConvention] begin
+@testitem "Quantlib PreviousBusinessDay" setup=[QuantlibBusinessDayConvention, QuantlibDateConversion] begin
     date = Date(2023, 1, 1)  # First of the year
 
     business_day_convention = ql.Preceding
@@ -9,7 +9,7 @@
     @test result == expected_date
 end
 
-@testitem "Quantlib NextBusinessDay" setup=[QuantlibBusinessDayConvention] begin
+@testitem "Quantlib NextBusinessDay" setup=[QuantlibBusinessDayConvention, QuantlibDateConversion] begin
     date = Date(2023, 12, 24)  # A Sunday
 
     business_day_convention = ql.Following
@@ -20,7 +20,7 @@ end
     @test result == expected_date
 end
 
-@testitem "Quantlib Indifferent" setup=[QuantlibBusinessDayConvention] begin
+@testitem "Quantlib Indifferent" setup=[QuantlibBusinessDayConvention, QuantlibDateConversion] begin
     date = Date(2023, 7, 15)  # A Saturday
     
     business_day_convention = ql.Unadjusted
@@ -31,7 +31,7 @@ end
     @test result == expected_date
 end
 
-@testitem "Quantlib ModifiedFollowing" setup=[QuantlibBusinessDayConvention] begin
+@testitem "Quantlib ModifiedFollowing" setup=[QuantlibBusinessDayConvention, QuantlibDateConversion] begin
     date = Date(2023, 12, 31)  # A Sunday
     
     business_day_convention = ql.ModifiedFollowing
@@ -42,7 +42,7 @@ end
     @test result == expected_date
 end
 
-@testitem "Quantlib ModifiedPreceding" setup=[QuantlibBusinessDayConvention] begin
+@testitem "Quantlib ModifiedPreceding" setup=[QuantlibBusinessDayConvention, QuantlibDateConversion] begin
     date = Date(2023, 1, 1)  # A Sunday
 
     business_day_convention = ql.ModifiedPreceding

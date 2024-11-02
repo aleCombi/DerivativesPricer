@@ -47,7 +47,19 @@ function compounding_factor(rate, time_fraction, ::LinearRate)
     return 1 .+ rate .* time_fraction
 end
 
-function implied_rate(accrual_ratiao, time_fraction, ::LinearRate)
+"""
+    implied_rate(accrual_ratio, time_fraction, ::LinearRate)
+
+Calculates the implied interest rate for linear (simple) interest given an accrual ratio.
+
+# Arguments
+- `accrual_ratio`: The ratio of the final to the initial principal (e.g., 1.05 for a 5% increase).
+- `time_fraction`: The time fraction over which the rate is applied (e.g., 1 for one year).
+
+# Returns
+- The implied rate as a decimal, derived based on simple interest.
+"""
+function implied_rate(accrual_ratio, time_fraction, ::LinearRate)
     return (accrual_ratio .- 1) ./ time_fraction
 end
 
@@ -68,6 +80,19 @@ function compounding_factor(rate, time_fraction, rate_type::Compounded)
     return (1 .+ rate ./ rate_type.frequency) .^ (rate_type.frequency .* time_fraction)
 end
 
+"""
+    implied_rate(accrual_ratio, time_fraction, rate_type::Compounded)
+
+Calculates the implied interest rate for compound interest given an accrual ratio and compounding frequency.
+
+# Arguments
+- `accrual_ratio`: The ratio of the final to the initial principal.
+- `time_fraction`: The time fraction over which the rate is applied.
+- `rate_type::Compounded`: An instance of `Compounded`, which specifies the compounding frequency.
+
+# Returns
+- The implied rate as a decimal, adjusted for the compounding frequency.
+"""
 function implied_rate(accrual_ratio, time_fraction, rate_type::Compounded)
     return (accrual_ratio .^ (1 ./ rate_type.frequency ./ time_fraction) .- 1) * rate_type.frequency
 end
@@ -88,6 +113,18 @@ function compounding_factor(rate, time_fraction, ::Exponential)
     return exp.(rate .* time_fraction)
 end
 
+"""
+    implied_rate(accrual_ratio, time_fraction, ::Exponential)
+
+Calculates the implied interest rate for exponential interest given an accrual ratio.
+
+# Arguments
+- `accrual_ratio`: The ratio of the final to the initial principal.
+- `time_fraction`: The time fraction over which the rate is applied.
+
+# Returns
+- The implied rate as a decimal based on continuous compounding.
+"""
 function implied_rate(accrual_ratio, time_fraction, ::Exponential)
     return log.(accrual_ratio) ./ time_fraction
 end
