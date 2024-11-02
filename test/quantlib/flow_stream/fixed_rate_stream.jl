@@ -1,5 +1,5 @@
 # act360, linear rate, modified following, 1 month
-@testitem "Quantlib: 2 Month, Linear, ACT360, ModifiedFollowing, Target calendar" setup=[QuantlibDateConversion] begin
+@testitem "Quantlib: 2 Month, Linear, ACT360, ModifiedFollowing, Target calendar" setup=[QuantlibSetup] begin
     ## Getting DerivativesPricer Results
     # schedule configuration
     start_date = Date(2019, 6, 27)
@@ -21,8 +21,8 @@
 
     ## Getting Quanatlib Results
 
-    ql_start_date = julia_to_ql_date(start_date)
-    ql_end_date = julia_to_ql_date(end_date)
+    ql_start_date = to_ql_date(start_date)
+    ql_end_date = to_ql_date(end_date)
 
     # Define schedule with NullCalendar (treat all days as business)
     schedule = ql.Schedule(ql_start_date, ql_end_date, ql.Period(ql.Monthly),
@@ -35,7 +35,7 @@
     @test isapprox(ql_fixed_flows, fixed_rate_stream.cash_flows; atol=1e-15)
 end
 
-@testitem "Quantlib: 2 Month, Linear, ACT360, ModifiedFollowing, Target calendar" setup=[QuantlibDateConversion] begin
+@testitem "Quantlib: 2 Month, Linear, ACT360, ModifiedFollowing, Target calendar" setup=[QuantlibSetup] begin
     ## Getting DerivativesPricer Results
     # schedule configuration
     start_date = Date(2019, 6, 27)
@@ -57,8 +57,8 @@ end
 
     ## Getting Quanatlib Results
 
-    ql_start_date = julia_to_ql_date(start_date)
-    ql_end_date = julia_to_ql_date(end_date)
+    ql_start_date = to_ql_date(start_date)
+    ql_end_date = to_ql_date(end_date)
 
     # Define schedule with NullCalendar (treat all days as business)
     schedule = ql.Schedule(ql_start_date, ql_end_date, ql.Period(ql.Monthly),

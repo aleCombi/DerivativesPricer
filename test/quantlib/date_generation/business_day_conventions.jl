@@ -3,7 +3,7 @@
 
     business_day_convention = ql.Preceding
     original_date = ql.Date(1, 1, 2023)
-    expected_date = ql_calendar.adjust(original_date, business_day_convention) |> ql_to_julia_date
+    expected_date = ql_calendar.adjust(original_date, business_day_convention) |> to_julia_date
 
     result = adjust_date(date, calendar, PrecedingBusinessDay()) 
     @test result == expected_date
@@ -14,7 +14,7 @@ end
 
     business_day_convention = ql.Following
     original_date = ql.Date(24, 12, 2023)
-    expected_date = ql_calendar.adjust(original_date, business_day_convention) |> ql_to_julia_date
+    expected_date = ql_calendar.adjust(original_date, business_day_convention) |> to_julia_date
 
     result = adjust_date(date, calendar, FollowingBusinessDay())
     @test result == expected_date
@@ -25,7 +25,7 @@ end
     
     business_day_convention = ql.Unadjusted
     original_date = ql.Date(15, 7, 2023)
-    expected_date = ql_calendar.adjust(original_date, business_day_convention) |> ql_to_julia_date
+    expected_date = ql_calendar.adjust(original_date, business_day_convention) |> to_julia_date
 
     result = adjust_date(date, calendar, NoneBusinessDayConvention())
     @test result == expected_date
@@ -36,7 +36,7 @@ end
     
     business_day_convention = ql.ModifiedFollowing
     original_date = ql.Date(31, 12, 2023)
-    expected_date = ql_calendar.adjust(original_date, business_day_convention) |> ql_to_julia_date
+    expected_date = ql_calendar.adjust(original_date, business_day_convention) |> to_julia_date
 
     result = adjust_date(date, calendar, ModifiedFollowing())
     @test result == expected_date
@@ -47,14 +47,14 @@ end
 
     business_day_convention = ql.ModifiedPreceding
     original_date = ql.Date(1, 1, 2023)
-    expected_date = ql_calendar.adjust(original_date, business_day_convention) |> ql_to_julia_date
+    expected_date = ql_calendar.adjust(original_date, business_day_convention) |> to_julia_date
 
     result = adjust_date(date, calendar, ModifiedPreceding())
     @test result == expected_date
 
     date = Date(2023, 10, 14)  # A Saturday
     original_date = ql.Date(14, 10, 2023)
-    expected_date = ql_calendar.adjust(original_date, business_day_convention) |> ql_to_julia_date
+    expected_date = ql_calendar.adjust(original_date, business_day_convention) |> to_julia_date
 
     result = adjust_date(date, calendar, ModifiedPreceding())
     @test result == expected_date

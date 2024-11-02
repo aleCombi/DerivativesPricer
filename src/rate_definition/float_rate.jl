@@ -45,6 +45,10 @@ struct SimpleRateConfig{D<:DayCount, L<:RateType, C<:AbstractShift, N<:MarginCon
     margin::N
 end
 
+function SimpleRateConfig(day_count_convention::D, rate_type::L) where {D<:DayCount, L<:RateType}
+    return SimpleRateConfig(day_count_convention, rate_type, NoShift(), AdditiveMargin())
+end
+
 """
     CompoundRateConfig{D<:DayCount, L<:RateType, C<:AbstractShift, S<:AbstractScheduleConfig, M<:CompoundMargin} <: FloatRateConfig
 

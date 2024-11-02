@@ -1,24 +1,3 @@
-@testsnippet QuantlibDateConversion begin
-    using Dates
-    using BusinessDays
-    using PyCall
-    ql = pyimport("QuantLib")
-
-    function ql_to_julia_date(ql_date)
-        # Extract year, month, and day from the QuantLib.Date object
-        year = Int(ql_date.year())
-        month = Int(ql_date.month())
-        day = Int(ql_date.dayOfMonth())
-        
-        # Construct and return the Julia Date
-        return Date(year, month, day)
-    end
-
-    function julia_to_ql_date(julia_date)
-        return ql.Date(day(julia_date), month(julia_date), year(julia_date))
-    end
-end
-
 @testsnippet QuantlibBusinessDayConvention begin
     using Dates
     using BusinessDays
@@ -35,4 +14,77 @@ end
     ql_calendar = ql.WeekendsOnly()
     ql_calendar.addHoliday(ql.Date(1,1,2023))
     ql_calendar.addHoliday(ql.Date(25,12,2023))
+end
+
+@testsnippet QuantlibSetup begin
+    using Dates
+    using BusinessDays
+    using PyCall
+    ql = pyimport("QuantLib")
+
+    using Dates
+    using BusinessDays
+    using PyCall
+    ql = pyimport("QuantLib")
+
+    to_julia_date(ql_date) = Date(Int(ql_date.year()), Int(ql_date.month()), Int(ql_date.dayOfMonth()))
+    to_ql_date(julia_date) = ql.Date(day(julia_date), month(julia_date), year(julia_date))
+
+    to_ql_business_day_convention(::FollowingBusinessDay) = ql.Following
+    to_ql_business_day_convention(::PrecedingBusinessDay) = ql.Preceding
+    to_ql_business_day_convention(::ModifiedPreceding) = ql.ModifiedPreceding
+    to_ql_business_day_convention(::NoneBusinessDayConvention) = ql.None
+    to_ql_business_day_convention(::ModifiedFollowing) = ql.ModifiedFollowing
+
+    to_ql_date_generation(::InArrearsStubPosition) = ql.DateGeneration.Forward
+    to_ql_date_generation(::UpfrontStubPosition) = ql.DateGeneration.Backward
+
+    to_ql_calendar(::WeekendsOnly) = ql.WeekendsOnly()
+    to_ql_calendar(::BusinessDays.USGovernmentBond) = ql.UnitedStates(ql.UnitedStates.GovernmentBond)
+    # Helper function to generate QuantLib schedule for comparison
+    function generate_quantlib_schedule(
+        start_date::Date, 
+        end_date::Date, 
+        period::Period, 
+        calendar, 
+        roll_convention, 
+        business_day_convention, 
+        termination_bd_convention, 
+        stub_position;
+        first_date=nothing,
+        next_to_last_date=nothing)
+        
+        # Setting first date and penultimate date, this is how quantlib does long stubs
+        ql_first_date = isnothing(first_date) ? ql.Date() : to_ql_date(first_date)
+        ql_next_to_last_date = isnothing(next_to_last_date) ? ql.Date() : to_ql_date(next_to_last_date)
+
+        # settings ql schedule arguments
+        ql_start = to_ql_date(start_date)
+        ql_end = to_ql_date(end_date)
+        ql_period = ql.Period(period.value, ql.Months)  # Assuming period is of type Month for this function
+        ql_calendar = to_ql_calendar(calendar)
+        end_of_month = roll_convention isa EOMRollConvention
+        ql_business_day_convention = to_ql_business_day_convention(business_day_convention)
+        ql_termination_bd_convention =  to_ql_business_day_convention(termination_bd_convention)
+        ql_date_generation_direction = to_ql_date_generation(stub_position)
+
+        # Generate the QuantLib schedule
+        ql_schedule = ql.Schedule(
+            ql_start, 
+            ql_end, 
+            ql_period, 
+            ql_calendar, 
+            ql_business_day_convention, 
+            ql_termination_bd_convention, 
+            ql_date_generation_direction,
+            end_of_month,
+            ql_first_date,
+            ql_next_to_last_date
+        )
+        
+        # Convert QuantLib Dates back to Julia Dates
+        return [to_julia_date(dt) for dt in ql_schedule]
+    end
+    calendar_weekends = WeekendsOnly()
+    calendar_us = BusinessDays.USGovernmentBond()
 end

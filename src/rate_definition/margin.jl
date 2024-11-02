@@ -18,6 +18,10 @@ struct AdditiveMargin{N<:Number} <: MarginConfig
     margin::N
 end
 
+function AdditiveMargin()
+    return AdditiveMargin(0)
+end
+
 """
     MultiplicativeMargin{N<:Number}
 
