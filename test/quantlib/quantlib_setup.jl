@@ -33,7 +33,7 @@ end
     to_ql_business_day_convention(::FollowingBusinessDay) = ql.Following
     to_ql_business_day_convention(::PrecedingBusinessDay) = ql.Preceding
     to_ql_business_day_convention(::ModifiedPreceding) = ql.ModifiedPreceding
-    to_ql_business_day_convention(::NoneBusinessDayConvention) = ql.None
+    to_ql_business_day_convention(::NoneBusinessDayConvention) = ql.Unadjusted
     to_ql_business_day_convention(::ModifiedFollowing) = ql.ModifiedFollowing
 
     to_ql_date_generation(::InArrearsStubPosition) = ql.DateGeneration.Forward
