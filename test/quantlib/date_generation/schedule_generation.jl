@@ -16,7 +16,7 @@
     # Generate QuantLib schedule
     quantlib_schedule = generate_quantlib_schedule(start_date, end_date, period, calendar_weekends, roll_convention, 
                                                    business_day_convention, termination_bd_convention, InArrearsStubPosition())
-
+    
     @test julia_schedule == quantlib_schedule
 end
 

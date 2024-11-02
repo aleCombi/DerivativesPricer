@@ -127,6 +127,9 @@ Shifts the input schedule by a specified number of business days according to a 
 - The business day-shifted schedule of dates.
 """
 function shifted_schedule(schedule, shift_rule::BusinessDayShift)
+    if shift_rule.shift == 0
+        return tobday.(shift_rule.calendar, schedule; forward=true)
+    end
     return advancebdays.(shift_rule.calendar, schedule, shift_rule.shift)
 end
 
