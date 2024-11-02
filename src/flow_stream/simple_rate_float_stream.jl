@@ -62,6 +62,48 @@ function SimpleRateStreamSchedules(instrument_schedule::S, rate_config::SimpleRa
 end
 
 """
+    Base.getindex(obj::SimpleRateStreamSchedules, index::Int) -> NamedTuple
+
+Allows indexing into a `SimpleRateStreamSchedules` object using square brackets (`[]`). Returns a named tuple containing the relevant schedule dates for the specified index.
+
+# Arguments
+- `obj::SimpleRateStreamSchedules`: The `SimpleRateStreamSchedules` instance to index into.
+- `index::Int`: The position in the schedule to retrieve.
+
+# Returns
+- A named tuple with the following fields:
+    - `accrual_start`: The start date of the accrual period.
+    - `accrual_end`: The end date of the accrual period.
+    - `fixing_date`: The fixing date for the interest rate.
+    - `pay_date`: The payment date.
+    - `discount_first_date`: The start date for the discounting period.
+    - `discount_end_date`: The end date for the discounting period.
+"""
+function Base.getindex(obj::SimpleRateStreamSchedules, index::Int)
+    return (accrual_start = obj.accrual_dates[index],
+            accrual_end = obj.accrual_dates[index + 1],
+            fixing_date = obj.fixing_dates[index],
+            pay_date = obj.pay_dates[index],
+            discount_first_date = obj.discount_start_dates[index],
+            discount_end_date = obj.discount_end_dates[index])
+end
+
+"""
+    Base.length(obj::SimpleRateStreamSchedules) -> Int
+
+Returns the number of periods in the `SimpleRateStreamSchedules` object by measuring the length of the `fixing_dates` vector.
+
+# Arguments
+- `obj::SimpleRateStreamSchedules`: The `SimpleRateStreamSchedules` instance whose length is to be determined.
+
+# Returns
+- The number of periods in the schedule, represented as an integer.
+"""
+function Base.length(obj::SimpleRateStreamSchedules)
+    return length(obj.fixing_dates)
+end
+
+"""
     struct FloatingRateStream{D, T} <: FlowStream
 
 A type representing a stream of floating-rate cash flows with specified dates for payments, accrual, and rate fixings.
