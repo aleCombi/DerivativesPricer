@@ -16,6 +16,15 @@ end
     @test result == 12.5
 end
 
+@testitem "apply_margin with AdditiveMargin default value 0" begin
+    rate = 10.0
+    margin = AdditiveMargin()
+    result = apply_margin(rate, margin)
+    
+    @test result == rate + margin.margin
+    @test result == rate
+end
+
 @testitem "apply_margin with AdditiveMargin (Int type)" begin
     rate = 5
     margin = AdditiveMargin(3)

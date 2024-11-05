@@ -18,6 +18,14 @@ struct AdditiveMargin{N<:Number} <: MarginConfig
     margin::N
 end
 
+"""
+    AdditiveMargin()
+
+Constructs an `AdditiveMargin` with a default margin of `0`.
+
+# Returns
+An instance of `AdditiveMargin` initialized with a default value of `0`, representing a zero margin or spread.
+"""
 function AdditiveMargin()
     return AdditiveMargin(0)
 end
