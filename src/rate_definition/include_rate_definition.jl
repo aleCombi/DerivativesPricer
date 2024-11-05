@@ -5,7 +5,7 @@ include("float_rate.jl")
 
 export 
     # rate_conventions.jl
-    RateType, LinearRate, Compounded, Exponential, calculate_interest, discount_interest, compounding_factor,
+    RateType, LinearRate, Compounded, Exponential, calculate_interest, discount_interest, compounding_factor, implied_rate,
     # fixed_rate.jl
     FixedRateConfig, FixedRate,
     # float_rate.jl
