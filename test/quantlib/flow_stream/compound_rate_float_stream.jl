@@ -1,4 +1,5 @@
 # for the quantlib implementation, cf. https://www.implementingquantlib.com/2024/09/sub-periods-coupons.html 
+# unfortunately, this looks quite newly implemented in ql, hence it should be taken with caution and tested otherwise
 # act360, linear rate, modified following, 1 month
 @testitem "Quantlib: compound schedules" setup=[QuantlibSetup] begin
     ## Getting Quanatlib Results
@@ -15,7 +16,7 @@
     rate = 0.0047
     day_count = ACT360()
     rate_type = LinearRate()
-    compound_schedule = ScheduleConfig(sub_period)
+    compound_schedule = ScheduleConfig(sub_period; stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT360(), LinearRate(), BusinessDayShift(-2, WeekendsOnly(),false), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
     instrument_rate = CompoundInstrumentRate(RateIndex("compounded_rate_index"), rate_config)
 
@@ -56,8 +57,14 @@
 
     # compare schedules per coupon
     for (i, (ql_coupon, c)) in enumerate(zip(ql_coupons[1:end-1], compounding_schedules))
-        for (ql_fixing_date,fixing_date) in zip(ql_coupon.fixingDates(),c.fixing_dates)
-            println(to_julia_date(ql_fixing_date), fixing_date)
+        @assert to_julia_date(ql_coupon.accrualStartDate()) == c.accrual_dates[1]
+        @assert to_julia_date(ql_coupon.accrualEndDate()) == c.accrual_dates[end]
+        println(pybuiltin("dir")(ql_coupon))
+        println(pybuiltin("type")(ql_coupon))
+
+        for (j, (ql_fixing_date,fixing_date)) in enumerate(zip(ql_coupon.fixingDates(),c.fixing_dates))
+            println(to_julia_date(ql_fixing_date), " vs ", fixing_date)
+            println(c[j].accrual_start)
             @assert to_julia_date(ql_fixing_date) == fixing_date
         end
     end
