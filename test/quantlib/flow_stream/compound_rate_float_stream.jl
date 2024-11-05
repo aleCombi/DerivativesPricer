@@ -16,7 +16,7 @@
     day_count = ACT360()
     rate_type = LinearRate()
     compound_schedule = ScheduleConfig(sub_period)
-    rate_config = CompoundRateConfig(ACT360(), LinearRate(), NoShift(), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
+    rate_config = CompoundRateConfig(ACT360(), LinearRate(), BusinessDayShift(-2, WeekendsOnly(),false), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
     instrument_rate = CompoundInstrumentRate(RateIndex("compounded_rate_index"), rate_config)
 
     # fixed rate stream configuration
@@ -24,36 +24,41 @@
     stream_config = FloatStreamConfig(principal, instrument_rate, instrument_schedule)
 
     # float rate stream calculations
-    float_rate_stream = DerivativesPricer.CompoundFloatRateStream(stream_config)
+    float_rate_stream = CompoundFloatRateStream(stream_config)
+    compounding_schedules = float_rate_stream.schedules.compounding_schedules
+    compounding_schedules = [x for x in compounding_schedules]
+    coupons = [coupon for schedule in compounding_schedules for coupon in schedule]
 
     # quantlib
-    ql_start_date = to_ql_date(start_date)
-    ql_end_date = to_ql_date(end_date)
 
     # Define schedule
     schedule = get_quantlib_schedule(start_date, end_date, period, calendar, NoRollConvention(), business_day_convention, business_day_convention, schedule_config.stub_period.position)
-    
+
     yts = ql.YieldTermStructureHandle(ql.FlatForward(2, ql.TARGET(), 0.05, to_ql_day_count(day_count)))
     engine = ql.DiscountingSwapEngine(yts)
 
-    index = ql.IborIndex("MyIndex", ql.Period(1, ql.Months), 1, ql.USDCurrency(), ql.WeekendsOnly(), ql.Following, false, to_ql_day_count(day_count))
+    index = ql.IborIndex("MyIndex", ql.Period(1, ql.Months), 2, ql.USDCurrency(), ql.WeekendsOnly(), ql.Following, false, to_ql_day_count(day_count))
     nominal = 100.0
-    coupons = ql.SubPeriodsLeg(
+    sub_period_leg = ql.SubPeriodsLeg(
         [nominal],
         schedule,
         index,
         paymentLag=2,
         averagingMethod=ql.RateAveraging.Compound)
 
-    ql_coupons = [ql.as_floating_rate_coupon(coupon) for coupon in coupons]
+    settlement_days = 3
+    calendar = ql.TARGET()
+    bond = ql.Bond(settlement_days, calendar, schedule[1], sub_period_leg)
+
+    ql_coupons = [ql.as_sub_periods_coupon(cf) for cf in bond.cashflows()]
+    println(length(ql_coupons[1:end-1]))
+    println(length(compounding_schedules))
 
     # compare schedules per coupon
-    for (i, (ql_coupon, coupon)) in enumerate(zip(ql_coupons, coupons))
-        @assert coupon.accrual_start == to_julia_date(ql_coupon.accrualStartDate())
-        @assert coupon.accrual_end == to_julia_date(ql_coupon.accrualEndDate())
-        println(coupon.fixing_date)
-        println(to_julia_date(ql_coupon.fixingDate()))
-        @assert coupon.fixing_date == to_julia_date(ql_coupon.fixingDate())
-        @assert coupon.pay_date == to_julia_date(ql_coupon.date())
+    for (i, (ql_coupon, c)) in enumerate(zip(ql_coupons[1:end-1], compounding_schedules))
+        for (ql_fixing_date,fixing_date) in zip(ql_coupon.fixingDates(),c.fixing_dates)
+            println(to_julia_date(ql_fixing_date), fixing_date)
+            @assert to_julia_date(ql_fixing_date) == fixing_date
+        end
     end
 end

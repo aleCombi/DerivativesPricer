@@ -88,6 +88,11 @@ function Base.getindex(obj::SimpleRateStreamSchedules, index::Int)
             discount_end_date = obj.discount_end_dates[index])
 end
 
+function Base.iterate(s::SimpleRateStreamSchedules, state=1)
+    state > length(s) && return nothing
+    return s[state], state + 1
+end
+
 """
     Base.length(obj::SimpleRateStreamSchedules) -> Int
 
