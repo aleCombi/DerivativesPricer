@@ -12,7 +12,7 @@
     rate_index = RateIndex("dummy")  # Dummy rate index
     rate_convention = DummyRateType()  # Dummy rate convention
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
-    rate_config = SimpleRateConfig(day_count_convention, rate_convention, NoShift(), AdditiveMargin(0))
+    rate_config = SimpleRateConfig(day_count_convention, rate_convention)
     instrument_rate = SimpleInstrumentRate(rate_index, rate_config)
     stream_config = FloatStreamConfig(principal, instrument_rate, instrument_schedule)
 

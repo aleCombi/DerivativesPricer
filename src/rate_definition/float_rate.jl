@@ -45,6 +45,16 @@ struct SimpleRateConfig{D<:DayCount, L<:RateType, C<:AbstractShift, N<:MarginCon
     margin::N
 end
 
+"""
+    SimpleRateConfig(day_count_convention::D, rate_type::L) where {D<:DayCount, L<:RateType}
+
+Constructs a `SimpleRateConfig` with default values for `fixing_shift` (set to `NoShift()`) and `margin` 
+(set to `AdditiveMargin()`) given the specified day count convention and rate type.
+
+# Arguments
+- `day_count_convention::D`: The day count convention for calculating time fractions (e.g., Actual/360).
+- `rate_type::L`: The floating rate type.
+"""
 function SimpleRateConfig(day_count_convention::D, rate_type::L) where {D<:DayCount, L<:RateType}
     return SimpleRateConfig(day_count_convention, rate_type, NoShift(), AdditiveMargin())
 end
