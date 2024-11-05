@@ -11,4 +11,4 @@ export
     # simple_rate_float_stream.jl
     SimpleRateStreamSchedules, SimpleFloatRateStream,
     # compound_rate_float_stream.jl
-    CompoundedRateStreamSchedules
+    CompoundedRateStreamSchedules, CompoundFloatRateStream

@@ -101,5 +101,5 @@ and multiplies it by `(1 + margin)`.
 - The rate after applying the multiplicative margin (i.e., `rate * (1 + margin.margin)`).
 """
 function apply_margin(rate, margin::MultiplicativeMargin)
-    return rate .* (1 + margin.margin)
+    return rate .* (1 .+ margin.margin)
 end

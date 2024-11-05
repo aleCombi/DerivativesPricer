@@ -5,7 +5,8 @@
     start_date = Date(2019, 6, 27)
     end_date = Date(2029, 6, 27)
     business_day_convention=ModifiedFollowing()
-    period = Month(1)
+    period = Month(3)
+    sub_period = Month(1)
     calendar=BusinessDays.TARGET()
     schedule_config = ScheduleConfig(period; business_days_convention=business_day_convention, calendar=calendar)
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
@@ -14,15 +15,16 @@
     rate = 0.0047
     day_count = ACT360()
     rate_type = LinearRate()
-    rate_config = SimpleRateConfig(day_count, rate_type, BusinessDayShift(-1, WeekendsOnly(), false), AdditiveMargin())
-    instrument_rate = SimpleInstrumentRate(RateIndex("rate_index"), rate_config)
+    compound_schedule = ScheduleConfig(sub_period)
+    rate_config = CompoundRateConfig(ACT360(), LinearRate(), NoShift(), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
+    instrument_rate = CompoundInstrumentRate(RateIndex("compounded_rate_index"), rate_config)
 
     # fixed rate stream configuration
     principal = 1
     stream_config = FloatStreamConfig(principal, instrument_rate, instrument_schedule)
 
     # float rate stream calculations
-    float_rate_stream = SimpleFloatRateStream(stream_config)
+    float_rate_stream = DerivativesPricer.CompoundFloatRateStream(stream_config)
 
     # quantlib
     ql_start_date = to_ql_date(start_date)
@@ -43,7 +45,7 @@
         paymentLag=2,
         averagingMethod=ql.RateAveraging.Compound)
 
-        ql_coupons = [ql.as_floating_rate_coupon(coupon) for coupon in coupons]
+    ql_coupons = [ql.as_floating_rate_coupon(coupon) for coupon in coupons]
 
     # compare schedules per coupon
     for (i, (ql_coupon, coupon)) in enumerate(zip(ql_coupons, coupons))

@@ -51,7 +51,7 @@ fixing dates, discount dates, accrual dates, and accrual day counts.
 # Returns
 - A `SimpleRateStreamSchedules` instance containing payment dates, fixing dates, discount start and end dates, accrual dates, and day counts.
 """
-function SimpleRateStreamSchedules(instrument_schedule::S, rate_config::SimpleRateConfig) where S <: AbstractInstrumentSchedule
+function SimpleRateStreamSchedules(instrument_schedule::S, rate_config::R) where {S <: AbstractInstrumentSchedule, R <: AbstractRateConfig}
     accrual_dates = generate_schedule(instrument_schedule)
     time_fractions = day_count_fraction(accrual_dates, rate_config.day_count_convention)
     pay_dates = shifted_trimmed_schedule(accrual_dates, instrument_schedule.pay_shift)

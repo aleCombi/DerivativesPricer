@@ -27,6 +27,7 @@ if false
     include("quantlib/date_generation/schedule_generation.jl")
     include("quantlib/flow_stream/fixed_rate_stream.jl")
     include("quantlib/flow_stream/simple_rate_float_stream.jl")
+    include("quantlib/flow_stream/compound_rate_float_stream.jl")
 
     # integration_tests
     include("integration_tests/include_integration_tests.jl")
