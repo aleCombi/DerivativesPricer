@@ -13,7 +13,7 @@
     instrument_rate = FixedRate(rate, rate_config)
 
     # fixed rate stream configuration
-    principal = 1
+    principal = 1.0
     stream_config = FixedStreamConfig(principal, instrument_rate, instrument_schedule)
 
     # fixed rate stream calculations
@@ -49,7 +49,7 @@ end
     instrument_rate = FixedRate(rate, rate_config)
 
     # fixed rate stream configuration
-    principal = 1
+    principal = 1.0
     stream_config = FixedStreamConfig(principal, instrument_rate, instrument_schedule)
 
     # fixed rate stream calculations

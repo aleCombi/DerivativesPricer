@@ -21,7 +21,7 @@
     instrument_rate = CompoundInstrumentRate(RateIndex("compounded_rate_index"), rate_config)
 
     # fixed rate stream configuration
-    principal = 1
+    principal = 1.0
     stream_config = FloatStreamConfig(principal, instrument_rate, instrument_schedule)
 
     # float rate stream calculations

@@ -18,7 +18,7 @@
     instrument_rate = SimpleInstrumentRate(RateIndex("rate_index"), rate_config)
 
     # fixed rate stream configuration
-    principal = 1
+    principal = 1.0
     stream_config = FloatStreamConfig(principal, instrument_rate, instrument_schedule)
 
     # float rate stream calculations
@@ -36,7 +36,7 @@
     engine = ql.DiscountingSwapEngine(yts)
 
     index = ql.IborIndex("MyIndex", ql.Period(6, ql.Months), 10, ql.USDCurrency(), ql.WeekendsOnly(), ql.Following, false, to_ql_day_count(day_count))
-    floating_rate_leg = ql.IborLeg([1], schedule, index)
+    floating_rate_leg = ql.IborLeg([principal], schedule, index)
     coupons = [float_rate_stream.schedules[i] for i in 1:length(float_rate_stream.schedules)]
     # ql coupon
     ql_coupon = ql.as_floating_rate_coupon(floating_rate_leg[1])
