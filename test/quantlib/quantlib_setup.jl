@@ -97,6 +97,4 @@ end
         ql_schedule = get_quantlib_schedule(start_date, end_date, period, calendar, roll_convention, business_day_convention, termination_bd_convention, stub_position; first_date=first_date, next_to_last_date=next_to_last_date)
         return [to_julia_date(dt) for dt in ql_schedule]
     end
-    calendar_weekends = WeekendsOnly()
-    calendar_us = BusinessDays.USGovernmentBond()
 end

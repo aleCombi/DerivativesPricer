@@ -14,7 +14,8 @@
     rate = 0.0047
     day_count = ACT360()
     rate_type = LinearRate()
-    rate_config = SimpleRateConfig(day_count, rate_type, BusinessDayShift(-10, WeekendsOnly(), false), AdditiveMargin())
+    fixing_days_delay = 2
+    rate_config = SimpleRateConfig(day_count, rate_type, BusinessDayShift(-fixing_days_delay, WeekendsOnly(), false), AdditiveMargin())
     instrument_rate = SimpleInstrumentRate(RateIndex("rate_index"), rate_config)
 
     # fixed rate stream configuration
@@ -25,7 +26,6 @@
     float_rate_stream = SimpleFloatRateStream(stream_config)
 
     ## Getting Quanatlib Results
-
     ql_start_date = to_ql_date(start_date)
     ql_end_date = to_ql_date(end_date)
 
@@ -35,7 +35,7 @@
     yts = ql.YieldTermStructureHandle(ql.FlatForward(2, ql.TARGET(), 0.05, to_ql_day_count(day_count)))
     engine = ql.DiscountingSwapEngine(yts)
 
-    index = ql.IborIndex("MyIndex", ql.Period(6, ql.Months), 10, ql.USDCurrency(), ql.WeekendsOnly(), ql.Following, false, to_ql_day_count(day_count))
+    index = ql.IborIndex("MyIndex", ql.Period(6, ql.Months), fixing_days_delay, ql.USDCurrency(), ql.WeekendsOnly(), ql.Following, false, to_ql_day_count(day_count))
     floating_rate_leg = ql.IborLeg([principal], schedule, index)
     coupons = [float_rate_stream.schedules[i] for i in 1:length(float_rate_stream.schedules)]
     # ql coupon
@@ -44,10 +44,12 @@
 
     # compare schedules per coupon
     for (i, (ql_coupon, coupon)) in enumerate(zip(ql_coupons, coupons))
+        # println("Quantlib accrual start date: ", to_julia_date(ql_coupon.accrualStartDate()))
+        # println("DP accrual start date: ", coupon.accrual_start)
         @assert coupon.accrual_start == to_julia_date(ql_coupon.accrualStartDate())
         @assert coupon.accrual_end == to_julia_date(ql_coupon.accrualEndDate())
-        println(coupon.fixing_date)
-        println(to_julia_date(ql_coupon.fixingDate()))
+        # println("DP fixing date: ",coupon.fixing_date)
+        # println("Quantlib fixing date: ", to_julia_date(ql_coupon.fixingDate()))
         @assert coupon.fixing_date == to_julia_date(ql_coupon.fixingDate())
         @assert coupon.pay_date == to_julia_date(ql_coupon.date())
     end
