@@ -88,6 +88,22 @@ function Base.getindex(obj::SimpleRateStreamSchedules, index::Int)
             discount_end_date = obj.discount_end_dates[index])
 end
 
+"""
+    iterate(s::SimpleRateStreamSchedules, state=1)
+
+Iterator function for `SimpleRateStreamSchedules` type. Returns the current schedule and the next state 
+until the end of the list is reached.
+
+# Arguments
+- `s::SimpleRateStreamSchedules`: The object containing a list of rate stream schedules.
+- `state`: The current state (position) within the list, defaults to `1`.
+
+# Returns
+- A tuple `(current_schedule, next_state)` where `current_schedule` is the item at the current position in `s`,
+  and `next_state` is the next index to iterate. 
+- Returns `nothing` if the state exceeds the length of `s`, signaling the end of the iteration.
+
+"""
 function Base.iterate(s::SimpleRateStreamSchedules, state=1)
     state > length(s) && return nothing
     return s[state], state + 1
