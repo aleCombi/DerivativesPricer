@@ -13,6 +13,7 @@ if false
     include("unit/date_generation/instrument_schedule.jl")
     include("unit/rate_definition/rate_conventions.jl")
     include("unit/rate_definition/margin.jl")
+    include("unit/flow_stream/compound_rate_float_stream.jl")
 
     include("rate_curves.jl")
     include("float_rate_stream.jl")
