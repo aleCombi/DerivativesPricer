@@ -1,5 +1,6 @@
 # Test Case 1: Short Stub with WeekendsOnly Calendar, No Roll, and Modified Following Adjustment
 @testitem "QuantLib Comparison - Short Stub, WeekendsOnly Calendar, No Roll, Modified Following Adjustment" setup=[QuantlibSetup] begin
+    calendar_weekends = WeekendsOnly()
     start_date = Date(2023, 1, 10)
     end_date = Date(2023, 3, 5)
     period = Month(1)
@@ -10,7 +11,7 @@
 
     # Generate our schedule
     schedule_config = ScheduleConfig(period; roll_convention=roll_convention, business_days_convention=business_day_convention,
-                                     calendar=calendar_weekends, stub_period=stub_period, termination_bd_convention=termination_bd_convention)
+                                     calendar=WeekendsOnly(), stub_period=stub_period, termination_bd_convention=termination_bd_convention)
     julia_schedule = generate_schedule(start_date, end_date, schedule_config)
 
     # Generate QuantLib schedule
@@ -31,10 +32,10 @@ end
     stub_period = StubPeriod(InArrearsStubPosition(), ShortStubLength())
 
     schedule_config = ScheduleConfig(period; roll_convention=NoRollConvention(), business_days_convention=business_day_convention,
-                                     calendar=calendar_weekends, stub_period=stub_period, termination_bd_convention=termination_bd_convention)
+                                     calendar=WeekendsOnly(), stub_period=stub_period, termination_bd_convention=termination_bd_convention)
     julia_schedule = generate_schedule(start_date, end_date, schedule_config)
 
-    quantlib_schedule = generate_quantlib_schedule(start_date, end_date, period, calendar_weekends, roll_convention, business_day_convention, 
+    quantlib_schedule = generate_quantlib_schedule(start_date, end_date, period, WeekendsOnly(), roll_convention, business_day_convention, 
                                                    termination_bd_convention, InArrearsStubPosition())
 
     @test julia_schedule == quantlib_schedule
@@ -42,6 +43,8 @@ end
 
 # Test 2: Long stub, US calendar, Modified Preceding convention, No Roll, Following termination adjustment
 @testitem "QuantLib Comparison - Long Stub, Modified Preceding, Following Termination Adjustment" setup=[QuantlibSetup] begin
+    calendar_weekends = WeekendsOnly()
+    calendar_us = BusinessDays.USGovernmentBond()
     start_date = Date(2021, 2, 10)
     end_date = Date(2021, 6, 25)
     period = Month(1)
@@ -63,6 +66,7 @@ end
 
 # Test 3: Short upfront stub, WeekendsOnly calendar, Preceding convention, Modified Following termination adjustment
 @testitem "QuantLib Comparison - Short Upfront Stub, Preceding, Modified Following Termination Adjustment" setup=[QuantlibSetup] begin
+    calendar_weekends = WeekendsOnly()  
     start_date = Date(2023, 1, 3)
     end_date = Date(2023, 5, 10)
     period = Month(1)
@@ -83,6 +87,8 @@ end
 
 # Test 4: Long upfront stub, US calendar, Following convention, Modified Preceding termination adjustment
 @testitem "QuantLib Comparison - Long Upfront Stub, Following, Modified Preceding Termination Adjustment" setup=[QuantlibSetup] begin
+    calendar_weekends = WeekendsOnly()
+    calendar_us = BusinessDays.USGovernmentBond()
     start_date = Date(2022, 3, 15)
     end_date = Date(2022, 9, 1)
     period = Month(2)
@@ -104,7 +110,9 @@ end
 end
 
 # Test 5: Short stub, US calendar, Modified Following convention, None termination adjustment
-@testitem "QuantLib Comparison - Short Stub, Modified Following, No Termination Adjustment" setup=[QuantlibSetup] begin
+@testitem "QuantLib Comparison - Short Stub, Modified Following, No Termination Adjustment" setup=[QuantlibSetup] begin  
+    calendar_weekends = WeekendsOnly()
+    calendar_us = BusinessDays.USGovernmentBond()
     start_date = Date(2021, 1, 1)
     end_date = Date(2021, 3, 15)
     period = Month(1)

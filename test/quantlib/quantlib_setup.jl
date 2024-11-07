@@ -8,12 +8,6 @@
     struct CustomCalendar <: HolidayCalendar end
     BusinessDays.isholiday(::CustomCalendar, dt::Date) = dt in [Date(2023, 1, 1), Date(2023, 12, 25)] || dayofweek(dt) in [6, 7]  # Monday to Friday are working days, first and last day of the year are holidays in 2023
     calendar = CustomCalendar()
-
-    # Define a custom QuantLib calendar with weekends, Christmas and New Year
-    ql = pyimport("QuantLib")
-    ql_calendar = ql.WeekendsOnly()
-    ql_calendar.addHoliday(ql.Date(1, 1, 2023))
-    ql_calendar.addHoliday(ql.Date(25, 12, 2023))
 end
 
 @testsnippet QuantlibSetup begin
