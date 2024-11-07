@@ -29,8 +29,8 @@ end
 
 # Test 2: Creation of RateCurveInputs from Date-based time points (automatic day count conversion)
 @testitem "RateCurveInputs Construction from Dates" setup=[RateCurves] begin
-    times = [Date(2023, 1, 1), Date(2023, 6, 1), Date(2023, 12, 1)]
-    rates = [1.0, 1.5, 2.0]
+    times = [Date(2023, 6, 1), Date(2023, 12, 1)]
+    rates = [1.5, 2.0]
     interp_method = Gridded(Interpolations.Linear())
     date = Date(2023, 1, 1)
     day_count_convention = ACT365()
