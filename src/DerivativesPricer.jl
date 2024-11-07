@@ -1,6 +1,6 @@
 module DerivativesPricer
 
-using BusinessDays, Dates
+using BusinessDays, Dates, Interpolations
 
 # Include all the required files
 include("day_count_conventions.jl")

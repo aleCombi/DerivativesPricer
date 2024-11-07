@@ -1,5 +1,25 @@
+@testsnippet RateCurveSetup begin
+    using Dates
+    include("../dummy_struct_functions.jl")
+    # Create mock dates and day count convention
+    dates = [Date(2022, 1, 1), Date(2023, 1, 1), Date(2023, 7, 1), Date(2024, 1, 1)]
+    discount_factors = [0.95, 0.90, 0.85]
+    df_ratios = discount_factors[2:end-1] ./ discount_factors[1:end]
+    rate_type = LinearRate()
+    time_fractions = day_count_fraction(dates, ACT365())
+    println(time_fractions)
+    println(df_ratios)
+    rates = implied_rate(df_ratios, time_fractions, rate_type)
+
+    # Create a mock RateCurve
+    rate_curve_inputs = RateCurveInputs(dates[2:end], rates, dates[1])
+    rate_curve = create_rate_curve(rate_curve_inputs)
+
+    discount_factor(rate_curve, dates) |> println
+end
+
 # Test for price_fixed_flows_stream
-@testitem "price_fixed_flows_stream" begin
+@testitem "price_fixed_flows_stream" setup=[RateCurveSetup] begin
     include("discount_pricing_setup.jl")
     # Create a mock FixedRateStream
     payment_dates = [Date(2023, 1, 1), Date(2023, 7, 1), Date(2024, 1, 1)]
@@ -51,5 +71,5 @@ end
     # Expected price
     expected_price = 1000.0 * (0.9 * (0.95 / 0.90 - 1) + 0.85 * (0.90 / 0.85 - 1))
 
-    @test price == expected_price
+    @test price ≈ expected_price atol=1e-8
 end

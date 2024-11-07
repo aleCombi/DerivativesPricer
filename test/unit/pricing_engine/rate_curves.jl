@@ -18,7 +18,7 @@ end
     day_count_convention = ACT365()
 
     # Create RateCurveInputs instance
-    inputs = RateCurveInputs(times_day_counts, rates, interp_method, date, day_count_convention, times)
+    inputs = RateCurveInputs(times_day_counts, rates, interp_method, date, day_count_convention, LinearRate(), times)
 
     # Test if fields are correctly set
     @test inputs.times_day_counts == [0.1, 0.2, 0.3]
@@ -53,7 +53,7 @@ end
     day_count_convention = ACT365()
 
     # Create RateCurveInputs instance
-    inputs = RateCurveInputs(times_day_counts, rates, interp_method, date, day_count_convention, times)
+    inputs = RateCurveInputs(times_day_counts, rates, interp_method, date, day_count_convention, LinearRate(), times)
 
     # Create the RateCurve
     curve = create_rate_curve(inputs)
@@ -75,7 +75,7 @@ end
     day_count_convention = ACT365()
 
     # Create RateCurveInputs instance
-    inputs = RateCurveInputs(times_day_counts, rates, interp_method, date, day_count_convention, times)
+    inputs = RateCurveInputs(times_day_counts, rates, interp_method, date, day_count_convention, LinearRate(), times)
 
     # Create the RateCurve
     curve = create_rate_curve(inputs)
@@ -85,6 +85,6 @@ end
     discount = discount_factor(curve, test_date)
 
     # Expected discount factor (based on the real interpolation)
-    expected_discount = curve.interpolation(151.0/365)  # Example day count for June 1, 2023
+    expected_discount = 1 / (1 + 151.0/365 * curve.interpolation(151.0/365))  # Example day count for June 1, 2023
     @test discount ≈ expected_discount
 end
