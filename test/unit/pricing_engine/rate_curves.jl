@@ -1,7 +1,3 @@
-# Import the necessary dependencies and modules
-using Test
-using DerivativesPricer
-
 @testsnippet RateCurves begin
     using Interpolations
     using Dates
