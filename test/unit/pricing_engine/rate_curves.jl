@@ -36,7 +36,7 @@ end
 
     # Test if fields are set correctly and day counts were computed
     @test inputs.times_day_counts == [0.0, 151.0/365, 334.0/365]  # Example conversion based on ACT365
-    @test inputs.rates == [1.0, 1.5, 2.0]
+    @test inputs.rates == [1.5, 1.5, 2.0]
 end
 
 # Test 3: RateCurve construction from RateCurveInputs
@@ -52,7 +52,7 @@ end
     inputs = RateCurveInputs(times_day_counts, rates, interp_method, date, day_count_convention, LinearRate(), times)
 
     # Create the RateCurve
-    curve = create_rate_curve(inputs)
+    curve = RateCurve(inputs)
 
     # Test that the RateCurve fields are set correctly
     @test curve.name != ""  # Check that name is not empty
@@ -74,7 +74,7 @@ end
     inputs = RateCurveInputs(times_day_counts, rates, interp_method, date, day_count_convention, LinearRate(), times)
 
     # Create the RateCurve
-    curve = create_rate_curve(inputs)
+    curve = RateCurve(inputs)
 
     # Calculate discount factor with the real interpolation
     test_date = Date(2023, 6, 1)

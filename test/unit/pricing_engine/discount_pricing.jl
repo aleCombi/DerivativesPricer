@@ -13,7 +13,7 @@
 
     # Create a mock RateCurve
     rate_curve_inputs = RateCurveInputs(dates[2:end], rates, dates[1])
-    rate_curve = create_rate_curve(rate_curve_inputs)
+    rate_curve = RateCurve(rate_curve_inputs)
 
     # discount_factor(rate_curve, dates) |> println
 end

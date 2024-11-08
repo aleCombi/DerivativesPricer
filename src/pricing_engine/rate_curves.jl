@@ -81,7 +81,7 @@ function discount_factor(rate_curve::RateCurve, date)
 end
 
 """
-    create_rate_curve(inputs::RateCurveInputs)
+    RateCurve(inputs::RateCurveInputs)
 
 Creates a `RateCurve` instance from given `RateCurveInputs`.
 

@@ -15,6 +15,6 @@ rates = implied_rate(1 ./ discount_factors, time_fractions, rate_type)
 
 # Create a mock RateCurve
 rate_curve_inputs = RateCurveInputs(dates, rates, pricing_date)
-rate_curve = create_rate_curve(rate_curve_inputs)
+rate_curve = RateCurve(rate_curve_inputs)
 
 discount_factor(rate_curve, dates) |> println

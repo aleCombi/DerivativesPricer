@@ -17,5 +17,4 @@
     rate_curve = RateCurve(rate_curve_inputs)
     forward_rates = calculate_forward_rate(rate_curve, schedules, rate_config)
     println(forward_rates)
-    Interpolations.LinearInterpolation()
 end
