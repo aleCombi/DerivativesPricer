@@ -63,7 +63,7 @@ function calculate_forward_rate(rate_curve::R, schedules::CompoundedRateStreamSc
     interest_accruals = []
     for i in 1:length( schedules.compounding_schedules)
         forward_rates = calculate_forward_rate(rate_curve, schedules.compounding_schedules[i], rate_config.rate_type, rate_config.margin.margin_config)
-        compound_factors = 1 ./ discount_interest(forward_rates, schedules.compounding_schedules[i].accrual_day_counts, rate_config.rate_type)
+        compound_factors = compounding_factor(forward_rates, schedules.compounding_schedules[i].accrual_day_counts, rate_config.rate_type)
         interest_accrual = prod(compound_factors) 
         push!(interest_accruals, interest_accrual)
     end

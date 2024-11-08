@@ -22,6 +22,7 @@ if false
     include("unit/pricing_engine/rate_curves.jl")
     include("unit/pricing_engine/discount_pricing.jl")
     include("unit/pricing_engine/discount_pricing_setup.jl")
+    include("unit/pricing_engine/forward_rates.jl")
 
     # quantlib tests
     include("quantlib/quantlib_setup.jl")

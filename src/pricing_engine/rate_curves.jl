@@ -61,7 +61,7 @@ Constructor for `RateCurveInputs` that converts time points from Dates to day co
 - `RateCurveInputs`: An instance of `RateCurveInputs` with day counts as time points.
 """
 RateCurveInputs(times::Vector{D}, rates::Vector{R}, date::D, interp_method::I=Gridded(Interpolations.Linear()), day_count_convention::C = ACT365()) where {D<:TimeType, R, I<:InterpType, C<:DayCount} =
-    RateCurveInputs(vcat(0,day_count_fraction.(date, times, Ref(day_count_convention))), vcat(1,rates), interp_method, date, day_count_convention, LinearRate(), times)
+    RateCurveInputs(vcat(0,day_count_fraction.(date, times, Ref(day_count_convention))), vcat(rates[1],rates), interp_method, date, day_count_convention, LinearRate(), times)
 
 """
     discount_factor(rate_curve::RateCurve, date)
@@ -91,7 +91,7 @@ Creates a `RateCurve` instance from given `RateCurveInputs`.
 # Returns
 - `RateCurve`: A fully constructed `RateCurve`.
 """
-function create_rate_curve(inputs::RateCurveInputs)
+function RateCurve(inputs::RateCurveInputs)
     interpolation = interpolate((inputs.times_day_counts,), inputs.rates, inputs.interp_method) 
     RateCurve("Curve", inputs.date, interpolation, inputs.day_count_convention, inputs.rate_type)
 end
