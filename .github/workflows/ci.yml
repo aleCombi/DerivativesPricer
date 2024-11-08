@@ -18,6 +18,7 @@ jobs:
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
       - uses: julia-actions/julia-processcoverage@v1
-      - uses: julia-actions/julia-uploadcoveralls@v1
-      - uses: coverallsapp/github-action@v2
-
+      - uses: coverallsapp/github-action@v2 # Updated to Coveralls v2
+        with:
+          file: coverage/lcov.info # Specify the path to the coverage file
+          github-token: ${{ secrets.GITHUB_TOKEN }} # Default GitHub token, do not store in secrets manually
