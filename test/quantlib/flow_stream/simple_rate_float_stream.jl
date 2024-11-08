@@ -124,12 +124,12 @@
 
     # compare schedules per coupon
     for (i, (ql_coupon, coupon)) in enumerate(zip(ql_coupons, coupons))
-        println("Quantlib accrual start date: ", to_julia_date(ql_coupon.accrualStartDate()))
-        println("DP accrual start date: ", coupon.accrual_start)
+        # println("Quantlib accrual start date: ", to_julia_date(ql_coupon.accrualStartDate()))
+        # println("DP accrual start date: ", coupon.accrual_start)
         @assert coupon.accrual_start == to_julia_date(ql_coupon.accrualStartDate())
         @assert coupon.accrual_end == to_julia_date(ql_coupon.accrualEndDate())
-        println("DP fixing date: ",coupon.fixing_date)
-        println("Quantlib fixing date: ", to_julia_date(ql_coupon.fixingDate()))
+        # println("DP fixing date: ",coupon.fixing_date)
+        # println("Quantlib fixing date: ", to_julia_date(ql_coupon.fixingDate()))
         @assert coupon.fixing_date == to_julia_date(ql_coupon.fixingDate())
         @assert coupon.pay_date == to_julia_date(ql_coupon.date())
     end

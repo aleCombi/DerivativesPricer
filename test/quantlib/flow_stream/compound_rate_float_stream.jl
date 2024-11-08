@@ -52,19 +52,19 @@
     bond = ql.Bond(settlement_days, calendar, schedule[1], sub_period_leg)
 
     ql_coupons = [ql.as_sub_periods_coupon(cf) for cf in bond.cashflows()]
-    println(length(ql_coupons[1:end-1]))
-    println(length(compounding_schedules))
+    # println(length(ql_coupons[1:end-1]))
+    # println(length(compounding_schedules))
 
     # compare schedules per coupon
     for (i, (ql_coupon, c)) in enumerate(zip(ql_coupons[1:end-1], compounding_schedules))
         @assert to_julia_date(ql_coupon.accrualStartDate()) == c.accrual_dates[1]
         @assert to_julia_date(ql_coupon.accrualEndDate()) == c.accrual_dates[end]
-        println(pybuiltin("dir")(ql_coupon))
-        println(pybuiltin("type")(ql_coupon))
+        # println(pybuiltin("dir")(ql_coupon))
+        # println(pybuiltin("type")(ql_coupon))
 
         for (j, (ql_fixing_date,fixing_date)) in enumerate(zip(ql_coupon.fixingDates(),c.fixing_dates))
-            println(to_julia_date(ql_fixing_date), " vs ", fixing_date)
-            println(c[j].accrual_start)
+            # println(to_julia_date(ql_fixing_date), " vs ", fixing_date)
+            # println(c[j].accrual_start)
             @assert to_julia_date(ql_fixing_date) == fixing_date
         end
     end

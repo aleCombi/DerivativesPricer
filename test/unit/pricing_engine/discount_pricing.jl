@@ -7,15 +7,15 @@
     df_ratios = discount_factors[2:end-1] ./ discount_factors[1:end]
     rate_type = LinearRate()
     time_fractions = day_count_fraction(dates, ACT365())
-    println(time_fractions)
-    println(df_ratios)
+    # println(time_fractions)
+    # println(df_ratios)
     rates = implied_rate(df_ratios, time_fractions, rate_type)
 
     # Create a mock RateCurve
     rate_curve_inputs = RateCurveInputs(dates[2:end], rates, dates[1])
     rate_curve = create_rate_curve(rate_curve_inputs)
 
-    discount_factor(rate_curve, dates) |> println
+    # discount_factor(rate_curve, dates) |> println
 end
 
 # Test for price_fixed_flows_stream
@@ -64,7 +64,7 @@ end
     instrument_rate = SimpleInstrumentRate(rate_index, rate_config)
     stream_config = FloatStreamConfig(principal, instrument_rate, instrument_schedule)
     stream = SimpleFloatRateStream(stream_config)
-    print(stream.schedules.pay_dates)
+    # print(stream.schedules.pay_dates)
     # Calculate the price
     price = price_float_rate_stream(stream, rate_curve)
 
