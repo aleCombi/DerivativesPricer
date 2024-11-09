@@ -40,4 +40,5 @@ if false
     include("integration_tests/include_integration_tests.jl")
 end
 
+include("Aqua.jl")
 @run_package_tests filter=ti->!occursin("quantlib", ti.filename)

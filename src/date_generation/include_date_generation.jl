@@ -8,7 +8,7 @@ include("instrument_schedule.jl")
 
 export
     # date_generation/business_days_convention.jl
-    BusinessDayConvention, Following, ModifiedFollowing, PrecedingBusinessDay, FollowingBusinessDay, ModifiedPreceding, NoneBusinessDayConvention, adjust_date,
+    BusinessDayConvention, ModifiedFollowing, PrecedingBusinessDay, FollowingBusinessDay, ModifiedPreceding, NoneBusinessDayConvention, adjust_date,
     # date_generation/roll_conventions.jl
     roll_date, NoRollConvention, EOMRollConvention, RollConvention,
     # date_generation/date_shft.jl
