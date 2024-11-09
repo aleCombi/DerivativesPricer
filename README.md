@@ -18,6 +18,12 @@
       <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
     </td>
   </tr>
+    <tr>
+    <td><strong>License</strong></td>
+    <td><a href="https://github.com/JuliaTesting/Aqua.jl">
+      <img src="https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg" alt="Aqua QA"></a>
+    </td>
+  </tr>
 </table>
 
 This library aims at pricing linear interest rates (IR) derivatives using a multi-curve framework.
