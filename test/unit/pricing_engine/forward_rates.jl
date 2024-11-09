@@ -13,7 +13,7 @@
     rates = [0.02, 0.06, 0.06]
     pricing_date = Date(2013,3,1)
     rate_curve = RateCurve(pricing_date, rates; spine_dates=dates)
-    forward_rates = calculate_forward_rate(rate_curve, schedules, rate_config)
+    forward_rates = forward_rate(rate_curve, schedules, rate_config)
 end
 
 # This tests the forward rates calculation when the rate fixes in advance (forward looking) before the accrual start and the accrual period is shorter than the benchmark rate accrual period (e.g. you read a benchmark rate referred to a period longer or shorter than the one you apply it to), with some margin.
@@ -32,5 +32,5 @@ end
     rates = [0.02, 0.06, 0.06]
     pricing_date = Date(2013,3,1)
     rate_curve = RateCurve(pricing_date, rates; spine_dates=dates)
-    forward_rates = calculate_forward_rate(rate_curve, schedules, rate_config)
+    forward_rates = forward_rate(rate_curve, schedules, rate_config)
 end

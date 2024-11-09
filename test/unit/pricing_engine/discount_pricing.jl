@@ -31,7 +31,7 @@ end
     day_counts = day_count_fraction(dates, rate_config.day_count_convention)
     schedules = SimpleRateStreamSchedules(dates[2:end], dates[1:end-1], dates[1:end-1], dates[2:end], dates, day_counts)
     # Calculate forward rates
-    fwd_rates = calculate_forward_rate(rate_curve, schedules, rate_config)
+    fwd_rates = forward_rate(rate_curve, schedules, rate_config)
 
     # Expected forward rates
     expected_fwd_rates = [(0.95 / 0.90 - 1) / 181 * 360, (0.90 / 0.85 - 1) / 184 * 360]

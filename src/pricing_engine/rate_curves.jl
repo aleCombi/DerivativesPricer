@@ -1,3 +1,5 @@
+using Interpolations: InterpolationType, BoundaryCondition
+
 """
     AbstractRateCurve
 

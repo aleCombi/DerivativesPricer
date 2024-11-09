@@ -29,12 +29,12 @@ settlement_date = Date(2022, 1, 1)
 rate_curve = FlatRateCurve("myRateCurve", settlement_date, interest_rate, day_count, Exponential())
 
 # forward rates calculation
-forward_rates = calculate_forward_rate(rate_curve, schedules, rate_config)
+forward_rates = forward_rate(rate_curve, schedules, rate_config)
 
 # stream definition
 stream = DerivativesPricer.CompoundFloatRateStream(stream_config)
 
 # pricing the stream
-forward_rates = calculate_forward_rate(rate_curve, schedules, rate_config)
+forward_rates = forward_rate(rate_curve, schedules, rate_config)
 expected_flows = DerivativesPricer.calculate_expected_flows(stream, forward_rates)
 npv = price_float_rate_stream(stream, rate_curve)
