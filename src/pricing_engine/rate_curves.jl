@@ -1,79 +1,86 @@
-const InterpType = Interpolations.InterpolationType
-const AbstractInterp = Interpolations.AbstractInterpolation
+"""
+    AbstractRateCurve
 
+An abstract type representing the base structure for all rate curves. Specific rate curves should inherit from this type to ensure compatibility within rate curve calculations and interpolations.
+"""
 abstract type AbstractRateCurve end
 
 """
-    struct RateCurve{T<:AbstractInterp,C<:DayCount,D<:TimeType}
+    RateCurve{I, C, D, R} <: AbstractRateCurve
 
-A structure representing a rate curve with interpolation.
+A structure representing an interpolated rate curve that leverages an interpolation method to compute rates over a continuous range. The interpolated rate curve uses a specified day count convention, rate type, and supports boundary conditions for extrapolation.
 
-# Fields
-- `name::String`: The name of the rate curve.
-- `date::D`: The reference date for the rate curve.
-- `interpolation::T`: The interpolation method used for the rate curve.
-- `day_count_convention::C`: The day count convention used for the rate curve.
+Fields
+- `name::String`: Name identifier for the rate curve.
+- `day_count_convention::C`: The day count convention used for calculating date-based fractions (e.g., ACT360, 30E360).
+- `rate_type::R`: Type of rate (e.g., simple, compounded) used in discounting and rate calculations.
+- `date::D`: The anchor date for the rate curve.
+- `interpolation::I`: Interpolation object that supports interpolation and optional extrapolation of rate data points.
+
+Type Parameters
+- `I<:AbstractInterpolation`: Specifies the interpolation and extrapolation method (e.g., linear, spline).
+- `C<:DayCount`: Day count convention used for time fraction calculations.
+- `D<:TimeType`: Type representing the date or time basis.
+- `R<:RateType`: Type representing the rate calculation basis (e.g., LinearRate).
 """
-struct RateCurve{T<:AbstractInterp,C<:DayCount,D<:TimeType,R<:RateType} <: AbstractRateCurve
+struct RateCurve{I<:AbstractInterpolation, C<:DayCount, D<:TimeType, R<:RateType} <: AbstractRateCurve
     name::String
-    date::D
-    interpolation::T
     day_count_convention::C
     rate_type::R
-end
-
-"""
-    struct RateCurveInputs{T<:Number, R, I<:InterpType, C<:DayCount, D<:TimeType}
-
-A structure representing the necessary inputs to create a `RateCurve`.
-
-# Fields
-- `times_day_counts::Vector{T}`: Time points stored as day counts.
-- `rates::Vector{R}`: Corresponding rates for each time point.
-- `interp_method::I`: Interpolation method to be used for the rate curve.
-- `date::D`: Reference date for the rate curve.
-- `day_count_convention::C`: Day count convention to apply for the rate curve.
-- `rate_type::R`: Type of rate (e.g., continuous or simple).
-"""
-struct RateCurveInputs{T<:Number, R, I<:InterpType, C<:DayCount, D<:TimeType, rate <: RateType}
-    times_day_counts::Vector{T}
-    rates::Vector{R}
-    interp_method::I
     date::D
-    day_count_convention::C
-    rate_type::rate
-    times::Vector{D}
+    interpolation::I
 end
 
 """
-    RateCurveInputs(times::Vector{D}, rates::Vector{R}, interp_method::I, date::D, day_count_convention::C) where {D<:TimeType, R, I<:InterpType, C<:DayCount}
+    RateCurve(date::D, spine_rates::Vector{N}; interp_method::I=Gridded(Linear()), 
+              extrap_method::E=Flat(), day_count_convention::C=ACT360(), rate_type::R=LinearRate(), 
+              spine_day_counts::Vector{N}=Vector{N}(), spine_dates::Vector{D}=Vector{D}())
 
-Constructor for `RateCurveInputs` that converts time points from Dates to day counts.
+Creates an instance of `RateCurve` based on given spine rates and interpolation settings.
 
-# Arguments
-- `times::Vector{D}`: Time points as Dates.
-- `rates::Vector{R}`: Corresponding rates for each time point.
-- `interp_method::I`: Interpolation method to be applied.
-- `date::D`: Reference date for the rate curve.
-- `day_count_convention::C`: Day count convention for calculating day counts.
+Positional Arguments
+- `date::D`: The base date for the rate curve.
+- `spine_rates::Vector{N}`: Vector containing the interest rates for interpolation.
 
-# Returns
-- `RateCurveInputs`: An instance of `RateCurveInputs` with day counts as time points.
+Keyword Arguments
+- `interp_method::I=Gridded(Linear())`: Specifies the interpolation method to be used for the curve.
+- `extrap_method::E=Flat()`: Boundary condition to be applied for extrapolation outside the defined range.
+- `day_count_convention::C=ACT360()`: The day count convention used to calculate fractions of time between dates.
+- `rate_type::R=LinearRate()`: Type of rate for discounting.
+- `spine_day_counts::Vector{N}=Vector{N}()`: Pre-computed day count fractions for the spine dates; calculated automatically if empty.
+- `spine_dates::Vector{D}=Vector{D}()`: Vector of dates corresponding to each spine rate.
+
+Returns
+- `RateCurve`: An instance of the interpolated rate curve.
 """
-RateCurveInputs(times::Vector{D}, rates::Vector{R}, date::D, interp_method::I=Gridded(Interpolations.Linear()), day_count_convention::C = ACT365()) where {D<:TimeType, R, I<:InterpType, C<:DayCount} =
-    RateCurveInputs(vcat(0,day_count_fraction.(date, times, Ref(day_count_convention))), vcat(rates[1],rates), interp_method, date, day_count_convention, LinearRate(), times)
+function RateCurve(date::D, spine_rates::Vector{N}; interp_method::I=Gridded(Linear()),
+                   extrap_method::E=Flat(),
+                   day_count_convention::C=ACT360(),
+                   rate_type::R=LinearRate(),
+                   spine_day_counts::Vector{N}=Vector{N}(),
+                   spine_dates::Vector{D}=Vector{D}()) where {D<:TimeType, N<:Number, I<:InterpolationType, E<:BoundaryCondition, C<:DayCount, R<:RateType}
+    if length(spine_rates) == length(spine_dates) && length(spine_day_counts) == 0
+        spine_day_counts = day_count_fraction(date, spine_dates, day_count_convention)
+    end
+    if length(spine_rates) != length(spine_day_counts)
+        return error("Wrong inputs for curve creation.")
+    end
+    interpolation = interpolate((spine_day_counts,), spine_rates, interp_method) 
+    extrap_interp = extrapolate(interpolation, extrap_method)
+    return RateCurve("Curve", day_count_convention, rate_type, date, extrap_interp)
+end
 
 """
     discount_factor(rate_curve::RateCurve, date)
 
-Calculates the discount factor for a given date on the rate curve.
+Calculates the discount factor at a specified date using an interpolated rate curve.
 
-# Arguments
-- `rate_curve::RateCurve`: The rate curve used for discount factor computation.
-- `date`: The target date for calculating the discount factor.
+Arguments
+- `rate_curve::RateCurve`: The interpolated rate curve to evaluate.
+- `date`: Target date for which the discount factor is calculated.
 
-# Returns
-- `Float64`: The discount factor for the specified date.
+Returns
+- `Float64`: Discount factor for the specified date.
 """
 function discount_factor(rate_curve::RateCurve, date)
     delta = day_count_fraction(rate_curve.date, date, rate_curve.day_count_convention)
@@ -81,32 +88,22 @@ function discount_factor(rate_curve::RateCurve, date)
 end
 
 """
-    RateCurve(inputs::RateCurveInputs)
+    FlatRateCurve{D, T, C, R} <: AbstractRateCurve
 
-Creates a `RateCurve` instance from given `RateCurveInputs`.
+Represents a flat rate curve with a constant rate applied throughout. This type of curve is typically used when the interest rate is fixed and does not vary over time.
 
-# Arguments
-- `inputs::RateCurveInputs`: The inputs necessary to define a rate curve.
+Fields
+- `name::String`: Name identifier for the flat rate curve.
+- `date::D`: Base date for the flat rate curve.
+- `rate::T`: The fixed interest rate applied across all time periods.
+- `day_count_convention::C`: Day count convention used for time-based calculations.
+- `rate_type::R`: Rate calculation type (e.g., LinearRate).
 
-# Returns
-- `RateCurve`: A fully constructed `RateCurve`.
-"""
-function RateCurve(inputs::RateCurveInputs)
-    interpolation = interpolate((inputs.times_day_counts,), inputs.rates, inputs.interp_method) 
-    RateCurve("Curve", inputs.date, interpolation, inputs.day_count_convention, inputs.rate_type)
-end
-
-"""
-    struct FlatRateCurve{D<:TimeType, T, C<:DayCount, R<:RateType}
-
-A structure representing a flat rate curve where the rate is constant.
-
-# Fields
-- `name::String`: The name of the flat rate curve.
-- `date::D`: The reference date for the flat rate curve.
-- `rate::T`: The constant rate applied across the curve.
-- `day_count_convention::C`: The day count convention applied to the curve.
-- `rate_type::R`: Type of rate (e.g., continuous or simple).
+Type Parameters
+- `D<:TimeType`: The date or time basis type.
+- `T`: Type of the fixed rate.
+- `C<:DayCount`: The day count convention used.
+- `R<:RateType`: The rate calculation type.
 """
 struct FlatRateCurve{D<:TimeType, T, C<:DayCount, R<:RateType} <: AbstractRateCurve
     name::String
@@ -119,14 +116,14 @@ end
 """
     discount_factor(rate_curve::FlatRateCurve, date)
 
-Calculates the discount factor for a given date using a flat rate curve.
+Calculates the discount factor at a specified date using a flat rate curve.
 
-# Arguments
-- `rate_curve::FlatRateCurve`: The flat rate curve for discount factor computation.
-- `date`: The date for which the discount factor is calculated.
+Arguments
+- `rate_curve::FlatRateCurve`: The flat rate curve to evaluate.
+- `date`: Target date for which the discount factor is calculated.
 
-# Returns
-- `Float64`: The discount factor for the specified date.
+Returns
+- `Float64`: Discount factor for the specified date.
 """
 function discount_factor(rate_curve::FlatRateCurve, date)
     delta = day_count_fraction(rate_curve.date, date, rate_curve.day_count_convention)

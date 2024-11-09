@@ -1,26 +1,17 @@
 @testsnippet RateCurveSetup begin
     using Dates
-    include("../dummy_struct_functions.jl")
     # Create mock dates and day count convention
-    dates = [Date(2022, 1, 1), Date(2023, 1, 1), Date(2023, 7, 1), Date(2024, 1, 1)]
+    pricing_date = Date(2022, 1, 1)
+    dates = [Date(2023, 1, 1), Date(2023, 7, 1), Date(2024, 1, 1)]
     discount_factors = [0.95, 0.90, 0.85]
-    df_ratios = discount_factors[2:end-1] ./ discount_factors[1:end]
-    rate_type = LinearRate()
-    time_fractions = day_count_fraction(dates, ACT365())
-    # println(time_fractions)
-    # println(df_ratios)
-    rates = implied_rate(df_ratios, time_fractions, rate_type)
+    time_fractions = day_count_fraction(pricing_date, dates, ACT360())
+    rates = implied_rate(1 ./ discount_factors, time_fractions, LinearRate())
 
-    # Create a mock RateCurve
-    rate_curve_inputs = RateCurveInputs(dates[2:end], rates, dates[1])
-    rate_curve = RateCurve(rate_curve_inputs)
-
-    # discount_factor(rate_curve, dates) |> println
+    rate_curve = RateCurve(pricing_date, rates; spine_dates=dates)
 end
 
 # Test for price_fixed_flows_stream
 @testitem "price_fixed_flows_stream" setup=[RateCurveSetup] begin
-    include("discount_pricing_setup.jl")
     # Create a mock FixedRateStream
     payment_dates = [Date(2023, 1, 1), Date(2023, 7, 1), Date(2024, 1, 1)]
     cash_flows = [1000.0, 1000.0, 1000.0]
@@ -35,9 +26,7 @@ end
 end
 
 # Test for forward_rates
-@testitem "forward_rates" begin
-    include("discount_pricing_setup.jl")
-
+@testitem "forward_rates" setup=[RateCurveSetup] begin
     rate_config = SimpleRateConfig(ACT360(), LinearRate(), NoShift(), AdditiveMargin(0))
     day_counts = day_count_fraction(dates, rate_config.day_count_convention)
     schedules = SimpleRateStreamSchedules(dates[2:end], dates[1:end-1], dates[1:end-1], dates[2:end], dates, day_counts)
@@ -50,8 +39,8 @@ end
     @test isapprox(fwd_rates, expected_fwd_rates; rtol=1e-7)
 end
 
-@testitem "float_rate_pricing" begin
-    include("discount_pricing_setup.jl")
+@testitem "float_rate_pricing" setup=[RateCurveSetup] begin
+    include("../dummy_struct_functions.jl")
     # Create a mock FloatRateStream
     principal = 1000.0
     start_date = Date(2023, 1, 1)
