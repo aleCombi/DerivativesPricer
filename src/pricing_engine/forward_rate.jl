@@ -49,7 +49,7 @@ It first calculates the time fraction and then computes the forward rate.
 """
 function forward_rate(rate_curve::C, start_date, end_date; 
                       rate_type::R=rate_curve.rate_type, 
-                      day_count::D=rate_curve.day_count, 
+                      day_count::D=rate_curve.day_count_convention, 
                       margin_config::M=AdditiveMargin(0)) where {C<:AbstractRateCurve, R<:RateType, D<:DayCount, M<:MarginConfig}
     time_fraction = day_count_fraction(start_date, end_date, day_count)
     return forward_rate(rate_curve, start_date, end_date, time_fraction; 
@@ -72,7 +72,8 @@ it applies the specified `rate_type` and `margin_config` to compute the forward 
 # Returns
 - A list of forward rates for each period in the schedule.
 """
-function forward_rate(rate_curve::C, schedules::SimpleRateStreamSchedules, rate_type::R, margin_config::M=AdditiveMargin(0)) where {C<:AbstractRateCurve, R<:RateType, M<:MarginConfig}
+function forward_rate(schedules::SimpleRateStreamSchedules, rate_curve::C, rate_type::R, margin_config::M=AdditiveMargin(0)) where {C<:AbstractRateCurve, R<:RateType, M<:MarginConfig}
+    println("ciao")
     return forward_rate(rate_curve, schedules.discount_start_dates, schedules.discount_end_dates, 
                         schedules.accrual_day_counts; 
                         rate_type=rate_type, 
@@ -92,8 +93,8 @@ Calculates forward rates over periods specified in the schedules using the confi
 # Returns
 - A list of forward rates for each period, computed using `rate_config`.
 """
-function forward_rate(rate_curve::C, schedules::SimpleRateStreamSchedules, rate_config::SimpleRateConfig) where C<:AbstractRateCurve
-    return forward_rate(rate_curve, schedules, rate_config.rate_type, rate_config.margin)
+function forward_rate(schedules::SimpleRateStreamSchedules, rate_curve::C, rate_config::SimpleRateConfig) where C<:AbstractRateCurve
+    return forward_rate(schedules, rate_curve, rate_config.rate_type, rate_config.margin)
 end
 
 """
