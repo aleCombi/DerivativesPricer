@@ -1,3 +1,3 @@
 using Aqua
-using DerivativePricer
-Aqua.test_all(DerivativePricer)
+using DerivativesPricer
+Aqua.test_all(DerivativesPricer)
