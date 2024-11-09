@@ -1,3 +1,3 @@
 using Aqua
 using DerivativesPricer
-c
+Aqua.test_all(DerivativesPricer; stale_deps=false, deps_compat=false)
