@@ -2,13 +2,13 @@
 
 julia_version = "1.11.1"
 manifest_format = "2.0"
-project_hash = "54cf2875f9f5d587143853bc6bbfa1abea5d29b7"
+project_hash = "f098f38152b3a02c3ae6689ceb8071413b9fa400"
 
 [[deps.Adapt]]
 deps = ["LinearAlgebra", "Requires"]
-git-tree-sha1 = "d80af0733c99ea80575f612813fa6aa71022d33a"
+git-tree-sha1 = "50c3c56a52972d78e8be9fd135bfb91c9574c140"
 uuid = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
-version = "4.1.0"
+version = "4.1.1"
 weakdeps = ["StaticArrays"]
 
     [deps.Adapt.extensions]
@@ -105,9 +105,9 @@ version = "0.1.10"
 
 [[deps.HTTP]]
 deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
-git-tree-sha1 = "d1d712be3164d61d1fb98e7ce9bcbc6cc06b45ed"
+git-tree-sha1 = "1336e07ba2eb75614c99496501a8f4b233e9fafe"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-version = "1.10.8"
+version = "1.10.10"
 
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
