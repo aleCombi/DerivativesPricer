@@ -19,7 +19,7 @@
     </td>
   </tr>
     <tr>
-    <td><strong>License</strong></td>
+    <td><strong>Code Quality</strong></td>
     <td><a href="https://github.com/JuliaTesting/Aqua.jl">
       <img src="https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg" alt="Aqua QA"></a>
     </td>
