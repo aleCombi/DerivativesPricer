@@ -23,8 +23,7 @@ function forward_rate(rate_curve::C, start_date, end_date, time_fraction;
     end_discount_factor = discount_factor(rate_curve, end_date)
     start_discount_factor = discount_factor(rate_curve, start_date)
     discount_factor_ratio = start_discount_factor ./ end_discount_factor
-    rates = implied_rate(discount_factor_ratio, time_fraction, rate_type)
-    return apply_margin(rates, margin_config)
+    return margined_rate(discount_factor_ratio, time_fraction, rate_type, margin_config)
 end
 
 """
@@ -73,7 +72,6 @@ it applies the specified `rate_type` and `margin_config` to compute the forward 
 - A list of forward rates for each period in the schedule.
 """
 function forward_rate(schedules::SimpleRateStreamSchedules, rate_curve::C, rate_type::R, margin_config::M=AdditiveMargin(0)) where {C<:AbstractRateCurve, R<:RateType, M<:MarginConfig}
-    println("ciao")
     return forward_rate(rate_curve, schedules.discount_start_dates, schedules.discount_end_dates, 
                         schedules.accrual_day_counts; 
                         rate_type=rate_type, 
@@ -120,11 +118,11 @@ function forward_rate(rate_curve::R, schedules::CompoundedRateStreamSchedules, r
     end
     interest_accruals = []
     for i in 1:length(schedules.compounding_schedules)
-        forward_rates = forward_rate(rate_curve, schedules.compounding_schedules[i], rate_config.rate_type, rate_config.margin.margin_config)
+        forward_rates = forward_rate(schedules.compounding_schedules[i], rate_curve, rate_config.rate_type, rate_config.margin.margin_config)
         compound_factors = compounding_factor(forward_rates, schedules.compounding_schedules[i].accrual_day_counts, rate_config.rate_type)
         interest_accrual = prod(compound_factors) 
         push!(interest_accruals, interest_accrual)
     end
 
-    return forward_rate(interest_accruals, schedules.accrual_day_counts, rate_config.rate_type)
+    return margined_rate(interest_accruals, schedules.accrual_day_counts, rate_config.rate_type, rate_config.margin.margin_config)
 end

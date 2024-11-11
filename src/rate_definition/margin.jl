@@ -111,3 +111,26 @@ and multiplies it by `(1 + margin)`.
 function apply_margin(rate, margin::MultiplicativeMargin)
     return rate .* (1 .+ margin.margin)
 end
+
+"""
+    margined_rate(accrual_ratio, time_fraction, rate_type::R, margin::M) where {R<:RateType, M<:MarginConfig}
+
+Calculates a margined rate based on the given accrual ratio, time fraction, rate type, and margin configuration.
+
+# Arguments
+- `accrual_ratio`: A numeric value representing the ratio of accrual over a period, typically related to interest or financial growth.
+- `time_fraction`: A numeric value representing the fraction of time over which the rate applies (e.g., a fraction of a year).
+- `rate_type::R`: The rate type, a subtype of `RateType`, specifying how the interest or growth rate is calculated.
+- `margin::M`: The margin configuration, a subtype of `MarginConfig`, defining any adjustments or margins applied to the calculated rate.
+
+# Returns
+- A numeric value representing the margined rate, calculated by determining the implied rate based on the accrual ratio and time fraction, and then applying the specified margin.
+
+# Details
+The function first calculates an implied rate using the `implied_rate` function, based on the accrual ratio and time fraction parameters and the specified rate type. It then adjusts this rate by applying the margin using the `apply_margin` function and returns the margined rate.
+
+"""
+function margined_rate(accrual_ratio, time_fraction, rate_type::R, margin::M) where {R<:RateType, M<:MarginConfig}
+    rate = implied_rate(accrual_ratio, time_fraction, rate_type)
+    return apply_margin(rate, margin)
+end
