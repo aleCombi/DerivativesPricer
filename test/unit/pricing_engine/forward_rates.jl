@@ -110,7 +110,7 @@ end
     pay_dates = [Date(2001,1,1)]
 
     accrual_dates = [Date(2000,1,1), Date(2000,2,1), Date(2000,3,1)]
-    accrual_day_counts = day_count_fraction(accrual_dates, ACT365())
+    accrual_day_counts = [day_count_fraction(accrual_dates[1], accrual_dates[3], ACT365())]
     fixing_dates = accrual_dates[1:end-1]
     discount_start_dates = fixing_dates
     discount_end_dates = accrual_dates[2:end]
