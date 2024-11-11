@@ -28,7 +28,7 @@ function setup_pricer()
 end
 
 # Calculation phase (price the fixed-rate stream)
-function calculate_npv(fixed_rate_stream::DerivativesPricer.FixedRateStream, rate_curve::DerivativesPricer.FlatRateCurve)
+function calculate_npv(fixed_rate_stream::Hedgehog.FixedRateStream, rate_curve::Hedgehog.FlatRateCurve)
     return price_fixed_flows_stream(fixed_rate_stream.pay_dates, fixed_rate_stream.cash_flows, rate_curve)
 end
 
@@ -55,7 +55,7 @@ display(calculation_benchmark)
 # @benchmark day_count_fraction($rate_curve.date, $fixed_rate_stream.pay_dates, $rate_curve.day_count_convention)
 
 # delta =  day_count_fraction(rate_curve.date, fixed_rate_stream.pay_dates, rate_curve.day_count_convention)
-# @benchmark DerivativesPricer.discount_interest($rate_curve.rate, $delta, $rate_curve.rate_type)
+# @benchmark Hedgehog.discount_interest($rate_curve.rate, $delta, $rate_curve.rate_type)
 
 # f(delta, rate) = @. exp(-delta * rate)
 
