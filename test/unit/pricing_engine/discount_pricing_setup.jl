@@ -1,6 +1,6 @@
 using Test
 using Dates
-using DerivativesPricer
+using Hedgehog
 include("../dummy_struct_functions.jl")
 # Create mock dates and day count convention
 pricing_date = Date(2022, 1, 1)

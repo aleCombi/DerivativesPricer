@@ -1,4 +1,4 @@
-# DerivativesPricer package
+# Hedgehog package
 
 This package implements several Linear Interest Rate Derivatives Pricers in Julia.
 

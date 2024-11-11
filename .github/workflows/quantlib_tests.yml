@@ -47,6 +47,6 @@ jobs:
         run: |
           julia --project=. -e '
             using TestItemRunner
-            using DerivativesPricer
+            using Hedgehog
             @run_package_tests filter=ti -> occursin("quantlib", ti.filename)
           '

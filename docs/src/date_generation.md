@@ -4,6 +4,6 @@ This page documents the available functions allowing to generate streams of date
 
 ## Schedules Generation
 ```@autodocs
-Modules = [DerivativesPricer]
+Modules = [Hedgehog]
 Pages   = ["schedule_generation.jl"]
 ```

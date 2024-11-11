@@ -1,4 +1,4 @@
-using DerivativesPricer
+using Hedgehog
 using Dates
 using BenchmarkTools
 using ProfileView
@@ -13,7 +13,7 @@ function setup_pricer()
     settlement_date = Date(2024, 10, 10)
 
     # Set up the flat rate curve
-    rate_curve = DerivativesPricer.FlatRateCurve("myRateCurve", settlement_date, interest_rate, day_count, Exponential())
+    rate_curve = Hedgehog.FlatRateCurve("myRateCurve", settlement_date, interest_rate, day_count, Exponential())
 
     loan_interest_rate = 0.05
     start_date = Date(2024, 10, 10)

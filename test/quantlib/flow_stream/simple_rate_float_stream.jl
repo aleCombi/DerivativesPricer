@@ -80,7 +80,7 @@
         ql_schedule = get_quantlib_schedule(start_date, end_date, period, calendar, roll_convention, business_day_convention, termination_bd_convention, stub_position; first_date=first_date, next_to_last_date=next_to_last_date)
         return [to_julia_date(dt) for dt in ql_schedule]
     end
-    ## Getting DerivativesPricer Results
+    ## Getting Hedgehog Results
     # schedule configuration
     start_date = Date(2019, 6, 27)
     end_date = Date(2029, 6, 27)

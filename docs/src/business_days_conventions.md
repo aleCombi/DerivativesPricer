@@ -1,5 +1,5 @@
 ## Business Days Conventions
 ```@autodocs
-Modules = [DerivativesPricer]
+Modules = [Hedgehog]
 Pages   = ["business_days_conventions.jl"]
 ```

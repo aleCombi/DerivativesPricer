@@ -1,5 +1,5 @@
 ## Stub Periods
 ```@autodocs
-Modules = [DerivativesPricer]
+Modules = [Hedgehog]
 Pages   = ["stub_periods.jl"]
 ```

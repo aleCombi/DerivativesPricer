@@ -1,3 +1,3 @@
 using Aqua
-using DerivativesPricer
-Aqua.test_all(DerivativesPricer; stale_deps=false, deps_compat=false)
+using Hedgehog
+Aqua.test_all(Hedgehog; stale_deps=false, deps_compat=false)

@@ -1,4 +1,4 @@
 [deps]
 BusinessDays = "4f18b42c-503e-5345-9536-bb0f25fc7038"
-DerivativesPricer = "265bde8e-a8a2-4012-a19c-337de8aac561"
+Hedgehog = "265bde8e-a8a2-4012-a19c-337de8aac561"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"

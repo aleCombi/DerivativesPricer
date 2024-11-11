@@ -1,5 +1,5 @@
 ## Instrument Schedule
 ```@autodocs
-Modules = [DerivativesPricer]
+Modules = [Hedgehog]
 Pages   = ["instrument_schedule.jl"]
 ```

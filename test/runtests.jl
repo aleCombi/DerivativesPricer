@@ -1,5 +1,5 @@
 using TestItemRunner
-using DerivativesPricer #TODO:explore the use of @testable to avoid exporting everything from the package.
+using Hedgehog #TODO:explore the use of @testable to avoid exporting everything from the package.
 
 # fake include test files: necessary to have code completion
 if false

@@ -1,3 +1,3 @@
 [deps]
-DerivativesPricer = "265bde8e-a8a2-4012-a19c-337de8aac561"
+Hedgehog = "265bde8e-a8a2-4012-a19c-337de8aac561"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"

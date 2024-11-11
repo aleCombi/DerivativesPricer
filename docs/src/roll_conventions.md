@@ -1,5 +1,5 @@
 ## Roll Conventions
 ```@autodocs
-Modules = [DerivativesPricer]
+Modules = [Hedgehog]
 Pages   = ["roll_conventions.jl"]
 ```

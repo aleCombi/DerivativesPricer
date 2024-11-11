@@ -1,3 +1,3 @@
-using Documenter, DerivativesPricer
+using Documenter, Hedgehog
 
-makedocs(sitename="DerivativesPricer")
+makedocs(sitename="Hedgehog")

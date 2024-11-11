@@ -1,7 +1,7 @@
 @testsnippet QuantlibBusinessDayConvention begin
     using Dates
     using BusinessDays
-    using DerivativesPricer
+    using Hedgehog
     using PyCall
 
     # Define a custom calendar with weekends, Christmas and New Year

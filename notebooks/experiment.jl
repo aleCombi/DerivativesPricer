@@ -1,10 +1,10 @@
-using DerivativesPricer
+using Hedgehog
 using Dates
 using BusinessDays
 using PyCall
 ql = pyimport("QuantLib")
 
-## Getting DerivativesPricer Results
+## Getting Hedgehog Results
 # schedule configuration
 start_date = Date(2019, 6, 27)
 end_date = Date(2029, 6, 27)

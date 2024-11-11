@@ -1,5 +1,5 @@
 ## Date Shifts
 ```@autodocs
-Modules = [DerivativesPricer]
+Modules = [Hedgehog]
 Pages   = ["date_shifts.jl"]
 ```
