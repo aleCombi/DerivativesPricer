@@ -62,6 +62,34 @@ function SimpleRateStreamSchedules(instrument_schedule::S, rate_config::R) where
 end
 
 """
+    SimpleRateStreamSchedules(pay_dates::Vector{D}, fixing_dates::Vector{D}, discount_start_dates::Vector{D}, 
+                              discount_end_dates::Vector{D}, accrual_dates::Vector{D}, day_count_convention::C) 
+                              where {C<:DayCount, D<:TimeType}
+
+Creates a schedule of rate streams, with associated time fractions, based on specified payment dates, fixing dates, 
+discount start and end dates, and accrual dates.
+
+# Arguments
+- `pay_dates::Vector{D}`: A vector of payment dates, where each date represents a point at which payment is due.
+- `fixing_dates::Vector{D}`: A vector of fixing dates, indicating when the rates are determined for each period.
+- `discount_start_dates::Vector{D}`: A vector of start dates for discounting, marking the beginning of each discount period.
+- `discount_end_dates::Vector{D}`: A vector of end dates for discounting, marking the end of each discount period.
+- `accrual_dates::Vector{D}`: A vector of accrual dates, representing the periods over which accrual is calculated.
+- `day_count_convention::C`: A day count convention of type `C<:DayCount`, which specifies how days are counted in the accrual periods.
+
+# Returns
+- A `SimpleRateStreamSchedules` object, containing the input schedule data along with computed time fractions for each accrual period, based on the provided day count convention.
+
+# Details
+The function calculates time fractions for each accrual period using the `day_count_fraction` function, which applies the specified day count convention to the provided accrual dates. These time fractions are then incorporated into the `SimpleRateStreamSchedules` object, providing a structured schedule with consistent rate periods and accruals.
+
+"""
+function SimpleRateStreamSchedules(pay_dates::Vector{D}, fixing_dates::Vector{D}, discount_start_dates::Vector{D}, discount_end_dates::Vector{D}, accrual_dates::Vector{D}, day_count_convention::C) where {C<:DayCount, D<:TimeType}
+    time_fractions = day_count_fraction(accrual_dates, day_count_convention)
+    return SimpleRateStreamSchedules(pay_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, time_fractions)
+end
+
+"""
     Base.getindex(obj::SimpleRateStreamSchedules, index::Int) -> NamedTuple
 
 Allows indexing into a `SimpleRateStreamSchedules` object using square brackets (`[]`). Returns a named tuple containing the relevant schedule dates for the specified index.
