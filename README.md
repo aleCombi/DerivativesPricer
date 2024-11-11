@@ -1,4 +1,4 @@
-# DerivativesPricer
+# Hedgehog.jl
 
 <table>
   <tr>

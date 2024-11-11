@@ -1,4 +1,4 @@
-module DerivativesPricer
+module Hedgehog
 
 using BusinessDays, Dates, Interpolations
 
