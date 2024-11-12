@@ -201,3 +201,19 @@ function period_compounded_accrual(simple_schedule::SimpleRateStreamSchedules, r
     sub_addend = simple_schedule.accrual_day_counts .* forwards
     return 1 .+ sum(sub_addend .* compound_after_i)
 end
+
+"""
+    forward_rate(stream::Stream, rate_curve::Curve) 
+
+Calculates the forward rate for a given `FlowStream` based on the provided rate curve and stream configuration.
+
+# Arguments
+- `stream::Stream`: A `FlowStream` object that includes schedules and configuration for the rate calculation.
+- `rate_curve::Curve`: An `AbstractRateCurve` object representing the rate curve data used for forward rate calculations.
+
+# Returns
+- The forward rate calculated for each period in the stream's schedule using the rate configuration specified in the stream.
+"""
+function forward_rate(stream::Stream, rate_curve::Curve) where {Stream <: FlowStream, Curve <: AbstractRateCurve}
+    return forward_rate(stream.schedules, rate_curve, stream.config.rate.rate_config)
+end

@@ -51,7 +51,3 @@ function price_float_rate_stream(stream::Stream, rate_curve::Curve) where {Strea
     flows = calculate_expected_flows(stream, forward_rates)
     return sum(discount_factors .* flows)
 end
-
-function forward_rate(stream::Stream, rate_curve::Curve) where {Stream <: FlowStream, Curve <: AbstractRateCurve}
-    return forward_rate(stream.schedules, rate_curve, stream.config.rate.rate_config)
-end
