@@ -63,3 +63,77 @@ price_hh = price_flow_stream(fixed_rate_stream, rate_curve)
 
 @test isapprox(present_value, price_hh; atol=1e-15)
 end
+
+@testitem "Quantlib: 6 Month, Linear, ACT360, ModifiedFollowing, Target calendar (for accrual), WeekendsOnly calendar (for fixing), 10 business days fixing shifter from start" setup=[QuantlibSetup] begin
+    ## Getting Hedgehog Results
+    # schedule configuration
+    start_date = Date(2019, 6, 27)
+    end_date = Date(2019, 7, 27)
+    business_day_convention=FollowingBusinessDay()
+    period = Month(1)
+    calendar=BusinessDays.TARGET()
+    schedule_config = ScheduleConfig(period; 
+        business_days_convention=business_day_convention, 
+        termination_bd_convention=business_day_convention, calendar=calendar)
+
+    instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
+
+    # rate configuration
+    day_count = ACT360()
+    rate_type = LinearRate()
+    fixing_days_delay = 0
+    rate_config = SimpleRateConfig(day_count, rate_type, NoShift(false), AdditiveMargin())
+    instrument_rate = SimpleInstrumentRate(RateIndex("rate_index"), rate_config)
+
+    # fixed rate stream configuration
+    principal = 1.0
+    stream_config = FloatStreamConfig(principal, instrument_rate, instrument_schedule)
+
+    # float rate stream calculations
+    float_rate_stream = SimpleFloatRateStream(stream_config)
+
+    ## Getting Quanatlib Results
+    ql_start_date = to_ql_date(start_date)
+    ql_end_date = to_ql_date(end_date)
+
+    # Define schedule
+    schedule = get_quantlib_schedule(start_date, end_date, period, calendar, NoRollConvention(), business_day_convention, business_day_convention, schedule_config.stub_period.position)
+    
+    ql.Settings.instance().evaluationDate = to_ql_date(Date(2017,1,1))
+    yts = ql.YieldTermStructureHandle(ql.FlatForward(0, ql.TARGET(), 0.05, to_ql_day_count(day_count)))
+    engine = ql.DiscountingSwapEngine(yts)
+
+    index = ql.IborIndex("MyIndex", ql.Period(1, ql.Months), fixing_days_delay, ql.USDCurrency(), ql.NullCalendar(), ql.Unadjusted, false, to_ql_day_count(day_count))
+    index = index.clone(yts)
+
+    floating_rate_leg = ql.IborLeg([principal], schedule, index)
+    swap = ql.Swap(floating_rate_leg, ql.Leg())  # Only a fixed-rate leg, no floating leg
+
+    coupons = [float_rate_stream.schedules[i] for i in 1:length(float_rate_stream.schedules)]
+    # ql coupon
+    ql_coupon = ql.as_floating_rate_coupon(floating_rate_leg[1])
+    ql_coupons = [ql.as_floating_rate_coupon(el) for el in floating_rate_leg]
+
+    # Attach the discounting engine to the bond
+    swap.setPricingEngine(engine)
+
+    # Calculate NPV
+    npv = swap.NPV()
+    # Calculate NPV
+    println(npv)
+
+    rate_curve = FlatRateCurve("Curve", Date(2017,1,1), 0.05, ACT360(), Exponential())
+    price_hh = price_flow_stream(float_rate_stream, rate_curve)
+    println(price_hh)
+        # compare schedules per coupon
+        for (i, (ql_coupon, coupon)) in enumerate(zip(ql_coupons, coupons))
+            println("Quantlib accrual start date: ", to_julia_date(ql_coupon.accrualStartDate()))
+            println("DP accrual start date: ", coupon.accrual_start)
+            @assert coupon.accrual_start == to_julia_date(ql_coupon.accrualStartDate())
+            @assert coupon.accrual_end == to_julia_date(ql_coupon.accrualEndDate())
+            println("DP fixing date: ",coupon.fixing_date)
+            println("Quantlib fixing date: ", to_julia_date(ql_coupon.fixingDate()))
+            @assert coupon.fixing_date == to_julia_date(ql_coupon.fixingDate())
+            @assert coupon.pay_date == to_julia_date(ql_coupon.date())
+        end
+end

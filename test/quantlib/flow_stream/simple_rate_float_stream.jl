@@ -3,11 +3,11 @@
     ## Getting Hedgehog Results
     # schedule configuration
     start_date = Date(2019, 6, 27)
-    end_date = Date(2029, 6, 27)
-    business_day_convention=ModifiedFollowing()
+    end_date = Date(2019, 7, 27)
+    business_day_convention=FollowingBusinessDay()
     period = Month(1)
     calendar=BusinessDays.TARGET()
-    schedule_config = ScheduleConfig(period; business_days_convention=business_day_convention, calendar=calendar)
+    schedule_config = ScheduleConfig(period; business_days_convention=business_day_convention, termination_bd_convention=business_day_convention, calendar=calendar)
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
 
     # rate configuration
@@ -44,12 +44,14 @@
 
     # compare schedules per coupon
     for (i, (ql_coupon, coupon)) in enumerate(zip(ql_coupons, coupons))
-        # println("Quantlib accrual start date: ", to_julia_date(ql_coupon.accrualStartDate()))
-        # println("DP accrual start date: ", coupon.accrual_start)
+        println("Quantlib accrual start date: ", to_julia_date(ql_coupon.accrualStartDate()))
+        println("DP accrual start date: ", coupon.accrual_start)
+        println("Quantlib accrual end date: ", to_julia_date(ql_coupon.accrualEndDate()))
+        println("DP accrual end date: ", coupon.accrual_end)
         @assert coupon.accrual_start == to_julia_date(ql_coupon.accrualStartDate())
         @assert coupon.accrual_end == to_julia_date(ql_coupon.accrualEndDate())
-        # println("DP fixing date: ",coupon.fixing_date)
-        # println("Quantlib fixing date: ", to_julia_date(ql_coupon.fixingDate()))
+        println("DP fixing date: ",coupon.fixing_date)
+        println("Quantlib fixing date: ", to_julia_date(ql_coupon.fixingDate()))
         @assert coupon.fixing_date == to_julia_date(ql_coupon.fixingDate())
         @assert coupon.pay_date == to_julia_date(ql_coupon.date())
     end
