@@ -116,12 +116,40 @@ function forward_rate(rate_curve::R, schedules::CompoundedRateStreamSchedules, r
    return forward_rate(rate_curve, schedules, rate_config.rate_type, rate_config.margin)
 end
 
+"""
+    forward_rate(rate_curve::R, schedules::CompoundedRateStreamSchedules, rate_type::T, margin_config::M) 
+
+Calculates compounded forward rates for each period specified in the `schedules`, using the given rate type and margin configuration.
+
+# Arguments
+- `rate_curve::R`: The rate curve object containing interest rate data.
+- `schedules::CompoundedRateStreamSchedules`: Schedule containing compounding periods for each segment.
+- `rate_type::T`: The type of rate (e.g., compounded, simple) for calculation.
+- `margin_config::M`: Margin configuration applied to the compounded rates.
+
+# Returns
+- The compounded forward rate for each period in `schedules`, with the specified margin applied.
+"""
 function forward_rate(rate_curve::R, schedules::CompoundedRateStreamSchedules, rate_type::T, margin_config::M) where {R<:AbstractRateCurve, T<:RateType, M<:CompoundMargin}
     period_accrual_func = s -> period_compounded_accrual(s, rate_curve, rate_type, margin_config)
     period_accruals = period_accrual_func.(schedules.compounding_schedules)
     margined_rate(period_accruals, schedules.accrual_day_counts, rate_type, margin_config.margin_config)
 end
 
+"""
+    period_compounded_accrual(simple_schedule::SimpleRateStreamSchedules, rate_curve::R, rate_type::T, margin_config::MarginOnCompoundedRate) 
+
+Calculates the compounded interest accruals over each period in `simple_schedule`, applying the specified margin configuration to the compounded rate.
+
+# Arguments
+- `simple_schedule::SimpleRateStreamSchedules`: Schedule data containing start and end dates for each period.
+- `rate_curve::R`: The rate curve object representing interest rate data.
+- `rate_type::T`: Rate type for calculation (e.g., compounded).
+- `margin_config::MarginOnCompoundedRate`: Margin configuration applied directly to the compounded rate.
+
+# Returns
+- A vector of interest accruals for each period, compounded with the specified margin.
+"""
 function period_compounded_accrual(simple_schedule::SimpleRateStreamSchedules, rate_curve::R, rate_type::T, margin_config::MarginOnCompoundedRate) where {R<:AbstractRateCurve, T<:RateType}
     forwards = forward_rate(simple_schedule, rate_curve, rate_type, margin_config.margin_config)
     compounding_factors = compounding_factor(forwards, simple_schedule.accrual_day_counts, rate_type)
@@ -129,6 +157,23 @@ function period_compounded_accrual(simple_schedule::SimpleRateStreamSchedules, r
     return interest_accruals
 end
 
+"""
+    period_compounded_accrual(simple_schedule::SimpleRateStreamSchedules, rate_curve::R, rate_type::T, margin_config::MarginOnUnderlying)
+
+Calculates the compounded interest accruals over each period in `simple_schedule`, applying the specified margin configuration to the underlying rate.
+
+# Arguments
+- `simple_schedule::SimpleRateStreamSchedules`: Schedule data with start and end dates for each period.
+- `rate_curve::R`: The rate curve object representing interest rate data.
+- `rate_type::T`: Type of rate (e.g., simple or compounded).
+- `margin_config::MarginOnUnderlying`: Margin configuration applied to the underlying rate before compounding.
+
+# Returns
+- The total compounded interest accrual for the period, adjusted for the underlying margin.
+
+# Notes
+- This function computes compound factors for each forward rate, then applies the accruals and margin sequentially.
+"""
 function period_compounded_accrual(simple_schedule::SimpleRateStreamSchedules, rate_curve::R, rate_type::T, margin_config::MarginOnUnderlying) where {R<:AbstractRateCurve, T<:RateType}
     forwards = forward_rate(simple_schedule, rate_curve, rate_type, margin_config.margin_config)
     compounding_factors = compounding_factor(forwards, simple_schedule.accrual_day_counts, rate_type)
