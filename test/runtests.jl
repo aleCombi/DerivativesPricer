@@ -35,6 +35,7 @@ if false
     include("quantlib/flow_stream/fixed_rate_stream.jl")
     include("quantlib/flow_stream/simple_rate_float_stream.jl")
     include("quantlib/flow_stream/compound_rate_float_stream.jl")
+    include("quantlib/pricing_engine/discount_pricing.jl")
 
     # integration_tests
     include("integration_tests/include_integration_tests.jl")
