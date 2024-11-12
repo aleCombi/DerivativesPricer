@@ -81,6 +81,29 @@ struct CompoundRateConfig{D<:DayCount, L<:RateType, C<:AbstractShift, S<:Abstrac
 end
 
 """
+    CompoundRateConfig(day_count_convention::D, rate_type::L, compound_schedule::S; 
+                       fixing_shift::C=NoShift(), 
+                       margin::M=AdditiveMargin(0))
+
+Creates a `CompoundRateConfig` object that defines the configuration for calculating compounded rates over multiple periods, including day count conventions, rate type, and margin adjustments.
+
+# Arguments
+- `day_count_convention::D`: Specifies the day count convention to calculate time fractions (e.g., 30/360, ACT/365).
+- `rate_type::L`: The type of rate used in calculations (e.g., compounded or simple).
+- `compound_schedule::S`: The schedule that defines compounding intervals for rate calculations.
+- `fixing_shift::C`: Optional fixing shift to apply to dates in the schedule, typically for adjusting rate fixing dates. Defaults to `NoShift()`.
+- `margin::M`: Optional margin configuration applied to adjust the final compounded rate. Defaults to `AdditiveMargin(0)`.
+
+# Returns
+- A `CompoundRateConfig` object initialized with the provided configurations for compounded rate calculations.
+"""
+function CompoundRateConfig(day_count_convention::D, rate_type::L, compound_schedule::S;
+    fixing_shift::C=NoShift(),
+    margin::M=AdditiveMargin(0)) where {D<:DayCount, L<:RateType, C<:AbstractShift, S<:AbstractScheduleConfig, M<:CompoundMargin}
+    return CompoundRateConfig(day_count_convention, rate_type, fixing_shift, compound_schedule, margin)
+end
+
+"""
     SimpleInstrumentRate
 
 A structure representing a simple floating-rate instrument, defined by a rate index and a simple rate configuration.

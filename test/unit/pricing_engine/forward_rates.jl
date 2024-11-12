@@ -120,6 +120,25 @@ end
     @test forward_rate(rate_curve, schedules, rate_config)[1] ≈ 0.05
 end
 
+@testitem "compounded forward rates with non-0 margin on compounded rate" begin
+    # create rate curve
+    using Dates
+    rate_curve = FlatRateCurve("FlatCurve", Date(2000,1,1), 0.05, ACT365(), LinearRate())
+
+    pay_dates = [Date(2001,1,1)]
+
+    accrual_dates = [Date(2000,1,1), Date(2000,2,1), Date(2000,3,1)]
+    fixing_dates = accrual_dates[1:end-1]
+    discount_start_dates = fixing_dates
+    discount_end_dates = accrual_dates[2:end]
+    compounding_schedules = [SimpleRateStreamSchedules(discount_end_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
+    schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
+    compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
+    rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule; margin=MarginOnCompoundedRate(AdditiveMargin(2)))
+    @test forward_rate(rate_curve, schedules, rate_config)[1] ≈ 0.05 + 2
+end
+
+
 @testitem "compounded forward rates with 0 margin on underlying" begin
     # create rate curve
     using Dates
@@ -136,4 +155,73 @@ end
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
     @test forward_rate(rate_curve, schedules, rate_config)[1] ≈ 0.05
+end
+
+@testitem "compounded forward rates with 0 margin on underlying with different rate conventions between curve and product" begin
+    # create rate curve
+    using Dates
+    rate_curve = FlatRateCurve("FlatCurve", Date(2000,1,1), 0.05, ACT365(), Exponential())
+
+    pay_dates = [Date(2001,1,1)]
+
+    accrual_dates = [Date(2000,1,1), Date(2000,2,1), Date(2000,3,1)]
+    fixing_dates = accrual_dates[1:end-1]
+    discount_start_dates = fixing_dates
+    discount_end_dates = accrual_dates[2:end]
+    compounding_schedules = [SimpleRateStreamSchedules(discount_end_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
+    schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
+    compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
+    rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
+    calculated_forward = forward_rate(rate_curve, schedules, rate_config)[1]
+
+    compounded_accrual = exp(31/365 * 0.05) * exp(29/365 * 0.05)
+    compounded_rate = (compounded_accrual - 1) / 60 * 365
+    @test calculated_forward ≈ compounded_rate
+end
+
+@testitem "compounded forward rates with non-zero margin on underlying with different rate conventions between curve and product" begin
+    # create rate curve
+    using Dates
+    rate_curve = FlatRateCurve("FlatCurve", Date(2000,1,1), 0.05, ACT365(), Exponential())
+
+    pay_dates = [Date(2001,1,1)]
+
+    accrual_dates = [Date(2000,1,1), Date(2000,2,1), Date(2000,3,1)]
+    fixing_dates = accrual_dates[1:end-1]
+    discount_start_dates = fixing_dates
+    discount_end_dates = accrual_dates[2:end]
+    compounding_schedules = [SimpleRateStreamSchedules(discount_end_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
+    schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
+    compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
+    rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule, margin=MarginOnUnderlying(AdditiveMargin(0.02)))
+    calculated_forward = forward_rate(rate_curve, schedules, rate_config)[1]
+
+    compounded_accrual = (exp(31/365 * 0.05) - 1 + 31/365 * 0.02) * (exp(29/365 * 0.05) + 0.02 * 29/365) + exp(29/365 * 0.05) - 1 + 29/365 * 0.02
+    compounded_rate = (compounded_accrual) / 60 * 365
+    @test calculated_forward ≈ compounded_rate
+end
+
+@testitem "Checking convergence of daily compounding with margin on underlying and continuous compounding with margin" begin
+    # create rate curve
+    using Dates
+    rate_curve = FlatRateCurve("FlatCurve", Date(2000,1,1), 0.05, ACT365(), Exponential())
+
+    pay_dates = [Date(2001,1,1)]
+
+    start_date = Date(2000,1,1)
+    end_date = Date(2100,1,1)
+    accrual_dates = collect(start_date:Day(1):end_date)
+    fixing_dates = accrual_dates[1:end-1]
+    discount_start_dates = fixing_dates
+    discount_end_dates = accrual_dates[2:end]
+    compounding_schedules = [SimpleRateStreamSchedules(discount_end_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
+    schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
+    compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
+    rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule; margin=MarginOnUnderlying(AdditiveMargin(0.02)))
+    
+    calculated_forward = forward_rate(rate_curve, schedules, rate_config)[1]
+    total_day_count = day_count_fraction(start_date, end_date, ACT365())
+    total_accrual = 1 + calculated_forward * total_day_count
+    
+    @test log(total_accrual) / total_day_count ≈ 0.07 atol = 1E-5
 end
