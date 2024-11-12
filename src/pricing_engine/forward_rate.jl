@@ -91,7 +91,7 @@ Calculates forward rates over periods specified in the schedules using the confi
 # Returns
 - A list of forward rates for each period, computed using `rate_config`.
 """
-function forward_rate(schedules::SimpleRateStreamSchedules, rate_curve::C, rate_config::SimpleRateConfig) where C<:AbstractRateCurve
+function forward_rate(schedules::SimpleRateStreamSchedules, rate_curve::C, rate_config::R) where {C<:AbstractRateCurve, R<:FloatRateConfig}
     return forward_rate(schedules, rate_curve, rate_config.rate_type, rate_config.margin)
 end
 
@@ -113,16 +113,26 @@ for each compounding schedule and applies any margin configurations on the compo
 - `Error` if the margin is specified on an underlying compounded rate, as this functionality is not implemented.
 """
 function forward_rate(rate_curve::R, schedules::CompoundedRateStreamSchedules, rate_config::CompoundRateConfig) where R<:AbstractRateCurve
-    if isa(rate_config.margin, MarginOnUnderlying)
-        error("Not implemented margin on underlying compounded rates")
-    end
-    interest_accruals = []
-    for i in 1:length(schedules.compounding_schedules)
-        forward_rates = forward_rate(schedules.compounding_schedules[i], rate_curve, rate_config.rate_type, rate_config.margin.margin_config)
-        compound_factors = compounding_factor(forward_rates, schedules.compounding_schedules[i].accrual_day_counts, rate_config.rate_type)
-        interest_accrual = prod(compound_factors) 
-        push!(interest_accruals, interest_accrual)
-    end
+   return forward_rate(rate_curve, schedules, rate_config.rate_type, rate_config.margin)
+end
 
-    return margined_rate(interest_accruals, schedules.accrual_day_counts, rate_config.rate_type, rate_config.margin.margin_config)
+function forward_rate(rate_curve::R, schedules::CompoundedRateStreamSchedules, rate_type::T, margin_config::M) where {R<:AbstractRateCurve, T<:RateType, M<:CompoundMargin}
+    period_accrual_func = s -> period_compounded_accrual(s, rate_curve, rate_type, margin_config)
+    period_accruals = period_accrual_func.(schedules.compounding_schedules)
+    margined_rate(period_accruals, schedules.accrual_day_counts, rate_type, margin_config.margin_config)
+end
+
+function period_compounded_accrual(simple_schedule::SimpleRateStreamSchedules, rate_curve::R, rate_type::T, margin_config::MarginOnCompoundedRate) where {R<:AbstractRateCurve, T<:RateType}
+    forwards = forward_rate(simple_schedule, rate_curve, rate_type, margin_config.margin_config)
+    compounding_factors = compounding_factor(forwards, simple_schedule.accrual_day_counts, rate_type)
+    interest_accruals = prod.(compounding_factors)
+    return interest_accruals
+end
+
+function period_compounded_accrual(simple_schedule::SimpleRateStreamSchedules, rate_curve::R, rate_type::T, margin_config::MarginOnUnderlying) where {R<:AbstractRateCurve, T<:RateType}
+    forwards = forward_rate(simple_schedule, rate_curve, rate_type, margin_config.margin_config)
+    compounding_factors = compounding_factor(forwards, simple_schedule.accrual_day_counts, rate_type)
+    compound_after_i = vcat([prod(compounding_factors[i+1:end]) for i in 1:(length(compounding_factors)-1)],1)
+    sub_addend = simple_schedule.accrual_day_counts .* forwards
+    return 1 + sum(sub_addend .* compound_after_i)
 end
