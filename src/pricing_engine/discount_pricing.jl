@@ -65,5 +65,7 @@ function price_flow_stream(stream::Stream, rate_curve::Curve) where {Stream <: F
     forward_rates = forward_rate(stream, rate_curve)
     discount_factors = discount_factor(rate_curve, stream.schedules.pay_dates)
     flows = calculate_expected_flows(stream, forward_rates)
+    println("flows:",flows)
+    println("discount_factors:",discount_factors)
     return sum(discount_factors .* flows)
 end

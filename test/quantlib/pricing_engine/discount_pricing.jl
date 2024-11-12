@@ -100,14 +100,14 @@ end
     schedule = get_quantlib_schedule(start_date, end_date, period, calendar, NoRollConvention(), business_day_convention, business_day_convention, schedule_config.stub_period.position)
     
     ql.Settings.instance().evaluationDate = to_ql_date(Date(2017,1,1))
-    yts = ql.YieldTermStructureHandle(ql.FlatForward(0, ql.TARGET(), 0.05, to_ql_day_count(day_count)))
+    yts = ql.YieldTermStructureHandle(ql.FlatForward(0, ql.NullCalendar(), 0.05, to_ql_day_count(day_count)))
     engine = ql.DiscountingSwapEngine(yts)
 
     index = ql.IborIndex("MyIndex", ql.Period(1, ql.Months), fixing_days_delay, ql.USDCurrency(), ql.NullCalendar(), ql.Unadjusted, false, to_ql_day_count(day_count))
     index = index.clone(yts)
 
     floating_rate_leg = ql.IborLeg([principal], schedule, index)
-    swap = ql.Swap(floating_rate_leg, ql.Leg())  # Only a fixed-rate leg, no floating leg
+    swap = ql.Swap(ql.Leg(), floating_rate_leg)  # Only a fixed-rate leg, no floating leg
 
     coupons = [float_rate_stream.schedules[i] for i in 1:length(float_rate_stream.schedules)]
     # ql coupon
@@ -124,16 +124,19 @@ end
 
     rate_curve = FlatRateCurve("Curve", Date(2017,1,1), 0.05, ACT360(), Exponential())
     price_hh = price_flow_stream(float_rate_stream, rate_curve)
+    println("discount factor ql:", yts.discount(to_ql_date(end_date)))
+
     println(price_hh)
-        # compare schedules per coupon
-        for (i, (ql_coupon, coupon)) in enumerate(zip(ql_coupons, coupons))
-            println("Quantlib accrual start date: ", to_julia_date(ql_coupon.accrualStartDate()))
-            println("DP accrual start date: ", coupon.accrual_start)
-            @assert coupon.accrual_start == to_julia_date(ql_coupon.accrualStartDate())
-            @assert coupon.accrual_end == to_julia_date(ql_coupon.accrualEndDate())
-            println("DP fixing date: ",coupon.fixing_date)
-            println("Quantlib fixing date: ", to_julia_date(ql_coupon.fixingDate()))
-            @assert coupon.fixing_date == to_julia_date(ql_coupon.fixingDate())
-            @assert coupon.pay_date == to_julia_date(ql_coupon.date())
-        end
+    @test price_hh == npv
+    # compare schedules per coupon
+    for (i, (ql_coupon, coupon)) in enumerate(zip(ql_coupons, coupons))
+        println("Quantlib accrual start date: ", to_julia_date(ql_coupon.accrualStartDate()))
+        println("DP accrual start date: ", coupon.accrual_start)
+        @assert coupon.accrual_start == to_julia_date(ql_coupon.accrualStartDate())
+        @assert coupon.accrual_end == to_julia_date(ql_coupon.accrualEndDate())
+        println("DP fixing date: ",coupon.fixing_date)
+        println("Quantlib fixing date: ", to_julia_date(ql_coupon.fixingDate()))
+        @assert coupon.fixing_date == to_julia_date(ql_coupon.fixingDate())
+        @assert coupon.pay_date == to_julia_date(ql_coupon.date())
+    end
 end
