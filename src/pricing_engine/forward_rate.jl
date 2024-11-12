@@ -214,6 +214,6 @@ Calculates the forward rate for a given `FlowStream` based on the provided rate 
 # Returns
 - The forward rate calculated for each period in the stream's schedule using the rate configuration specified in the stream.
 """
-function forward_rate(stream::Stream, rate_curve::Curve) where {Stream <: FlowStream, Curve <: AbstractRateCurve}
+function forward_rate(stream::Stream, rate_curve::Curve) where {Stream <: FloatStream, Curve <: AbstractRateCurve}
     return forward_rate(stream.schedules, rate_curve, stream.config.rate.rate_config)
 end

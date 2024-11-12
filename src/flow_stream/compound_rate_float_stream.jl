@@ -61,7 +61,7 @@ Represents a compound floating rate stream configuration within a `FlowStream` c
 - `config::FloatStreamConfig{P,CompoundInstrumentRate}`: Configuration data for the compound rate stream, including details of the rate and scheduling.
 - `schedules::CompoundedRateStreamSchedules`: Pre-computed schedules for payment and compounding dates, derived from the `config`.
 """
-struct CompoundFloatRateStream{P,S} <: FlowStream where {P,S}
+struct CompoundFloatRateStream{P,S} <: FloatStream where {P,S}
     config::FloatStreamConfig{P,CompoundInstrumentRate, S}
     schedules::CompoundedRateStreamSchedules
 end

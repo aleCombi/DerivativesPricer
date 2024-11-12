@@ -54,3 +54,11 @@ An abstract type representing a stream of cash flows for financial instruments.
 Concrete stream types, such as `FixedRateStream` or `FloatRateStream`, should inherit from this type.
 """
 abstract type FlowStream end
+
+"""
+    FloatStream
+
+An abstract type representing a stream of float cash flows for financial instruments. 
+Concrete stream types, such as `SimpleFloatRateStream` or `CompoundFloatRateStream`, should inherit from this type.
+"""
+abstract type FloatStream <: FlowStream end

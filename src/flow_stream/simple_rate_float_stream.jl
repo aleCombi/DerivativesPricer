@@ -166,7 +166,7 @@ A type representing a stream of floating-rate cash flows with specified dates fo
 
 This struct is primarily used to calculate and manage floating-rate payment streams based on predefined schedules and rate conventions.
 """
-struct SimpleFloatRateStream{P} <: FlowStream where P
+struct SimpleFloatRateStream{P} <: FloatStream where P
     config::FloatStreamConfig{P, SimpleInstrumentRate}
     schedules::SimpleRateStreamSchedules
 end

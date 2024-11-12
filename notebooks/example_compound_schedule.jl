@@ -37,4 +37,4 @@ stream = Hedgehog.CompoundFloatRateStream(stream_config)
 # pricing the stream
 forward_rates = forward_rate(rate_curve, schedules, rate_config)
 expected_flows = Hedgehog.calculate_expected_flows(stream, forward_rates)
-npv = price_float_rate_stream(stream, rate_curve)
+npv = price_flow_stream(stream, rate_curve)

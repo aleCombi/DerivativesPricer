@@ -6,6 +6,6 @@ export
     # rate_curves.jl
     AbstractRateCurve, FlatRateCurve, RateCurve, discount_factor,
     # discount_pricing.jl
-    price_fixed_flows_stream, 
+    price_flow_stream, 
     # forward_rate.jl
-    forward_rate, price_float_rate_stream
+    forward_rate, price_flow_stream

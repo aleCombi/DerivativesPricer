@@ -11,9 +11,25 @@ from the rate curve and returns the total price.
 # Returns
 - The price of the fixed-rate stream of cash flows.
 """
-function price_fixed_flows_stream(payment_dates::Vector{D}, cash_flows::Vector{N}, rate_curve) where D<:TimeType where N<:Number
+function price_flow_stream(payment_dates::Vector{D}, cash_flows::Vector{N}, rate_curve::R) where {D<:TimeType, N<:Number, R<:RateType}
     discount_factors = discount_factor(rate_curve, payment_dates)
     return sum(cash_flows .* discount_factors)
+end
+
+"""
+    price_flow_stream(stream::FixedRateStream, rate_curve::R) 
+
+Calculates the price of a `FixedRateStream` by discounting its cash flows using the specified rate curve.
+
+# Arguments
+- `stream::FixedRateStream`: A `FixedRateStream` object that includes payment dates and cash flows for pricing.
+- `rate_curve::R`: An `AbstractRateCurve` object used to discount each cash flow based on the rate curve.
+
+# Returns
+- The total present value (price) of the fixed rate stream, computed by discounting each cash flow to the valuation date.
+"""
+function price_flow_stream(stream::FixedRateStream, rate_curve::R) where {R<:AbstractRateCurve}
+    return price_flow_stream(stream.pay_dates, stream.cash_flows, rate_curve)
 end
 
 """
@@ -45,7 +61,7 @@ for each accrual period, discounts the cash flows using the discount factors fro
 # Returns
 - The price of the floating-rate stream of cash flows.
 """
-function price_float_rate_stream(stream::Stream, rate_curve::Curve) where {Stream <: FlowStream, Curve <: AbstractRateCurve}
+function price_flow_stream(stream::Stream, rate_curve::Curve) where {Stream <: FloatStream, Curve <: AbstractRateCurve}
     forward_rates = forward_rate(stream, rate_curve)
     discount_factors = discount_factor(rate_curve, stream.schedules.pay_dates)
     flows = calculate_expected_flows(stream, forward_rates)
