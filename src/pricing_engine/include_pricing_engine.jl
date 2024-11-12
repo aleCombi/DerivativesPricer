@@ -8,4 +8,4 @@ export
     # discount_pricing.jl
     price_flow_stream, 
     # forward_rate.jl
-    forward_rate, price_flow_stream
+    forward_rate

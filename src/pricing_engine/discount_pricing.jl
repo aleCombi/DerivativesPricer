@@ -11,7 +11,7 @@ from the rate curve and returns the total price.
 # Returns
 - The price of the fixed-rate stream of cash flows.
 """
-function price_flow_stream(payment_dates::Vector{D}, cash_flows::Vector{N}, rate_curve::R) where {D<:TimeType, N<:Number, R<:RateType}
+function price_flow_stream(payment_dates::Vector{D}, cash_flows::Vector{N}, rate_curve::R) where {D<:TimeType, N<:Number, R<:AbstractRateCurve}
     discount_factors = discount_factor(rate_curve, payment_dates)
     return sum(cash_flows .* discount_factors)
 end

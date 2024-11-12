@@ -117,7 +117,7 @@ end
     schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnCompoundedRate(AdditiveMargin(0)))
-    @test forward_rate(rate_curve, schedules, rate_config)[1] ≈ 0.05
+    @test forward_rate(schedules, rate_curve, rate_config)[1] ≈ 0.05
 end
 
 @testitem "compounded forward rates with non-0 margin on compounded rate" begin
@@ -135,7 +135,7 @@ end
     schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule; margin=MarginOnCompoundedRate(AdditiveMargin(2)))
-    @test forward_rate(rate_curve, schedules, rate_config)[1] ≈ 0.05 + 2
+    @test forward_rate(schedules, rate_curve, rate_config)[1] ≈ 0.05 + 2
 end
 
 
@@ -154,7 +154,7 @@ end
     schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
-    @test forward_rate(rate_curve, schedules, rate_config)[1] ≈ 0.05
+    @test forward_rate(schedules, rate_curve, rate_config)[1] ≈ 0.05
 end
 
 @testitem "compounded forward rates with 0 margin on underlying with different rate conventions between curve and product" begin
@@ -172,7 +172,7 @@ end
     schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
-    calculated_forward = forward_rate(rate_curve, schedules, rate_config)[1]
+    calculated_forward = forward_rate(schedules, rate_curve, rate_config)[1]
 
     compounded_accrual = exp(31/365 * 0.05) * exp(29/365 * 0.05)
     compounded_rate = (compounded_accrual - 1) / 60 * 365
@@ -194,7 +194,7 @@ end
     schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule, margin=MarginOnUnderlying(AdditiveMargin(0.02)))
-    calculated_forward = forward_rate(rate_curve, schedules, rate_config)[1]
+    calculated_forward = forward_rate(schedules, rate_curve, rate_config)[1]
 
     compounded_accrual = (exp(31/365 * 0.05) - 1 + 31/365 * 0.02) * (exp(29/365 * 0.05) + 0.02 * 29/365) + exp(29/365 * 0.05) - 1 + 29/365 * 0.02
     compounded_rate = (compounded_accrual) / 60 * 365
