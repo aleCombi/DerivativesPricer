@@ -3,13 +3,13 @@
 <table>
   <tr>
     <td><strong>Test</strong></td>
-    <td><a href="https://github.com/aleCombi/DerivativesPricer/actions">
-      <img src="https://github.com/aleCombi/DerivativesPricer/actions/workflows/ci.yml/badge.svg?event=push" alt="Test Passing"></a>
+    <td><a href="https://github.com/aleCombi/Hedgehog.jl/actions">
+      <img src="https://github.com/aleCombi/Hedgehog.jl/actions/workflows/ci.yml/badge.svg?event=push" alt="Test Passing"></a>
     </td>
   </tr>
   <tr>
     <td><strong>Coverage</strong></td>
-    <td><a href='https://coveralls.io/github/aleCombi/DerivativesPricer?branch=master'><img src='https://coveralls.io/repos/github/aleCombi/DerivativesPricer/badge.svg?branch=master&service=github' alt='Coverage Status' /></a>
+    <td><a href='https://coveralls.io/github/aleCombi/Hedgehog.jl?branch=master'><img src='https://coveralls.io/repos/github/aleCombi/Hedgehog.jl/badge.svg?branch=master&service=github' alt='Coverage Status' /></a>
     </td>
   </tr>
   <tr>
