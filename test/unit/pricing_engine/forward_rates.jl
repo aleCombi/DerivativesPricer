@@ -201,6 +201,37 @@ end
     @test calculated_forward ≈ compounded_rate
 end
 
+@testitem "Configured compounded forward rates with non-zero margin on underlying with different rate conventions between curve and product" begin
+    # create rate curve
+    using Dates
+    start_date = Date(2000,1,1)
+    end_date = Date(2000,3,1)
+
+    # create rate curve
+    rate_curve = FlatRateCurve("FlatCurve", start_date, 0.05, ACT365(), Exponential())
+
+    # instrument rate definition
+    margin = MarginOnUnderlying(AdditiveMargin(0.02))
+    rate_config = CompoundRateConfig(ACT360(), LinearRate(), ScheduleConfig(Month(1)); margin=margin)
+    instrument_rate = CompoundInstrumentRate(RateIndex("RateIndex"), rate_config)
+
+    # instrument schedule definition
+    schedule_config = ScheduleConfig(Month(2))
+    instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)
+
+    # stream configuration
+    stream_config = FloatStreamConfig(1, instrument_rate, instrument_schedule)
+    
+    # stream pre-computation (schedules and day-counts)
+    stream = CompoundFloatRateStream(stream_config)
+
+    calculated_forward = forward_rate(stream, rate_curve)
+
+    compounded_accrual = (exp(31/365 * 0.05) - 1 + 31/360 * 0.02) * (exp(29/365 * 0.05) + 0.02 * 29/360) + exp(29/365 * 0.05) - 1 + 29/360 * 0.02
+    compounded_rate = (compounded_accrual) / 60 * 360
+    @test calculated_forward ≈ [compounded_rate]
+end
+
 @testitem "Checking convergence of daily compounding with margin on underlying and continuous compounding with margin" begin
     # create rate curve
     using Dates
@@ -219,7 +250,7 @@ end
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule; margin=MarginOnUnderlying(AdditiveMargin(0.02)))
     
-    calculated_forward = forward_rate(rate_curve, schedules, rate_config)[1]
+    calculated_forward = forward_rate(schedules, rate_curve, rate_config)[1]
     total_day_count = day_count_fraction(start_date, end_date, ACT365())
     total_accrual = 1 + calculated_forward * total_day_count
     

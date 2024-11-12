@@ -91,7 +91,7 @@ Calculates forward rates over periods specified in the schedules using the confi
 # Returns
 - A list of forward rates for each period, computed using `rate_config`.
 """
-function forward_rate(schedules::SimpleRateStreamSchedules, rate_curve::C, rate_config::R) where {C<:AbstractRateCurve, R<:FloatRateConfig}
+function forward_rate(schedules::SimpleRateStreamSchedules, rate_curve::C, rate_config::SimpleRateConfig) where {C<:AbstractRateCurve}
     return forward_rate(schedules, rate_curve, rate_config.rate_type, rate_config.margin)
 end
 
@@ -112,7 +112,7 @@ for each compounding schedule and applies any margin configurations on the compo
 # Throws
 - `Error` if the margin is specified on an underlying compounded rate, as this functionality is not implemented.
 """
-function forward_rate(rate_curve::R, schedules::CompoundedRateStreamSchedules, rate_config::CompoundRateConfig) where R<:AbstractRateCurve
+function forward_rate(schedules::CompoundedRateStreamSchedules, rate_curve::R, rate_config::CompoundRateConfig) where R<:AbstractRateCurve
    return forward_rate(rate_curve, schedules, rate_config.rate_type, rate_config.margin)
 end
 

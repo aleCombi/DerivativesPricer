@@ -98,7 +98,7 @@ Creates a `CompoundRateConfig` object that defines the configuration for calcula
 - A `CompoundRateConfig` object initialized with the provided configurations for compounded rate calculations.
 """
 function CompoundRateConfig(day_count_convention::D, rate_type::L, compound_schedule::S;
-    fixing_shift::C=NoShift(),
+    fixing_shift::C=NoShift(false),
     margin::M=AdditiveMargin(0)) where {D<:DayCount, L<:RateType, C<:AbstractShift, S<:AbstractScheduleConfig, M<:CompoundMargin}
     return CompoundRateConfig(day_count_convention, rate_type, fixing_shift, compound_schedule, margin)
 end
