@@ -56,20 +56,64 @@ Returns
 - `RateCurve`: An instance of the interpolated rate curve.
 """
 function RateCurve(date::D, spine_rates::Vector{N}; interp_method::I=Gridded(Linear()),
-                   extrap_method::E=Flat(),
-                   day_count_convention::C=ACT360(),
-                   rate_type::R=LinearRate(),
-                   spine_day_counts::Vector{N}=Vector{N}(),
-                   spine_dates::Vector{D}=Vector{D}()) where {D<:TimeType, N<:Number, I<:InterpolationType, E<:BoundaryCondition, C<:DayCount, R<:RateType}
-    if length(spine_rates) == length(spine_dates) && length(spine_day_counts) == 0
-        spine_day_counts = day_count_fraction(date, spine_dates, day_count_convention)
-    end
-    if length(spine_rates) != length(spine_day_counts)
-        return error("Wrong inputs for curve creation.")
-    end
+                    extrap_method::E=Flat(),
+                    day_count_convention::C=ACT360(),
+                    rate_type::R=LinearRate(),
+                    spine_day_counts::Vector{N}=Vector{N}(),
+                    spine_dates::Vector{D}=Vector{D}()) where {D<:TimeType, N<:Number, I<:InterpolationType, E<:BoundaryCondition, C<:DayCount, R<:RateType}               
+    spine_day_counts = rate_curve_spine_daycounts(date, spine_rates, spine_dates, spine_day_counts, day_count_convention)
     interpolation = interpolate((spine_day_counts,), spine_rates, interp_method) 
     extrap_interp = extrapolate(interpolation, extrap_method)
     return RateCurve("Curve", day_count_convention, rate_type, date, extrap_interp)
+end
+
+"""
+    RateCurve(date::D, discount_factors::Vector{N}; interp_method::I=Gridded(Linear()), 
+              extrap_method::E=Flat(), day_count_convention::C=ACT360(), rate_type::R=LinearRate(), 
+              spine_day_counts::Vector{N}=Vector{N}(), spine_dates::Vector{D}=Vector{D}())
+
+Creates an instance of `RateCurve` based on given spine rates and interpolation settings.
+
+Positional Arguments
+- `date::D`: The base date for the rate curve.
+- `discount_factors::Vector{N}`: Vector containing the discount factors for interpolation.
+
+Keyword Arguments
+- `interp_method::I=Gridded(Linear())`: Specifies the interpolation method to be used for the curve.
+- `extrap_method::E=Flat()`: Boundary condition to be applied for extrapolation outside the defined range.
+- `day_count_convention::C=ACT360()`: The day count convention used to calculate fractions of time between dates.
+- `rate_type::R=LinearRate()`: Type of rate for discounting.
+- `spine_day_counts::Vector{N}=Vector{N}()`: Pre-computed day count fractions for the spine dates; calculated automatically if empty.
+- `spine_dates::Vector{D}=Vector{D}()`: Vector of dates corresponding to each spine rate.
+
+Returns
+- `RateCurve`: An instance of the interpolated rate curve.
+"""
+function RateCurve(date::D; discount_factors::Vector{N}, interp_method::I=Gridded(Linear()),
+                    extrap_method::E=Flat(),
+                    day_count_convention::C=ACT360(),
+                    rate_type::R=LinearRate(),
+                    spine_day_counts::Vector{N}=Vector{Float64}(),
+                    spine_dates::Vector{D}) where {D<:TimeType, N<:Number, I<:InterpolationType, E<:BoundaryCondition, C<:DayCount, R<:RateType}
+    spine_day_counts = rate_curve_spine_daycounts(date, discount_factors, spine_dates, spine_day_counts, day_count_convention)
+    implied_rates = implied_rate(1 ./ discount_factors, spine_day_counts, rate_type)
+    return RateCurve(date, implied_rates;
+        interp_method=interp_method,
+        extrap_method=extrap_method,
+        day_count_convention=day_count_convention,
+        rate_type=rate_type,
+        spine_day_counts=spine_day_counts,
+        spine_dates=spine_dates)
+end
+
+function rate_curve_spine_daycounts(date, spine_values, spine_dates, spine_day_counts, day_count_convention::D) where D<:DayCount
+    if length(spine_values) == length(spine_dates) && length(spine_day_counts) == 0
+       return day_count_fraction(date, spine_dates, day_count_convention)
+    end
+    if length(spine_values) != length(spine_day_counts)
+        return error("Wrong inputs for curve creation.")
+    end
+    return spine_day_counts
 end
 
 """
