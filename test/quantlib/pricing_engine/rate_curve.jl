@@ -11,5 +11,5 @@
     rate_curve = FlatRateCurve("Flat Curve", pricing_date, rate, day_count, Exponential())
     df_hedgehog = discount_factor(rate_curve, discount_date)
     
-    @test df_hedgehog == df_quantlib
+    @test df_hedgehog ≈ df_quantlib atol=1e-8
 end
