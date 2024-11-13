@@ -4,7 +4,7 @@
     accrual_dates = [Date(2013,3,1), Date(2013,6,1), Date(2013,9,1), Date(2013,12,1)]
     rates = [0.02, 0.02, 0.02, 0.02]
     pricing_date = Date(2013,2,1)
-    rate_curve = InterpolatedRateCurve(pricing_date, rates; spine_dates=accrual_dates, rate_type=Exponential())
+    rate_curve = InterpolatedRateCurve(pricing_date; input_values=rates, rate_type=Exponential(),spine_dates=accrual_dates, input_type=Hedgehog.Rate())
     forward_rates = forward_rate(rate_curve, Date(2013,6,1), Date(2013,9,1))
     @test forward_rates ≈ 0.02 atol=1e-8
 end
@@ -14,7 +14,7 @@ end
     accrual_dates = [Date(2013,3,1), Date(2013,6,1), Date(2013,9,1)]
     rates = [0.02, 0.03, 0.04]
     pricing_date = Date(2013,2,1)
-    rate_curve = InterpolatedRateCurve(pricing_date, rates; spine_dates=accrual_dates, rate_type=LinearRate())
+    rate_curve = InterpolatedRateCurve(pricing_date; input_values=rates, input_type=Hedgehog.Rate(), spine_dates=accrual_dates, rate_type=LinearRate())
     forward_rates = forward_rate(rate_curve, Date(2013,6,1), Date(2013,9,1))
     day_count_0 = day_count_fraction(pricing_date, Date(2013,6,1), rate_curve.day_count_convention)
     day_count_1 = day_count_fraction(Date(2013,6,1), Date(2013,9,1), rate_curve.day_count_convention)
@@ -28,7 +28,7 @@ end
     rates = [0.02, 0.03, 0.04]
     pricing_date = Date(2013,2,1)
     margin=0.001
-    rate_curve = InterpolatedRateCurve(pricing_date, rates; spine_dates=accrual_dates, rate_type=LinearRate())
+    rate_curve = InterpolatedRateCurve(pricing_date; input_values=rates, input_type=Hedgehog.Rate(), spine_dates=accrual_dates, rate_type=LinearRate())
     forward_rates = forward_rate(rate_curve, Date(2013,6,1), Date(2013,9,1); margin_config=AdditiveMargin(margin))
     day_count_0 = day_count_fraction(pricing_date, Date(2013,6,1), rate_curve.day_count_convention)
     day_count_1 = day_count_fraction(Date(2013,6,1), Date(2013,9,1), rate_curve.day_count_convention)
@@ -42,7 +42,7 @@ end
     rates = [0.02, 0.03, 0.04]
     pricing_date = Date(2013,2,1)
     margin=0.001
-    rate_curve = InterpolatedRateCurve(pricing_date, rates; spine_dates=accrual_dates, rate_type=LinearRate())
+    rate_curve = InterpolatedRateCurve(pricing_date; input_values=rates, input_type=Hedgehog.Rate(),spine_dates=accrual_dates, rate_type=LinearRate())
     forward_rates = forward_rate(rate_curve, Date(2013,6,1), Date(2013,9,1); margin_config=MultiplicativeMargin(margin))
     day_count_0 = day_count_fraction(pricing_date, Date(2013,6,1), rate_curve.day_count_convention)
     day_count_1 = day_count_fraction(Date(2013,6,1), Date(2013,9,1), rate_curve.day_count_convention)
@@ -56,7 +56,7 @@ end
     rates = [0.02, 0.03, 0.04]
     pricing_date = Date(2013,2,1)
     margin=0.001
-    rate_curve = InterpolatedRateCurve(pricing_date, rates; spine_dates=accrual_dates, rate_type=LinearRate())
+    rate_curve = InterpolatedRateCurve(pricing_date; input_values=rates, input_type=Hedgehog.Rate(),spine_dates=accrual_dates, rate_type=LinearRate())
     day_count_1 = day_count_fraction(Date(2013,6,1), Date(2013,9,1), rate_curve.day_count_convention)
     forward_rates = forward_rate(rate_curve, Date(2013,6,1), Date(2013,9,1), day_count_1; margin_config=MultiplicativeMargin(margin))
     day_count_0 = day_count_fraction(pricing_date, Date(2013,6,1), rate_curve.day_count_convention)
@@ -71,7 +71,7 @@ end
     rates = [0.02, 0.03, 0.04]
     pricing_date = Date(2013,2,1)
     margin=0.001
-    rate_curve = InterpolatedRateCurve(pricing_date, rates; spine_dates=accrual_dates, rate_type=LinearRate())
+    rate_curve = InterpolatedRateCurve(pricing_date; input_values=rates, input_type=Hedgehog.Rate(), spine_dates=accrual_dates, rate_type=LinearRate())
     day_count_1 = day_count_fraction(Date(2013,6,1), Date(2013,9,1), rate_curve.day_count_convention)
 
     accrual_dates = [Date(2013,6,1), Date(2013,9,1)]

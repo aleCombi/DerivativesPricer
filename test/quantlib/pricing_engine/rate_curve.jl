@@ -26,7 +26,7 @@ end
     df_quantlib = yts.discount(to_ql_date(discount_date))
 
     rate_curve = InterpolatedRateCurve(pricing_date; 
-        discount_factors=dfs, day_count_convention=day_count, spine_dates=dates, rate_type=Exponential())
+        input_values=dfs, input_type=Hedgehog.DiscountFactor(), day_count_convention=day_count, spine_dates=dates, rate_type=Exponential())
     df_hedgehog = discount_factor(rate_curve, discount_date)
     
     println(df_hedgehog)

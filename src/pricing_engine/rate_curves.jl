@@ -6,7 +6,7 @@ struct Rate<:InterpolatedValue end
 struct DiscountFactor<:InterpolatedValue end
 
 function convert_interpolated_value(value, from::Rate, to::RateXTime, day_count, rate_type::R) where {R<:RateType, D<:DayCount}
-    return value * day_count
+    return value .* day_count
 end
 
 function convert_interpolated_value(value, from::Rate, to::DiscountFactor, day_count, rate_type::R) where {R<:RateType, D<:DayCount}
@@ -14,19 +14,19 @@ function convert_interpolated_value(value, from::Rate, to::DiscountFactor, day_c
 end
 
 function convert_interpolated_value(value, from::RateXTime, to::Rate, day_count, rate_type::R) where {R<:RateType}
-    return value / day_count
+    return value ./ day_count
 end
 
 function convert_interpolated_value(value, from::RateXTime, to::DiscountFactor, day_count, rate_type::R) where {R<:RateType}
-    return discount_interest(value / day_count, day_count, rate_type)
+    return discount_interest(value ./ day_count, day_count, rate_type)
 end
 
 function convert_interpolated_value(value, from::DiscountFactor, to::Rate, day_count, rate_type::R) where {R<:RateType}
-    return implied_rate(1 / value, day_count, rate_type)
+    return implied_rate(1 ./ value, day_count, rate_type)
 end
 
 function convert_interpolated_value(value, from::DiscountFactor, to::RateXTime, day_count, rate_type::R) where {R<:RateType}
-    return implied_rate(1 / value, day_count, rate_type) * delta
+    return implied_rate(1 ./ value, day_count, rate_type) .* day_count
 end
 
 function convert_interpolated_value(value, from::D, to::D, day_count, rate_type::R) where {R<:RateType, D<:InterpolatedValue}
@@ -58,13 +58,14 @@ Type Parameters
 - `D<:TimeType`: Type representing the date or time basis.
 - `R<:RateType`: Type representing the rate calculation basis (e.g., LinearRate).
 """
-struct InterpolatedRateCurve{I<:AbstractInterpolation, D<:TimeType, F<:Function, C<:DayCount} <: AbstractRateCurve
+struct InterpolatedRateCurve{D<:TimeType, I<:AbstractInterpolation, F<:Function, G<:Function, C<:DayCount, R<:RateType} <: AbstractRateCurve
     name::String
     date::D
     interpolation::I
     interpolated_to_df::F
-    df_to_interpolated::F
+    df_to_interpolated::G
     day_count_convention::C
+    rate_type::R
 end
 
 function InterpolatedRateCurve(date::D; input_values::Vector{N}, interp_method::I=Gridded(Linear()),
@@ -75,13 +76,13 @@ function InterpolatedRateCurve(date::D; input_values::Vector{N}, interp_method::
             spine_dates=(),
             interpolated_value=RateXTime(),
             input_type=DiscountFactor()) where {D<:TimeType, N<:Number, I<:InterpolationType, E<:BoundaryCondition, C<:DayCount, R<:RateType}               
-    spine_day_counts = rate_curve_spine_daycounts(date, spine_rates, spine_dates, spine_day_counts, day_count_convention)
+    spine_day_counts = rate_curve_spine_daycounts(date, input_values, spine_dates, spine_day_counts, day_count_convention)
     spine_values = convert_interpolated_value(input_values, input_type, interpolated_value, spine_day_counts, rate_type)
     interpolation = interpolate((spine_day_counts,), spine_values, interp_method) 
     extrap_interp = extrapolate(interpolation, extrap_method)
     interpolated_to_df = (rate,day_count) -> convert_interpolated_value(rate, interpolated_value, DiscountFactor(), day_count, rate_type)
     df_to_interpolated = (df,day_count) -> convert_interpolated_value(df, DiscountFactor(), interpolated_value, day_count, rate_type)
-    return InterpolatedRateCurve("Curve", date, extrap_interp, interpolated_to_df, df_to_interpolated, day_count_convention)
+    return InterpolatedRateCurve("Curve", date, extrap_interp, interpolated_to_df, df_to_interpolated, day_count_convention, rate_type)
 end
 
 function rate_curve_spine_daycounts(date, spine_values, spine_dates, spine_day_counts, day_count_convention::D) where D<:DayCount

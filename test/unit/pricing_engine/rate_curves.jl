@@ -3,7 +3,7 @@
     spine_dates = [Date(2023, 1, 1), Date(2023, 6, 1), Date(2023, 12, 1)] 
     spine_rates = [1.5, 2.0, 2.5]
     date = Date(2023, 1, 1)
-    curve = InterpolatedRateCurve(Date(2023, 1, 1), spine_rates; spine_dates=spine_dates)
+    curve = InterpolatedRateCurve(Date(2023, 1, 1); input_values=spine_rates, input_type=Hedgehog.Rate(), spine_dates=spine_dates)
 
     # Calculate discount factor with the real interpolation
     test_date = Date(2023, 6, 1)
@@ -19,7 +19,7 @@ end
     spine_day_counts = [0.1, 0.3, 1] 
     spine_rates = [1.5, 2.0, 2.5]
     date = Date(2023, 1, 1)
-    curve = InterpolatedRateCurve(Date(2023, 1, 1), spine_rates; spine_day_counts=spine_day_counts)
+    curve = InterpolatedRateCurve(Date(2023, 1, 1); input_values=spine_rates, input_type=Hedgehog.Rate(), spine_day_counts=spine_day_counts)
 
     # Calculate discount factor with the real interpolation
     test_day_count = 1.6 # Example day count for June 1, 2023
@@ -35,7 +35,7 @@ end
     spine_dates = [Date(2023, 1, 1), Date(2023, 6, 1), Date(2023, 12, 1)] 
     spine_rates = [1.5, 2.0, 2.5]
     date = Date(2023, 1, 1)
-    curve = InterpolatedRateCurve(Date(2023, 1, 1), spine_rates; spine_dates=spine_dates, rate_type=Exponential())
+    curve = InterpolatedRateCurve(Date(2023, 1, 1); input_values=spine_rates, input_type=Hedgehog.Rate(), spine_dates=spine_dates, rate_type=Exponential())
 
     # Calculate discount factor with the real interpolation
     test_date = Date(2023, 6, 1)
@@ -51,7 +51,7 @@ end
     spine_dates = [Date(2023, 1, 1), Date(2023, 6, 1), Date(2023, 12, 1)] 
     spine_rates = [1.5, 2.0, 2.5]
     date = Date(2023, 1, 1)
-    curve = InterpolatedRateCurve(Date(2023, 1, 1), spine_rates; spine_dates=spine_dates, 
+    curve = InterpolatedRateCurve(Date(2023, 1, 1); input_values=spine_rates, interpolated_value=Hedgehog.Rate(), input_type=Hedgehog.Rate(), spine_dates=spine_dates, 
         rate_type=Exponential(), 
         day_count_convention=ACT365())
 
