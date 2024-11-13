@@ -10,7 +10,7 @@ Defines a schedule of compounded rate streams. This structure holds information 
 
 *Note*: The `pay_dates` field here only signifies scheduling purposes, without intrinsic meaning in the context of this struct.
 """
-struct CompoundedRateStreamSchedules{D, A, B, N}
+struct CompoundedRateStreamSchedules{D<:TimeType, N<:Number, A, B}
     pay_dates::Vector{D}
     compounding_schedules::Vector{SimpleRateStreamSchedules{A,B}}
     accrual_day_counts::Vector{N}
@@ -28,7 +28,7 @@ Constructor for `CompoundedRateStreamSchedules`, which initializes an instance w
 # Returns
 - An instance of `CompoundedRateStreamSchedules` with computed `accrual_day_counts`.
 """
-function CompoundedRateStreamSchedules(pay_dates::Vector{D}, compounding_schedules::Vector{SimpleRateStreamSchedules{A,B}}) where {D,A,B}
+function CompoundedRateStreamSchedules(pay_dates::Vector{D}, compounding_schedules::Vector{SimpleRateStreamSchedules{A,B}}) where {D<:TimeType}
     accrual_day_counts = [sum(schedule.accrual_day_counts) for schedule in compounding_schedules]
     return CompoundedRateStreamSchedules(pay_dates, compounding_schedules, accrual_day_counts)
 end
