@@ -28,7 +28,7 @@ Constructor for `CompoundedRateStreamSchedules`, which initializes an instance w
 # Returns
 - An instance of `CompoundedRateStreamSchedules` with computed `accrual_day_counts`.
 """
-function CompoundedRateStreamSchedules(pay_dates::Vector{D}, compounding_schedules::Vector{SimpleRateStreamSchedules{A,B}}) where {D<:TimeType}
+function CompoundedRateStreamSchedules(pay_dates::Vector{D}, compounding_schedules::Vector{SimpleRateStreamSchedules{A,B}}) where {D<:TimeType, A,B}
     accrual_day_counts = [sum(schedule.accrual_day_counts) for schedule in compounding_schedules]
     return CompoundedRateStreamSchedules(pay_dates, compounding_schedules, accrual_day_counts)
 end
