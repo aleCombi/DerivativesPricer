@@ -1,34 +1,141 @@
 using Interpolations: InterpolationType, BoundaryCondition
 
+"""
+    InterpolatedValue
+
+An abstract type that represents a value derived through interpolation.
+"""
 abstract type InterpolatedValue end
+
+"""
+    RateXTime <: InterpolatedValue
+
+A type representing a rate multiplied by time, commonly used in rate-time conversions.
+"""
 struct RateXTime<:InterpolatedValue end
+
+"""
+    Rate <: InterpolatedValue
+
+A type representing a rate, used for interpolation in rate-related calculations.
+"""
 struct Rate<:InterpolatedValue end
+
+"""
+    DiscountFactor <: InterpolatedValue
+
+A type representing a discount factor, used for discount-related calculations.
+"""
 struct DiscountFactor<:InterpolatedValue end
 
+"""
+    convert_interpolated_value(value, from::Rate, to::RateXTime, day_count, rate_type::R) where {R<:RateType, D<:DayCount}
+
+Converts a rate to a rate-time value by multiplying the rate by the day count.
+
+Arguments:
+- `value`: The initial rate value.
+- `from::Rate`: The rate type being converted from.
+- `to::RateXTime`: The rate-time type being converted to.
+- `day_count`: The day count used for conversion.
+- `rate_type::R`: The type of rate (e.g., LinearRate).
+"""
 function convert_interpolated_value(value, from::Rate, to::RateXTime, day_count, rate_type::R) where {R<:RateType, D<:DayCount}
     return value .* day_count
 end
 
+"""
+    convert_interpolated_value(value, from::Rate, to::DiscountFactor, day_count, rate_type::R) where {R<:RateType, D<:DayCount}
+
+Converts a rate to a discount factor based on the provided day count and rate type.
+
+Arguments:
+- `value`: The rate to convert.
+- `from::Rate`: The rate type being converted from.
+- `to::DiscountFactor`: The discount factor type being converted to.
+- `day_count`: The day count used for conversion.
+- `rate_type::R`: The type of rate (e.g., LinearRate).
+"""
 function convert_interpolated_value(value, from::Rate, to::DiscountFactor, day_count, rate_type::R) where {R<:RateType, D<:DayCount}
     return discount_interest(value, day_count, rate_type)
 end
 
+"""
+    convert_interpolated_value(value, from::RateXTime, to::Rate, day_count, rate_type::R) where {R<:RateType}
+
+Converts a rate-time value to a rate by dividing by the day count.
+
+Arguments:
+- `value`: The initial rate-time value.
+- `from::RateXTime`: The rate-time type being converted from.
+- `to::Rate`: The rate type being converted to.
+- `day_count`: The day count used for conversion.
+- `rate_type::R`: The type of rate (e.g., LinearRate).
+"""
 function convert_interpolated_value(value, from::RateXTime, to::Rate, day_count, rate_type::R) where {R<:RateType}
     return value ./ day_count
 end
 
+"""
+    convert_interpolated_value(value, from::RateXTime, to::DiscountFactor, day_count, rate_type::R) where {R<:RateType}
+
+Converts a rate-time value to a discount factor by calculating the discount interest.
+
+Arguments:
+- `value`: The initial rate-time value.
+- `from::RateXTime`: The rate-time type being converted from.
+- `to::DiscountFactor`: The discount factor type being converted to.
+- `day_count`: The day count used for conversion.
+- `rate_type::R`: The type of rate (e.g., LinearRate).
+"""
 function convert_interpolated_value(value, from::RateXTime, to::DiscountFactor, day_count, rate_type::R) where {R<:RateType}
     return discount_interest(value ./ day_count, day_count, rate_type)
 end
 
+"""
+    convert_interpolated_value(value, from::DiscountFactor, to::Rate, day_count, rate_type::R) where {R<:RateType}
+
+Converts a discount factor to a rate using the implied rate formula.
+
+Arguments:
+- `value`: The discount factor value.
+- `from::DiscountFactor`: The discount factor type being converted from.
+- `to::Rate`: The rate type being converted to.
+- `day_count`: The day count used for conversion.
+- `rate_type::R`: The type of rate (e.g., LinearRate).
+"""
 function convert_interpolated_value(value, from::DiscountFactor, to::Rate, day_count, rate_type::R) where {R<:RateType}
     return implied_rate(1 ./ value, day_count, rate_type)
 end
 
+"""
+    convert_interpolated_value(value, from::DiscountFactor, to::RateXTime, day_count, rate_type::R) where {R<:RateType}
+
+Converts a discount factor to a rate-time value by calculating the implied rate and multiplying by the day count.
+
+Arguments:
+- `value`: The discount factor value.
+- `from::DiscountFactor`: The discount factor type being converted from.
+- `to::RateXTime`: The rate-time type being converted to.
+- `day_count`: The day count used for conversion.
+- `rate_type::R`: The type of rate (e.g., LinearRate).
+"""
 function convert_interpolated_value(value, from::DiscountFactor, to::RateXTime, day_count, rate_type::R) where {R<:RateType}
     return implied_rate(1 ./ value, day_count, rate_type) .* day_count
 end
 
+"""
+    convert_interpolated_value(value, from::D, to::D, day_count, rate_type::R) where {R<:RateType, D<:InterpolatedValue}
+
+Returns the same value when converting between the same interpolated value types.
+
+Arguments:
+- `value`: The initial value.
+- `from::D`: The interpolated value type being converted from.
+- `to::D`: The interpolated value type being converted to.
+- `day_count`: The day count used for consistency.
+- `rate_type::R`: The type of rate.
+"""
 function convert_interpolated_value(value, from::D, to::D, day_count, rate_type::R) where {R<:RateType, D<:InterpolatedValue}
     return value
 end
@@ -68,6 +175,28 @@ struct InterpolatedRateCurve{D<:TimeType, I<:AbstractInterpolation, F<:Function,
     rate_type::R
 end
 
+"""
+    InterpolatedRateCurve(date::D; input_values::Vector{N}, interp_method::I=Gridded(Linear()),
+    extrap_method::E=Flat(), day_count_convention::C=ACT360(), rate_type::R=LinearRate(),
+    spine_day_counts=(), spine_dates=(), interpolated_value=RateXTime(), input_type=DiscountFactor())
+
+Creates an `InterpolatedRateCurve` with specified interpolation and boundary conditions, using provided input values and date.
+
+Arguments:
+- `date::D`: The anchor date for the rate curve.
+- `input_values::Vector{N}`: Values at specified points on the curve.
+- `interp_method::I`: Interpolation method.
+- `extrap_method::E`: Extrapolation method.
+- `day_count_convention::C`: Day count convention.
+- `rate_type::R`: Rate type for the curve.
+- `spine_day_counts`: Day counts for each spine point.
+- `spine_dates`: Dates for each spine point.
+- `interpolated_value`: The target type for interpolated values.
+- `input_type`: The input type of the provided values.
+
+Returns:
+- `InterpolatedRateCurve`: An interpolated rate curve object.
+"""
 function InterpolatedRateCurve(date::D; input_values::Vector{N}, interp_method::I=Gridded(Linear()),
             extrap_method::E=Flat(),
             day_count_convention::C=ACT360(),
@@ -85,6 +214,21 @@ function InterpolatedRateCurve(date::D; input_values::Vector{N}, interp_method::
     return InterpolatedRateCurve("Curve", date, extrap_interp, interpolated_to_df, df_to_interpolated, day_count_convention, rate_type)
 end
 
+"""
+    rate_curve_spine_daycounts(date, spine_values, spine_dates, spine_day_counts, day_count_convention::D) where D<:DayCount
+
+Calculates or verifies the day counts for each spine point on a curve.
+
+Arguments:
+- `date`: Anchor date of the curve.
+- `spine_values`: Values associated with each spine date.
+- `spine_dates`: Dates for each spine point.
+- `spine_day_counts`: Provided day counts for each spine point, if any.
+- `day_count_convention::D`: Day count convention used.
+
+Returns:
+- `Vector`: Calculated or verified spine day counts.
+"""
 function rate_curve_spine_daycounts(date, spine_values, spine_dates, spine_day_counts, day_count_convention::D) where D<:DayCount
     if length(spine_values) == length(spine_dates) && length(spine_day_counts) == 0
        return day_count_fraction(date, spine_dates, day_count_convention)
@@ -96,12 +240,12 @@ function rate_curve_spine_daycounts(date, spine_values, spine_dates, spine_day_c
 end
 
 """
-    discount_factor(rate_curve::RateCurve, date)
+    discount_factor(rate_curve::InterpolatedRateCurve, date)
 
 Calculates the discount factor at a specified date using an interpolated rate curve.
 
 Arguments
-- `rate_curve::RateCurve`: The interpolated rate curve to evaluate.
+- `rate_curve::InterpolatedRateCurve`: The interpolated rate curve to evaluate.
 - `date`: Target date for which the discount factor is calculated.
 
 Returns
