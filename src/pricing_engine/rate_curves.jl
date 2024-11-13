@@ -29,7 +29,7 @@ A type representing a discount factor, used for discount-related calculations.
 struct DiscountFactor<:InterpolatedValue end
 
 """
-    convert_interpolated_value(value, from::Rate, to::RateXTime, day_count, rate_type::R) where {R<:RateType, D<:DayCount}
+    convert_interpolated_value(value, from::Rate, to::RateXTime, day_count, rate_type::R) where {R<:RateType}
 
 Converts a rate to a rate-time value by multiplying the rate by the day count.
 
@@ -40,7 +40,7 @@ Arguments:
 - `day_count`: The day count used for conversion.
 - `rate_type::R`: The type of rate (e.g., LinearRate).
 """
-function convert_interpolated_value(value, from::Rate, to::RateXTime, day_count::D, rate_type::R) where {R<:RateType, D<:DayCount}
+function convert_interpolated_value(value, from::Rate, to::RateXTime, day_count, rate_type::R) where {R<:RateType}
     return value .* day_count
 end
 
