@@ -14,6 +14,6 @@ rates = implied_rate(1 ./ discount_factors, time_fractions, rate_type)
 # println(1 ./ discount_interest(rates, time_fractions, rate_type))
 
 # Create a mock RateCurve
-rate_curve = RateCurve(pricing_date, rates; spine_dates=dates)
+rate_curve = InterpolatedRateCurve(pricing_date, rates; spine_dates=dates)
 
 discount_factor(rate_curve, dates) |> println

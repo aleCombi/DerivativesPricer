@@ -7,7 +7,7 @@
     time_fractions = day_count_fraction(pricing_date, dates, ACT360())
     rates = implied_rate(1 ./ discount_factors, time_fractions, LinearRate())
 
-    rate_curve = RateCurve(pricing_date, rates; spine_dates=dates)
+    rate_curve = InterpolatedRateCurve(pricing_date, rates; spine_dates=dates)
 end
 
 # Test for price_fixed_flows_stream

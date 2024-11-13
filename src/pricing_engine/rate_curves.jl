@@ -1,5 +1,38 @@
 using Interpolations: InterpolationType, BoundaryCondition
 
+abstract type InterpolatedValue end
+struct RateXTime<:InterpolatedValue end
+struct Rate<:InterpolatedValue end
+struct DiscountFactor<:InterpolatedValue end
+
+function convert_interpolated_value(value, from::Rate, to::RateXTime, day_count, rate_type::R) where {R<:RateType, D<:DayCount}
+    return value * day_count
+end
+
+function convert_interpolated_value(value, from::Rate, to::DiscountFactor, day_count, rate_type::R) where {R<:RateType, D<:DayCount}
+    return discount_interest(value, day_count, rate_type)
+end
+
+function convert_interpolated_value(value, from::RateXTime, to::Rate, day_count, rate_type::R) where {R<:RateType}
+    return value / day_count
+end
+
+function convert_interpolated_value(value, from::RateXTime, to::DiscountFactor, day_count, rate_type::R) where {R<:RateType}
+    return discount_interest(value / day_count, day_count, rate_type)
+end
+
+function convert_interpolated_value(value, from::DiscountFactor, to::Rate, day_count, rate_type::R) where {R<:RateType}
+    return implied_rate(1 / value, day_count, rate_type)
+end
+
+function convert_interpolated_value(value, from::DiscountFactor, to::RateXTime, day_count, rate_type::R) where {R<:RateType}
+    return implied_rate(1 / value, day_count, rate_type) * delta
+end
+
+function convert_interpolated_value(value, from::D, to::D, day_count, rate_type::R) where {R<:RateType, D<:InterpolatedValue}
+    return value
+end
+
 """
     AbstractRateCurve
 
@@ -25,85 +58,30 @@ Type Parameters
 - `D<:TimeType`: Type representing the date or time basis.
 - `R<:RateType`: Type representing the rate calculation basis (e.g., LinearRate).
 """
-struct RateCurve{I<:AbstractInterpolation, C<:DayCount, D<:TimeType, R<:RateType} <: AbstractRateCurve
+struct InterpolatedRateCurve{I<:AbstractInterpolation, D<:TimeType, F<:Function, C<:DayCount} <: AbstractRateCurve
     name::String
-    day_count_convention::C
-    rate_type::R
     date::D
     interpolation::I
+    interpolated_to_df::F
+    df_to_interpolated::F
+    day_count_convention::C
 end
 
-"""
-    RateCurve(date::D, spine_rates::Vector{N}; interp_method::I=Gridded(Linear()), 
-              extrap_method::E=Flat(), day_count_convention::C=ACT360(), rate_type::R=LinearRate(), 
-              spine_day_counts::Vector{N}=Vector{N}(), spine_dates::Vector{D}=Vector{D}())
-
-Creates an instance of `RateCurve` based on given spine rates and interpolation settings.
-
-Positional Arguments
-- `date::D`: The base date for the rate curve.
-- `spine_rates::Vector{N}`: Vector containing the interest rates for interpolation.
-
-Keyword Arguments
-- `interp_method::I=Gridded(Linear())`: Specifies the interpolation method to be used for the curve.
-- `extrap_method::E=Flat()`: Boundary condition to be applied for extrapolation outside the defined range.
-- `day_count_convention::C=ACT360()`: The day count convention used to calculate fractions of time between dates.
-- `rate_type::R=LinearRate()`: Type of rate for discounting.
-- `spine_day_counts::Vector{N}=Vector{N}()`: Pre-computed day count fractions for the spine dates; calculated automatically if empty.
-- `spine_dates::Vector{D}=Vector{D}()`: Vector of dates corresponding to each spine rate.
-
-Returns
-- `RateCurve`: An instance of the interpolated rate curve.
-"""
-function RateCurve(date::D, spine_rates::Vector{N}; interp_method::I=Gridded(Linear()),
-                    extrap_method::E=Flat(),
-                    day_count_convention::C=ACT360(),
-                    rate_type::R=LinearRate(),
-                    spine_day_counts::Vector{N}=Vector{N}(),
-                    spine_dates::Vector{D}=Vector{D}()) where {D<:TimeType, N<:Number, I<:InterpolationType, E<:BoundaryCondition, C<:DayCount, R<:RateType}               
+function InterpolatedRateCurve(date::D; input_values::Vector{N}, interp_method::I=Gridded(Linear()),
+            extrap_method::E=Flat(),
+            day_count_convention::C=ACT360(),
+            rate_type::R=LinearRate(),
+            spine_day_counts=(),
+            spine_dates=(),
+            interpolated_value=RateXTime(),
+            input_type=DiscountFactor()) where {D<:TimeType, N<:Number, I<:InterpolationType, E<:BoundaryCondition, C<:DayCount, R<:RateType}               
     spine_day_counts = rate_curve_spine_daycounts(date, spine_rates, spine_dates, spine_day_counts, day_count_convention)
-    interpolation = interpolate((spine_day_counts,), spine_rates, interp_method) 
+    spine_values = convert_interpolated_value(input_values, input_type, interpolated_value, spine_day_counts, rate_type)
+    interpolation = interpolate((spine_day_counts,), spine_values, interp_method) 
     extrap_interp = extrapolate(interpolation, extrap_method)
-    return RateCurve("Curve", day_count_convention, rate_type, date, extrap_interp)
-end
-
-"""
-    RateCurve(date::D, discount_factors::Vector{N}; interp_method::I=Gridded(Linear()), 
-              extrap_method::E=Flat(), day_count_convention::C=ACT360(), rate_type::R=LinearRate(), 
-              spine_day_counts::Vector{N}=Vector{N}(), spine_dates::Vector{D}=Vector{D}())
-
-Creates an instance of `RateCurve` based on given spine rates and interpolation settings.
-
-Positional Arguments
-- `date::D`: The base date for the rate curve.
-- `discount_factors::Vector{N}`: Vector containing the discount factors for interpolation.
-
-Keyword Arguments
-- `interp_method::I=Gridded(Linear())`: Specifies the interpolation method to be used for the curve.
-- `extrap_method::E=Flat()`: Boundary condition to be applied for extrapolation outside the defined range.
-- `day_count_convention::C=ACT360()`: The day count convention used to calculate fractions of time between dates.
-- `rate_type::R=LinearRate()`: Type of rate for discounting.
-- `spine_day_counts::Vector{N}=Vector{N}()`: Pre-computed day count fractions for the spine dates; calculated automatically if empty.
-- `spine_dates::Vector{D}=Vector{D}()`: Vector of dates corresponding to each spine rate.
-
-Returns
-- `RateCurve`: An instance of the interpolated rate curve.
-"""
-function RateCurve(date::D; discount_factors::Vector{N}, interp_method::I=Gridded(Linear()),
-                    extrap_method::E=Flat(),
-                    day_count_convention::C=ACT360(),
-                    rate_type::R=LinearRate(),
-                    spine_day_counts::Vector{N}=Vector{Float64}(),
-                    spine_dates::Vector{D}) where {D<:TimeType, N<:Number, I<:InterpolationType, E<:BoundaryCondition, C<:DayCount, R<:RateType}
-    spine_day_counts = rate_curve_spine_daycounts(date, discount_factors, spine_dates, spine_day_counts, day_count_convention)
-    implied_rates = implied_rate(1 ./ discount_factors, spine_day_counts, rate_type)
-    return RateCurve(date, implied_rates;
-        interp_method=interp_method,
-        extrap_method=extrap_method,
-        day_count_convention=day_count_convention,
-        rate_type=rate_type,
-        spine_day_counts=spine_day_counts,
-        spine_dates=spine_dates)
+    interpolated_to_df = (rate,day_count) -> convert_interpolated_value(rate, interpolated_value, DiscountFactor(), day_count, rate_type)
+    df_to_interpolated = (df,day_count) -> convert_interpolated_value(df, DiscountFactor(), interpolated_value, day_count, rate_type)
+    return InterpolatedRateCurve("Curve", date, extrap_interp, interpolated_to_df, df_to_interpolated, day_count_convention)
 end
 
 function rate_curve_spine_daycounts(date, spine_values, spine_dates, spine_day_counts, day_count_convention::D) where D<:DayCount
@@ -128,9 +106,10 @@ Arguments
 Returns
 - `Float64`: Discount factor for the specified date.
 """
-function discount_factor(rate_curve::RateCurve, date)
+function discount_factor(rate_curve::InterpolatedRateCurve, date)
     delta = day_count_fraction(rate_curve.date, date, rate_curve.day_count_convention)
-    return discount_interest(rate_curve.interpolation(delta), delta, rate_curve.rate_type)
+    interpolated_value = rate_curve.interpolation(delta)
+    return rate_curve.interpolated_to_df(interpolated_value, delta)
 end
 
 """
