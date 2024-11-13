@@ -40,7 +40,7 @@ Arguments:
 - `day_count`: The day count used for conversion.
 - `rate_type::R`: The type of rate (e.g., LinearRate).
 """
-function convert_interpolated_value(value, from::Rate, to::RateXTime, day_count, rate_type::R) where {R<:RateType, D<:DayCount}
+function convert_interpolated_value(value, from::Rate, to::RateXTime, day_count::D, rate_type::R) where {R<:RateType, D<:DayCount}
     return value .* day_count
 end
 
@@ -56,7 +56,7 @@ Arguments:
 - `day_count`: The day count used for conversion.
 - `rate_type::R`: The type of rate (e.g., LinearRate).
 """
-function convert_interpolated_value(value, from::Rate, to::DiscountFactor, day_count, rate_type::R) where {R<:RateType, D<:DayCount}
+function convert_interpolated_value(value, from::Rate, to::DiscountFactor, day_count, rate_type::R) where {R<:RateType}
     return discount_interest(value, day_count, rate_type)
 end
 
