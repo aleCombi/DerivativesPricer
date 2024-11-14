@@ -4,20 +4,17 @@
 Represents a schedule for simple rate streams, including payment dates, fixing dates, discount dates, and accrual information.
 
 # Fields
-- `pay_dates::Vector{D}`: A vector containing the dates when payments are due.
 - `fixing_dates::Vector{D}`: A vector of dates for fixing rates, typically set in advance of payment dates.
 - `discount_start_dates::Vector{D}`: A vector of start dates for the discounting period.
 - `discount_end_dates::Vector{D}`: A vector of end dates for the discounting period.
 - `accrual_dates::Vector{D}`: A vector of accrual period start dates.
 - `accrual_day_counts::Vector{T}`: A vector of day count fractions for each accrual period, representing the portion of the year.
 
-This struct organizes dates and day count fractions relevant to simple rate calculations, facilitating accurate interest and discount calculations.
-"""
-struct SimpleRateStreamSchedules{D <: TimeType, T <: Number}
-    pay_dates::Vector{D}
+This struct is meant to give all the pre-computable date-related data about a list of floating rates."""
+struct SimpleRateSchedule{D <: TimeType, T <: Number}
     fixing_dates::Vector{D}
-    discount_start_dates::Vector{D}
-    discount_end_dates::Vector{D}
+    observation_start::Vector{D}
+    observation_end::Vector{D}
     accrual_dates::Vector{D}
     accrual_day_counts::Vector{T}
 end
@@ -34,8 +31,8 @@ and accruals.
 # Returns
 - A `SimpleRateStreamSchedules` instance with generated payment, fixing, discount, and accrual dates.
 """
-function SimpleRateStreamSchedules(stream_config::FloatStreamConfig{P,SimpleInstrumentRate}) where P
-    return SimpleRateStreamSchedules(stream_config.schedule, stream_config.rate.rate_config)
+function SimpleRateSchedule(stream_config::FloatStreamConfig{P,SimpleInstrumentRate}) where P
+    return SimpleRateSchedule(stream_config.schedule, stream_config.rate.rate_config)
 end
 
 """
@@ -51,18 +48,21 @@ fixing dates, discount dates, accrual dates, and accrual day counts.
 # Returns
 - A `SimpleRateStreamSchedules` instance containing payment dates, fixing dates, discount start and end dates, accrual dates, and day counts.
 """
-function SimpleRateStreamSchedules(instrument_schedule::S, rate_config::R) where {S <: AbstractInstrumentSchedule, R <: AbstractRateConfig}
-    accrual_dates = generate_schedule(instrument_schedule)
+function SimpleRateSchedule(start_date::D, end_date::D, schedule_config::S, rate_config::R) where {D<:TimeType, S <: AbstractScheduleConfig, R <: AbstractRateConfig}
+    accrual_dates = generate_schedule(start_date, end_date, schedule_config)
     time_fractions = day_count_fraction(accrual_dates, rate_config.day_count_convention)
-    pay_dates = shifted_trimmed_schedule(accrual_dates, instrument_schedule.pay_shift)
     fixing_dates = shifted_trimmed_schedule(accrual_dates, rate_config.fixing_shift)
-    discount_start_dates = fixing_dates
-    discount_end_dates = generate_end_date(fixing_dates, instrument_schedule.schedule_config)
-    return SimpleRateStreamSchedules(pay_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, time_fractions)
+    observation_start = fixing_dates
+    observation_end = generate_end_date(fixing_dates, schedule_config)#TODO: these two lines should be controlled by the observation period determination of the rate index
+    return SimpleRateSchedule(fixing_dates, observation_start, observation_end, accrual_dates, time_fractions)
+end
+
+function SimpleRateSchedule(instrument_schedule::I, rate_config::R) where {I<:AbstractInstrumentSchedule,R <: AbstractRateConfig}
+    return SimpleRateSchedule(instrument_schedule.start_date, instrument_schedule.end_date, instrument_schedule.schedule_config, rate_config)
 end
 
 """
-    SimpleRateStreamSchedules(pay_dates::Vector{D}, fixing_dates::Vector{D}, discount_start_dates::Vector{D}, 
+    SimpleRateStreamSchedules(fixing_dates::Vector{D}, discount_start_dates::Vector{D}, 
                               discount_end_dates::Vector{D}, accrual_dates::Vector{D}, day_count_convention::C) 
                               where {C<:DayCount, D<:TimeType}
 
@@ -70,7 +70,6 @@ Creates a schedule of rate streams, with associated time fractions, based on spe
 discount start and end dates, and accrual dates.
 
 # Arguments
-- `pay_dates::Vector{D}`: A vector of payment dates, where each date represents a point at which payment is due.
 - `fixing_dates::Vector{D}`: A vector of fixing dates, indicating when the rates are determined for each period.
 - `discount_start_dates::Vector{D}`: A vector of start dates for discounting, marking the beginning of each discount period.
 - `discount_end_dates::Vector{D}`: A vector of end dates for discounting, marking the end of each discount period.
@@ -84,9 +83,9 @@ discount start and end dates, and accrual dates.
 The function calculates time fractions for each accrual period using the `day_count_fraction` function, which applies the specified day count convention to the provided accrual dates. These time fractions are then incorporated into the `SimpleRateStreamSchedules` object, providing a structured schedule with consistent rate periods and accruals.
 
 """
-function SimpleRateStreamSchedules(pay_dates::Vector{D}, fixing_dates::Vector{D}, discount_start_dates::Vector{D}, discount_end_dates::Vector{D}, accrual_dates::Vector{D}, day_count_convention::C) where {C<:DayCount, D<:TimeType}
+function SimpleRateSchedule(fixing_dates::Vector{D}, discount_start_dates::Vector{D}, discount_end_dates::Vector{D}, accrual_dates::Vector{D}, day_count_convention::C) where {C<:DayCount, D<:TimeType}
     time_fractions = day_count_fraction(accrual_dates, day_count_convention)
-    return SimpleRateStreamSchedules(pay_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, time_fractions)
+    return SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, time_fractions)
 end
 
 """
@@ -107,13 +106,12 @@ Allows indexing into a `SimpleRateStreamSchedules` object using square brackets 
     - `discount_first_date`: The start date for the discounting period.
     - `discount_end_date`: The end date for the discounting period.
 """
-function Base.getindex(obj::SimpleRateStreamSchedules, index::Int)
+function Base.getindex(obj::SimpleRateSchedule, index::Int)
     return (accrual_start = obj.accrual_dates[index],
             accrual_end = obj.accrual_dates[index + 1],
             fixing_date = obj.fixing_dates[index],
-            pay_date = obj.pay_dates[index],
-            discount_first_date = obj.discount_start_dates[index],
-            discount_end_date = obj.discount_end_dates[index])
+            observation_start = obj.observation_start[index],
+            observation_end = obj.observation_end[index])
 end
 
 """
@@ -132,7 +130,7 @@ until the end of the list is reached.
 - Returns `nothing` if the state exceeds the length of `s`, signaling the end of the iteration.
 
 """
-function Base.iterate(s::SimpleRateStreamSchedules, state=1)
+function Base.iterate(s::SimpleRateSchedule, state=1)
     state > length(s) && return nothing
     return s[state], state + 1
 end
@@ -148,7 +146,7 @@ Returns the number of periods in the `SimpleRateStreamSchedules` object by measu
 # Returns
 - The number of periods in the schedule, represented as an integer.
 """
-function Base.length(obj::SimpleRateStreamSchedules)
+function Base.length(obj::SimpleRateSchedule)
     return length(obj.fixing_dates)
 end
 
@@ -166,9 +164,10 @@ A type representing a stream of floating-rate cash flows with specified dates fo
 
 This struct is primarily used to calculate and manage floating-rate payment streams based on predefined schedules and rate conventions.
 """
-struct SimpleFloatRateStream{P} <: FloatStream where P
+struct SimpleFloatRateStream{P,D} <: FloatStream where {P, D<:TimeType}
     config::FloatStreamConfig{P, SimpleInstrumentRate}
-    schedules::SimpleRateStreamSchedules
+    schedules::SimpleRateSchedule
+    pay_dates::Vector{D}
 end
 
 """
@@ -183,6 +182,8 @@ for payment, fixing, and accrual based on the input configuration.
 # Returns
 - A `SimpleFloatRateStream` instance with the calculated schedules.
 """
-function SimpleFloatRateStream(config::FloatStreamConfig{P, SimpleInstrumentRate}) where P
-    return SimpleFloatRateStream(config, SimpleRateStreamSchedules(config))
+function SimpleFloatRateStream(stream_config::FloatStreamConfig{P, SimpleInstrumentRate}) where P
+    schedules = SimpleRateSchedule(stream_config)
+    pay_dates = shifted_trimmed_schedule(schedules.accrual_dates, stream_config.schedule.pay_shift)
+    return SimpleFloatRateStream(stream_config, schedules, pay_dates)
 end

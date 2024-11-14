@@ -22,7 +22,6 @@
     # Check if the generated accrual dates are correct
     expected_dates = collect(start_date:Month(6):end_date)
     @test stream.schedules.accrual_dates == expected_dates
-    @test stream.schedules.pay_dates == expected_dates[2:end]
     @test stream.schedules.fixing_dates == expected_dates[2:end]
 
     # Check if the generated accrual day counts are correct

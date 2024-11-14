@@ -62,12 +62,6 @@
             expected_fixing_date = shifted_schedule(coupon.accrual_start, bds)
 
             @test coupon.fixing_date == expected_fixing_date  # Ensure generated fixing date matches actual
-            @test coupon.fixing_date < coupon.pay_date
-
-            # Ensure payment date is after accrual end date and adjusted for business day convention
-            expected_payment_date = shifted_schedule(coupon.accrual_end, pay_shift)
-            @test coupon.pay_date == expected_payment_date
-            @test coupon.pay_date > coupon.accrual_end
         end
     end
 end

@@ -79,8 +79,7 @@ end
     discount_start_dates = fixing_dates
     discount_end_dates = accrual_dates[2:end]
     accrual_day_counts = [day_count_1]
-    pay_dates = discount_end_dates
-    schedules = SimpleRateStreamSchedules(pay_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, accrual_day_counts)
+    schedules = SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, accrual_day_counts)
     forward_rates = forward_rate(schedules, rate_curve, rate_curve.rate_type, MultiplicativeMargin(margin))[1]
     day_count_0 = day_count_fraction(pricing_date, Date(2013,6,1), rate_curve.day_count_convention)
     day_count_1 = day_count_fraction(Date(2013,6,1), Date(2013,9,1), rate_curve.day_count_convention)
@@ -92,7 +91,7 @@ end
 @testitem "forward_rates" setup=[RateCurveSetup] begin
     rate_config = SimpleRateConfig(ACT360(), LinearRate(), NoShift(), AdditiveMargin(0))
     day_counts = day_count_fraction(dates, rate_config.day_count_convention)
-    schedules = SimpleRateStreamSchedules(dates[2:end], dates[1:end-1], dates[1:end-1], dates[2:end], dates, day_counts)
+    schedules = SimpleRateSchedule(dates[1:end-1], dates[1:end-1], dates[2:end], dates, day_counts)
     # Calculate forward rates
     fwd_rates = forward_rate(schedules, rate_curve, rate_config)
 
@@ -113,7 +112,7 @@ end
     fixing_dates = accrual_dates[1:end-1]
     discount_start_dates = fixing_dates
     discount_end_dates = accrual_dates[2:end]
-    compounding_schedules = [SimpleRateStreamSchedules(discount_end_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
+    compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
     schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnCompoundedRate(AdditiveMargin(0)))
@@ -131,7 +130,7 @@ end
     fixing_dates = accrual_dates[1:end-1]
     discount_start_dates = fixing_dates
     discount_end_dates = accrual_dates[2:end]
-    compounding_schedules = [SimpleRateStreamSchedules(discount_end_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
+    compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
     schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule; margin=MarginOnCompoundedRate(AdditiveMargin(2)))
@@ -150,7 +149,7 @@ end
     fixing_dates = accrual_dates[1:end-1]
     discount_start_dates = fixing_dates
     discount_end_dates = accrual_dates[2:end]
-    compounding_schedules = [SimpleRateStreamSchedules(discount_end_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
+    compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
     schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
@@ -168,7 +167,7 @@ end
     fixing_dates = accrual_dates[1:end-1]
     discount_start_dates = fixing_dates
     discount_end_dates = accrual_dates[2:end]
-    compounding_schedules = [SimpleRateStreamSchedules(discount_end_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
+    compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
     schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
@@ -190,7 +189,7 @@ end
     fixing_dates = accrual_dates[1:end-1]
     discount_start_dates = fixing_dates
     discount_end_dates = accrual_dates[2:end]
-    compounding_schedules = [SimpleRateStreamSchedules(discount_end_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
+    compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
     schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule, margin=MarginOnUnderlying(AdditiveMargin(0.02)))
@@ -245,7 +244,7 @@ end
     fixing_dates = accrual_dates[1:end-1]
     discount_start_dates = fixing_dates
     discount_end_dates = accrual_dates[2:end]
-    compounding_schedules = [SimpleRateStreamSchedules(discount_end_dates, fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
+    compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
     schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule; margin=MarginOnUnderlying(AdditiveMargin(0.02)))

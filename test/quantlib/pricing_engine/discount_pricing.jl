@@ -134,9 +134,7 @@ end
         println("DP accrual start date: ", coupon.accrual_start)
         @assert coupon.accrual_start == to_julia_date(ql_coupon.accrualStartDate())
         @assert coupon.accrual_end == to_julia_date(ql_coupon.accrualEndDate())
-        println("DP fixing date: ",coupon.fixing_date)
         println("Quantlib fixing date: ", to_julia_date(ql_coupon.fixingDate()))
         @assert coupon.fixing_date == to_julia_date(ql_coupon.fixingDate())
-        @assert coupon.pay_date == to_julia_date(ql_coupon.date())
     end
 end
