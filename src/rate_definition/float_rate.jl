@@ -1,3 +1,7 @@
+abstract type CompoundingStyle end
+struct CompoundedRate <: CompoundingStyle end
+struct AverageRate <: CompoundingStyle end
+
 """
     AbstractRateIndex
 
@@ -72,12 +76,13 @@ a rate type `L`, a fixing shift `C`, a compounding schedule `S`, and a margin co
 - `compound_schedule::S`: A schedule configuration defining the intervals for compounding.
 - `margin::M`: The margin or spread added over the compounded floating rate.
 """
-struct CompoundRateConfig{D<:DayCount, L<:RateType, C<:AbstractShift, S<:AbstractScheduleConfig, M<:CompoundMargin} <: FloatRateConfig
+struct CompoundRateConfig{D<:DayCount, L<:RateType, C<:AbstractShift, S<:AbstractScheduleConfig, M<:CompoundMargin, CS<:CompoundingStyle} <: FloatRateConfig
     day_count_convention::D
     rate_type::L
     fixing_shift::C
     compound_schedule::S
     margin::M
+    compounding_style::CS
 end
 
 """
@@ -99,8 +104,9 @@ Creates a `CompoundRateConfig` object that defines the configuration for calcula
 """
 function CompoundRateConfig(day_count_convention::D, rate_type::L, compound_schedule::S;
     fixing_shift::C=NoShift(false),
-    margin::M=AdditiveMargin(0)) where {D<:DayCount, L<:RateType, C<:AbstractShift, S<:AbstractScheduleConfig, M<:CompoundMargin}
-    return CompoundRateConfig(day_count_convention, rate_type, fixing_shift, compound_schedule, margin)
+    margin::M=AdditiveMargin(0),
+    compounding_style=CompoundedRate()) where {D<:DayCount, L<:RateType, C<:AbstractShift, S<:AbstractScheduleConfig, M<:CompoundMargin}
+    return CompoundRateConfig(day_count_convention, rate_type, fixing_shift, compound_schedule, margin, compounding_style)
 end
 
 """

@@ -25,7 +25,8 @@
         LinearRate(), 
         BusinessDayShift(-2, fixing_calendar, false), 
         compound_schedule, 
-        MarginOnUnderlying(AdditiveMargin(0))
+        MarginOnUnderlying(AdditiveMargin(0)),
+        Hedgehog.CompoundedRate()
     )
     instrument_rate = CompoundInstrumentRate(RateIndex("compounded_rate_index"), rate_config)
 

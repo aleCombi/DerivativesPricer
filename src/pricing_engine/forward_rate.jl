@@ -113,7 +113,7 @@ for each compounding schedule and applies any margin configurations on the compo
 - `Error` if the margin is specified on an underlying compounded rate, as this functionality is not implemented.
 """
 function forward_rate(schedules::CompoundedRateSchedules, rate_curve::R, rate_config::CompoundRateConfig) where R<:AbstractRateCurve
-   return forward_rate(rate_curve, schedules, rate_config.rate_type, rate_config.margin)
+   return forward_rate(rate_curve, schedules, rate_config.rate_type, rate_config.margin, rate_config.compounding_style)
 end
 
 """
@@ -130,7 +130,7 @@ Calculates compounded forward rates for each period specified in the `schedules`
 # Returns
 - The compounded forward rate for each period in `schedules`, with the specified margin applied.
 """
-function forward_rate(rate_curve::R, schedules::CompoundedRateSchedules, rate_type::T, margin_config::MarginOnCompoundedRate) where {R<:AbstractRateCurve, T<:RateType}
+function forward_rate(rate_curve::R, schedules::CompoundedRateSchedules, rate_type::T, margin_config::MarginOnCompoundedRate, ::CompoundedRate) where {R<:AbstractRateCurve, T<:RateType}
     period_accrual_func = s -> period_compounded_accrual(s, rate_curve, rate_type, margin_config)
     period_accruals = period_accrual_func.(schedules.compounding_schedules)
     return margined_rate(period_accruals, schedules.accrual_day_counts, rate_type, margin_config.margin_config)
@@ -150,10 +150,17 @@ Calculates compounded forward rates for each period specified in the `schedules`
 # Returns
 - The compounded forward rate for each period in `schedules`, with the specified margin applied.
 """
-function forward_rate(rate_curve::R, schedules::CompoundedRateSchedules, rate_type::T, margin_config::MarginOnUnderlying) where {R<:AbstractRateCurve, T<:RateType}
+function forward_rate(rate_curve::R, schedules::CompoundedRateSchedules, rate_type::T, margin_config::MarginOnUnderlying, ::CompoundedRate) where {R<:AbstractRateCurve, T<:RateType}
     period_accrual_func = s -> period_compounded_accrual(s, rate_curve, rate_type, margin_config)
     period_accruals = period_accrual_func.(schedules.compounding_schedules)
     return implied_rate(period_accruals, schedules.accrual_day_counts, rate_type)
+end
+
+function forward_rate(rate_curve::R, schedules::CompoundedRateSchedules, rate_type::T, margin_config::M, ::AverageRate) where {R<:AbstractRateCurve, T<:RateType, M<:CompoundMargin}
+    forwards = [forward_rate(schedule, rate_curve, rate_type) for schedule in schedules.compounding_schedules]
+    accrual_day_counts = [schedule.accrual_day_counts for schedule in schedules.compounding_schedules]
+    weighted_averages = [sum(x.*y) / sum(y) for (x,y) in zip(forwards,accrual_day_counts)]
+    return apply_margin(weighted_averages, margin_config.margin_config)
 end
 
 """

@@ -17,7 +17,7 @@
     day_count = ACT360()
     rate_type = LinearRate()
     compound_schedule = ScheduleConfig(sub_period; stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
-    rate_config = CompoundRateConfig(ACT360(), LinearRate(), BusinessDayShift(-2, WeekendsOnly(),false), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
+    rate_config = CompoundRateConfig(ACT360(), LinearRate(), BusinessDayShift(-2, WeekendsOnly(),false), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)), CompoundedRate())
     instrument_rate = CompoundInstrumentRate(RateIndex("compounded_rate_index"), rate_config)
 
     # fixed rate stream configuration

@@ -115,7 +115,7 @@ end
     compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
     schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
-    rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnCompoundedRate(AdditiveMargin(0)))
+    rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnCompoundedRate(AdditiveMargin(0)), CompoundedRate())
     @test forward_rate(schedules, rate_curve, rate_config)[1] ≈ 0.05
 end
 
@@ -152,7 +152,7 @@ end
     compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
     schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
-    rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
+    rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)), CompoundedRate())
     @test forward_rate(schedules, rate_curve, rate_config)[1] ≈ 0.05
 end
 
@@ -170,7 +170,7 @@ end
     compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
     schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
-    rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
+    rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)), CompoundedRate())
     calculated_forward = forward_rate(schedules, rate_curve, rate_config)[1]
 
     compounded_accrual = exp(31/365 * 0.05) * exp(29/365 * 0.05)
@@ -192,7 +192,7 @@ end
     compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
     schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
-    rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule, margin=MarginOnUnderlying(AdditiveMargin(0.02)))
+    rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule, margin=MarginOnUnderlying(AdditiveMargin(0.02)), compounding_style=Hedgehog.CompoundedRate())
     calculated_forward = forward_rate(schedules, rate_curve, rate_config)[1]
 
     compounded_accrual = (exp(31/365 * 0.05) - 1 + 31/365 * 0.02) * (exp(29/365 * 0.05) + 0.02 * 29/365) + exp(29/365 * 0.05) - 1 + 29/365 * 0.02
