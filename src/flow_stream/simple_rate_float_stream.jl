@@ -1,3 +1,5 @@
+abstract type RateSchedule end
+
 """
     struct SimpleRateStreamSchedules{D <: TimeType, T <: Number}
 
@@ -11,7 +13,7 @@ Represents a schedule for simple rate streams, including payment dates, fixing d
 - `accrual_day_counts::Vector{T}`: A vector of day count fractions for each accrual period, representing the portion of the year.
 
 This struct is meant to give all the pre-computable date-related data about a list of floating rates."""
-struct SimpleRateSchedule{D <: TimeType, T <: Number}
+struct SimpleRateSchedule{D <: TimeType, T <: Number} <: RateSchedule
     fixing_dates::Vector{D}
     observation_start::Vector{D}
     observation_end::Vector{D}

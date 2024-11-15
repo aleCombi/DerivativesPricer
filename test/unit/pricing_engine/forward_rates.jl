@@ -113,7 +113,7 @@ end
     discount_start_dates = fixing_dates
     discount_end_dates = accrual_dates[2:end]
     compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
-    schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
+    schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnCompoundedRate(AdditiveMargin(0)))
     @test forward_rate(schedules, rate_curve, rate_config)[1] ≈ 0.05
@@ -131,7 +131,7 @@ end
     discount_start_dates = fixing_dates
     discount_end_dates = accrual_dates[2:end]
     compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
-    schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
+    schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule; margin=MarginOnCompoundedRate(AdditiveMargin(2)))
     @test forward_rate(schedules, rate_curve, rate_config)[1] ≈ 0.05 + 2
@@ -150,7 +150,7 @@ end
     discount_start_dates = fixing_dates
     discount_end_dates = accrual_dates[2:end]
     compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
-    schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
+    schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
     @test forward_rate(schedules, rate_curve, rate_config)[1] ≈ 0.05
@@ -168,7 +168,7 @@ end
     discount_start_dates = fixing_dates
     discount_end_dates = accrual_dates[2:end]
     compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
-    schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
+    schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)))
     calculated_forward = forward_rate(schedules, rate_curve, rate_config)[1]
@@ -190,7 +190,7 @@ end
     discount_start_dates = fixing_dates
     discount_end_dates = accrual_dates[2:end]
     compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
-    schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
+    schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule, margin=MarginOnUnderlying(AdditiveMargin(0.02)))
     calculated_forward = forward_rate(schedules, rate_curve, rate_config)[1]
@@ -245,7 +245,7 @@ end
     discount_start_dates = fixing_dates
     discount_end_dates = accrual_dates[2:end]
     compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
-    schedules = CompoundedRateStreamSchedules(pay_dates, compounding_schedules)
+    schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule; margin=MarginOnUnderlying(AdditiveMargin(0.02)))
     

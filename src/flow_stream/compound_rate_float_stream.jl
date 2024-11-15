@@ -9,7 +9,7 @@ Defines a schedule of compounded rate streams. This structure holds information 
 
 *Note*: The `pay_dates` field here only signifies scheduling purposes, without intrinsic meaning in the context of this struct.
 """
-struct CompoundedRateStreamSchedules{N<:Number, A, B, D<:TimeType}
+struct CompoundedRateSchedules{N<:Number, A, B, D<:TimeType} <: RateSchedule
     accrual_dates::Vector{D}
     compounding_schedules::Vector{SimpleRateSchedule{A,B}}
     accrual_day_counts::Vector{N}
@@ -26,9 +26,9 @@ Constructor for `CompoundedRateStreamSchedules`, which initializes an instance w
 # Returns
 - An instance of `CompoundedRateStreamSchedules` with computed `accrual_day_counts`.
 """
-function CompoundedRateStreamSchedules(accrual_dates, compounding_schedules::Vector{SimpleRateSchedule{A,B}}) where {A,B}
+function CompoundedRateSchedules(accrual_dates, compounding_schedules::Vector{SimpleRateSchedule{A,B}}) where {A,B}
     accrual_day_counts = [sum(schedule.accrual_day_counts) for schedule in compounding_schedules]
-    return CompoundedRateStreamSchedules(accrual_dates, compounding_schedules, accrual_day_counts)
+    return CompoundedRateSchedules(accrual_dates, compounding_schedules, accrual_day_counts)
 end
 
 """
@@ -42,11 +42,11 @@ Constructs a `CompoundedRateStreamSchedules` instance based on a `FloatStreamCon
 # Returns
 - An instance of `CompoundedRateStreamSchedules` derived from the provided stream configuration.
 """
-function CompoundedRateStreamSchedules(stream_config::FloatStreamConfig{P,CompoundInstrumentRate}) where P
+function CompoundedRateSchedules(stream_config::FloatStreamConfig{P,CompoundInstrumentRate}) where P
     accrual_dates = generate_schedule(stream_config.schedule)
     rate_config = stream_config.rate.rate_config
     compounding_schedules = [SimpleRateSchedule(accrual_dates[i], accrual_dates[i+1], rate_config.compound_schedule, rate_config) for i in 1:length(accrual_dates)-1]
-    return CompoundedRateStreamSchedules(accrual_dates, compounding_schedules)
+    return CompoundedRateSchedules(accrual_dates, compounding_schedules)
 end
 
 """
@@ -60,7 +60,7 @@ Represents a compound floating rate stream configuration within a `FlowStream` c
 """
 struct CompoundFloatRateStream{P,S,D} <: FloatStream where {P,S,D<:TimeType}
     config::FloatStreamConfig{P,CompoundInstrumentRate, S}
-    schedules::CompoundedRateStreamSchedules
+    schedules::CompoundedRateSchedules
     pay_dates::Vector{D}
 end
 
@@ -76,7 +76,7 @@ Creates a `CompoundFloatRateStream` instance using the provided `FloatStreamConf
 - An instance of `CompoundFloatRateStream` initialized with the provided configuration and generated schedules.
 """
 function CompoundFloatRateStream(stream_config::FloatStreamConfig{P,CompoundInstrumentRate, S}) where {P,S}
-    schedules = CompoundedRateStreamSchedules(stream_config)
+    schedules = CompoundedRateSchedules(stream_config)
     pay_dates = shifted_trimmed_schedule(schedules.accrual_dates, stream_config.schedule.pay_shift)
     return CompoundFloatRateStream(stream_config, schedules, pay_dates)
 end

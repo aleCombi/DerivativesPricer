@@ -20,7 +20,7 @@ instrument_schedule = InstrumentSchedule(start_date, end_date, Year(1))
 stream_config = FloatStreamConfig(principal, instrument_rate, instrument_schedule)
 
 # schedule generation
-schedules = CompoundedRateStreamSchedules(stream_config)
+schedules = CompoundedRateSchedules(stream_config)
 
 # rate curve setup
 interest_rate = 0.03  # 3% flat rate
