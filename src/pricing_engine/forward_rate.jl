@@ -74,14 +74,13 @@ it applies the specified `rate_type` and `margin_config` to compute the forward 
 function forward_rate(schedules::SimpleRateSchedule, market_data::D, rate_type::R, margin_config::M=AdditiveMargin(0)) where {D<:MarketData, R<:RateType, M<:MarginConfig}
     past_indices = findall(date -> date <= market_data_date(market_data), schedules.fixing_dates)
     future_indices = findall(date -> date > market_data_date(market_data), schedules.fixing_dates)
-    fixed_rates = [get_fixing(fixing_date, market_data.fixing_source) for fixing_date in schedules.fixing_dates[past_indices]]
+    fixed_rates = [apply_margin(get_fixing(fixing_date, market_data.fixing_source), margin_config) for fixing_date in schedules.fixing_dates[past_indices]]
     forward_rates = forward_rate(market_data.rate_curve, 
                                 schedules.observation_start[future_indices],
                                 schedules.observation_end[future_indices], 
                                 schedules.accrual_day_counts[future_indices]; 
                                 rate_type=rate_type, 
                                 margin_config=margin_config)
-                                
     return vcat(fixed_rates, forward_rates)
 end
 
@@ -119,8 +118,8 @@ for each compounding schedule and applies any margin configurations on the compo
 # Throws
 - `Error` if the margin is specified on an underlying compounded rate, as this functionality is not implemented.
 """
-function forward_rate(schedules::CompoundedRateSchedules, rate_curve::R, rate_config::CompoundRateConfig) where R<:AbstractRateCurve
-   return forward_rate(rate_curve, schedules, rate_config.rate_type, rate_config.margin, rate_config.compounding_style)
+function forward_rate(schedules::CompoundedRateSchedules, market_data::M, rate_config::CompoundRateConfig) where M<:MarketData
+   return forward_rate(market_data, schedules, rate_config.rate_type, rate_config.margin, rate_config.compounding_style)
 end
 
 """
@@ -137,8 +136,8 @@ Calculates compounded forward rates for each period specified in the `schedules`
 # Returns
 - The compounded forward rate for each period in `schedules`, with the specified margin applied.
 """
-function forward_rate(rate_curve::R, schedules::CompoundedRateSchedules, rate_type::T, margin_config::MarginOnCompoundedRate, ::CompoundedRate) where {R<:AbstractRateCurve, T<:RateType}
-    period_accrual_func = s -> period_compounded_accrual(s, rate_curve, rate_type, margin_config)
+function forward_rate(market_data::M, schedules::CompoundedRateSchedules, rate_type::T, margin_config::MarginOnCompoundedRate, ::CompoundedRate) where {M<:MarketData, T<:RateType}
+    period_accrual_func = s -> period_compounded_accrual(s, market_data, rate_type, margin_config)
     period_accruals = period_accrual_func.(schedules.compounding_schedules)
     return margined_rate(period_accruals, schedules.accrual_day_counts, rate_type, margin_config.margin_config)
 end
@@ -157,14 +156,14 @@ Calculates compounded forward rates for each period specified in the `schedules`
 # Returns
 - The compounded forward rate for each period in `schedules`, with the specified margin applied.
 """
-function forward_rate(rate_curve::R, schedules::CompoundedRateSchedules, rate_type::T, margin_config::MarginOnUnderlying, ::CompoundedRate) where {R<:AbstractRateCurve, T<:RateType}
-    period_accrual_func = s -> period_compounded_accrual(s, rate_curve, rate_type, margin_config)
+function forward_rate(market_data::M, schedules::CompoundedRateSchedules, rate_type::T, margin_config::MarginOnUnderlying, ::CompoundedRate) where {M<:MarketData, T<:RateType}
+    period_accrual_func = s -> period_compounded_accrual(s, market_data, rate_type, margin_config)
     period_accruals = period_accrual_func.(schedules.compounding_schedules)
     return implied_rate(period_accruals, schedules.accrual_day_counts, rate_type)
 end
 
-function forward_rate(rate_curve::R, schedules::CompoundedRateSchedules, rate_type::T, margin_config::M, ::AverageRate) where {R<:AbstractRateCurve, T<:RateType, M<:CompoundMargin}
-    forwards = [forward_rate(schedule, rate_curve, rate_type) for schedule in schedules.compounding_schedules]
+function forward_rate(market_data::M, schedules::CompoundedRateSchedules, rate_type::T, margin_config::MC, ::AverageRate) where {M<:MarketData, T<:RateType, MC<:CompoundMargin}
+    forwards = [forward_rate(schedule, market_data, rate_type) for schedule in schedules.compounding_schedules]
     accrual_day_counts = [schedule.accrual_day_counts for schedule in schedules.compounding_schedules]
     weighted_averages = [sum(x.*y) / sum(y) for (x,y) in zip(forwards,accrual_day_counts)]
     return apply_margin(weighted_averages, margin_config.margin_config)
@@ -184,8 +183,8 @@ Calculates the compounded interest accruals over each period in `simple_schedule
 # Returns
 - A vector of interest accruals for each period, compounded with the specified margin.
 """
-function period_compounded_accrual(simple_schedule::SimpleRateSchedule, rate_curve::R, rate_type::T, ::MarginOnCompoundedRate) where {R<:AbstractRateCurve, T<:RateType}
-    forwards = forward_rate(simple_schedule, rate_curve, rate_type)
+function period_compounded_accrual(simple_schedule::SimpleRateSchedule, market_data::M, rate_type::T, ::MarginOnCompoundedRate) where {M<:MarketData, T<:RateType}
+    forwards = forward_rate(simple_schedule, market_data, rate_type)
     compounding_factors = compounding_factor(forwards, simple_schedule.accrual_day_counts, rate_type)
     interest_accruals = prod(compounding_factors)
     return interest_accruals
@@ -208,8 +207,8 @@ Calculates the compounded interest accruals over each period in `simple_schedule
 # Notes
 - This function computes compound factors for each forward rate, then applies the accruals and margin sequentially.
 """
-function period_compounded_accrual(simple_schedule::SimpleRateSchedule, rate_curve::R, rate_type::T, margin_config::MarginOnUnderlying) where {R<:AbstractRateCurve, T<:RateType}
-    forwards = forward_rate(simple_schedule, rate_curve, rate_type, margin_config.margin_config)
+function period_compounded_accrual(simple_schedule::SimpleRateSchedule, market_data::M, rate_type::T, margin_config::MarginOnUnderlying) where {M<:MarketData, T<:RateType}
+    forwards = forward_rate(simple_schedule, market_data, rate_type, margin_config.margin_config)
     compounding_factors = compounding_factor(forwards, simple_schedule.accrual_day_counts, rate_type)
     compound_after_i = vcat([prod(compounding_factors[i+1:end]) for i in 1:(length(compounding_factors)-1)],1)
     sub_addend = simple_schedule.accrual_day_counts .* forwards

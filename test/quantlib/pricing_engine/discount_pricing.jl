@@ -59,7 +59,7 @@ present_value = sum([
 print("Present Value of Fixed Rate Stream:", present_value)
 
 rate_curve = FlatRateCurve("Curve", start_date, 0.02, ACT360(), Exponential())
-price_hh = price_flow_stream(fixed_rate_stream, rate_curve)
+price_hh = price_flow_stream(fixed_rate_stream, RateMarketData(rate_curve))
 
 @test isapprox(present_value, price_hh; atol=1e-15)
 end
@@ -123,7 +123,7 @@ end
     println(npv)
 
     rate_curve = FlatRateCurve("Curve", Date(2017,1,1), 0.05, ACT360(), Exponential())
-    price_hh = price_flow_stream(float_rate_stream, rate_curve)
+    price_hh = price_flow_stream(float_rate_stream, RateMarketData(rate_curve))
     println("discount factor ql:", yts.discount(to_ql_date(end_date)))
 
     println(price_hh)

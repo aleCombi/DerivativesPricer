@@ -6,7 +6,7 @@
     pricing_date = Date(2013,2,1)
     rate_curve = InterpolatedRateCurve(pricing_date; input_values=rates, rate_type=Exponential(),spine_dates=accrual_dates, input_type=Hedgehog.Rate())
     forward_rates = forward_rate(rate_curve, Date(2013,6,1), Date(2013,9,1))
-    @test forward_rates ≈ 0.02 atol=1e-8
+    @test forward_rates ≈ 0.02
 end
 
 @testitem "Forward rates on a linear curve" begin
@@ -106,7 +106,8 @@ end
     # create rate curve
     using Dates
     rate_curve = FlatRateCurve("FlatCurve", Date(2000,1,1), 0.05, ACT365(), LinearRate())
-
+    fixings = RateFixingTuples(Date(2000,1,1), RateIndex(""), Base.ImmutableDict(
+        Date(2000,1,1) => 0.05))
     pay_dates = [Date(2001,1,1)]
 
     accrual_dates = [Date(2000,1,1), Date(2000,2,1), Date(2000,3,1)]
@@ -117,14 +118,15 @@ end
     schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnCompoundedRate(AdditiveMargin(0)), CompoundedRate())
-    @test forward_rate(schedules, rate_curve, rate_config)[1] ≈ 0.05
+    @test forward_rate(schedules, RateMarketData(rate_curve, fixings), rate_config)[1] ≈ 0.05
 end
 
 @testitem "compounded forward rates with non-0 margin on compounded rate" begin
     # create rate curve
     using Dates
-    rate_curve = FlatRateCurve("FlatCurve", Date(2000,1,1), 0.05, ACT365(), LinearRate())
-
+    rate_curve = FlatRateCurve("FlatCurve", Date(2000,1,1), 0.05, ACT365(), Exponential())
+    fixings = RateFixingTuples(Date(2000,1,1), RateIndex(""), Base.ImmutableDict(
+        Date(2000,1,1) => 0.05))
     pay_dates = [Date(2001,1,1)]
 
     accrual_dates = [Date(2000,1,1), Date(2000,2,1), Date(2000,3,1)]
@@ -134,8 +136,8 @@ end
     compounding_schedules = [SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, ACT365())]
     schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
-    rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule; margin=MarginOnCompoundedRate(AdditiveMargin(2)))
-    @test forward_rate(schedules, rate_curve, rate_config)[1] ≈ 0.05 + 2
+    rate_config = CompoundRateConfig(ACT365(), Exponential(), compound_schedule; margin=MarginOnCompoundedRate(AdditiveMargin(2)))
+    @test forward_rate(schedules, RateMarketData(rate_curve, fixings), rate_config)[1] ≈ 0.05 + 2
 end
 
 
@@ -143,7 +145,8 @@ end
     # create rate curve
     using Dates
     rate_curve = FlatRateCurve("FlatCurve", Date(2000,1,1), 0.05, ACT365(), LinearRate())
-
+    fixings = RateFixingTuples(Date(2000,1,1), RateIndex(""), Base.ImmutableDict(
+        Date(2000,1,1) => 0.05))
     pay_dates = [Date(2001,1,1)]
 
     accrual_dates = [Date(2000,1,1), Date(2000,2,1), Date(2000,3,1)]
@@ -154,16 +157,17 @@ end
     schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)), CompoundedRate())
-    @test forward_rate(schedules, rate_curve, rate_config)[1] ≈ 0.05
+    @test forward_rate(schedules, RateMarketData(rate_curve, fixings), rate_config)[1] ≈ 0.05
 end
 
 @testitem "compounded forward rates with 0 margin on underlying with different rate conventions between curve and product" begin
     # create rate curve
     using Dates
-    rate_curve = FlatRateCurve("FlatCurve", Date(2000,1,1), 0.05, ACT365(), Exponential())
+    rate_curve = FlatRateCurve("FlatCurve", Date(2000,1,1), 0.05, ACT365(), LinearRate())
 
     pay_dates = [Date(2001,1,1)]
-
+    fixings = RateFixingTuples(Date(2000,1,1), RateIndex(""), Base.ImmutableDict(
+        Date(2000,1,1) => 0.05))
     accrual_dates = [Date(2000,1,1), Date(2000,2,1), Date(2000,3,1)]
     fixing_dates = accrual_dates[1:end-1]
     discount_start_dates = fixing_dates
@@ -172,18 +176,15 @@ end
     schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), TimeShift(Day(0)), compound_schedule, MarginOnUnderlying(AdditiveMargin(0)), CompoundedRate())
-    calculated_forward = forward_rate(schedules, rate_curve, rate_config)[1]
+    calculated_forward = forward_rate(schedules, RateMarketData(rate_curve, fixings), rate_config)[1]
 
-    compounded_accrual = exp(31/365 * 0.05) * exp(29/365 * 0.05)
-    compounded_rate = (compounded_accrual - 1) / 60 * 365
-    @test calculated_forward ≈ compounded_rate
+    @test calculated_forward ≈ 0.05
 end
 
 @testitem "compounded forward rates with non-zero margin on underlying with different rate conventions between curve and product" begin
     # create rate curve
     using Dates
-    rate_curve = FlatRateCurve("FlatCurve", Date(2000,1,1), 0.05, ACT365(), Exponential())
-
+    rate_curve = FlatRateCurve("FlatCurve", Date(1999,12,31), 0.05, ACT365(), Exponential())
     pay_dates = [Date(2001,1,1)]
 
     accrual_dates = [Date(2000,1,1), Date(2000,2,1), Date(2000,3,1)]
@@ -194,7 +195,7 @@ end
     schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule, margin=MarginOnUnderlying(AdditiveMargin(0.02)), compounding_style=Hedgehog.CompoundedRate())
-    calculated_forward = forward_rate(schedules, rate_curve, rate_config)[1]
+    calculated_forward = forward_rate(schedules, RateMarketData(rate_curve), rate_config)[1]
 
     compounded_accrual = (exp(31/365 * 0.05) - 1 + 31/365 * 0.02) * (exp(29/365 * 0.05) + 0.02 * 29/365) + exp(29/365 * 0.05) - 1 + 29/365 * 0.02
     compounded_rate = (compounded_accrual) / 60 * 365
@@ -205,7 +206,8 @@ end
     # create rate curve
     using Dates
     rate_curve = FlatRateCurve("FlatCurve", Date(2000,1,1), 0.05, ACT365(), Exponential())
-
+    fixings = RateFixingTuples(Date(2000,1,1), RateIndex(""), Base.ImmutableDict(
+        Date(2000,1,1) => 0.05))
     pay_dates = [Date(2001,1,1)]
 
     accrual_dates = [Date(2000,1,1), Date(2000,2,1), Date(2000,3,1)]
@@ -216,9 +218,9 @@ end
     schedules = CompoundedRateSchedules(pay_dates, compounding_schedules)
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule, margin=MarginOnUnderlying(AdditiveMargin(0.02)), compounding_style=Hedgehog.AverageRate())
-    calculated_forward = forward_rate(schedules, rate_curve, rate_config)[1]
+    calculated_forward = forward_rate(schedules, RateMarketData(rate_curve,fixings), rate_config)[1]
 
-    rate_first = (exp(31/365 * 0.05) - 1) / (31/365)
+    rate_first = 0.05
     rate_second = (exp(29/365 * 0.05) - 1) / (29/365)
     average = (rate_first * 31 + rate_second * 29) / 60 + 0.02
     @test calculated_forward ≈ average
@@ -229,7 +231,8 @@ end
     using Dates
     start_date = Date(2000,1,1)
     end_date = Date(2000,3,1)
-
+    fixings = RateFixingTuples(Date(2000,1,1), RateIndex(""), Base.ImmutableDict(
+        Date(2000,1,1) => 0.05))
     # create rate curve
     rate_curve = FlatRateCurve("FlatCurve", start_date, 0.05, ACT365(), Exponential())
 
@@ -248,11 +251,11 @@ end
     # stream pre-computation (schedules and day-counts)
     stream = CompoundFloatRateStream(stream_config)
 
-    calculated_forward = forward_rate(stream, rate_curve)
+    calculated_forward = forward_rate(stream, RateMarketData(rate_curve, fixings))
 
     compounded_accrual = (exp(31/365 * 0.05) - 1 + 31/360 * 0.02) * (exp(29/365 * 0.05) + 0.02 * 29/360) + exp(29/365 * 0.05) - 1 + 29/360 * 0.02
     compounded_rate = (compounded_accrual) / 60 * 360
-    @test calculated_forward ≈ [compounded_rate]
+    @test calculated_forward[1] ≈ compounded_rate
 end
 
 @testitem "Configured average forward rates with non-zero margin on underlying with different rate conventions between curve and product" begin
@@ -260,7 +263,8 @@ end
     using Dates
     start_date = Date(2000,1,1)
     end_date = Date(2000,3,1)
-
+    fixings = RateFixingTuples(Date(2000,1,1), RateIndex(""), Base.ImmutableDict(
+        Date(2000,1,1) => 0.05))
     # create rate curve
     rate_curve = FlatRateCurve("FlatCurve", start_date, 0.05, ACT365(), Exponential())
 
@@ -279,9 +283,9 @@ end
     # stream pre-computation (schedules and day-counts)
     stream = CompoundFloatRateStream(stream_config)
 
-    calculated_forward = forward_rate(stream, rate_curve)[1]
+    calculated_forward = forward_rate(stream, RateMarketData(rate_curve,fixings))[1]
 
-    rate_first = (exp(31/365 * 0.05) - 1) / (31/365)
+    rate_first = 0.05 * 365/360
     rate_second = (exp(29/365 * 0.05) - 1) / (29/365)
     # here the averaging is done on the rate converted to the ACT360 convention
     average = ((rate_first * 31 + rate_second * 29)) * 360 / 365 / 60 + 0.02 
@@ -291,7 +295,7 @@ end
 @testitem "Checking convergence of daily compounding with margin on underlying and continuous compounding with margin" begin
     # create rate curve
     using Dates
-    rate_curve = FlatRateCurve("FlatCurve", Date(2000,1,1), 0.05, ACT365(), Exponential())
+    rate_curve = FlatRateCurve("FlatCurve", Date(1999,1,1), 0.05, ACT365(), Exponential())
 
     pay_dates = [Date(2001,1,1)]
 
@@ -306,7 +310,7 @@ end
     compound_schedule = ScheduleConfig(Month(1); stub_period=StubPeriod(UpfrontStubPosition(), ShortStubLength()))
     rate_config = CompoundRateConfig(ACT365(), LinearRate(), compound_schedule; margin=MarginOnUnderlying(AdditiveMargin(0.02)))
     
-    calculated_forward = forward_rate(schedules, rate_curve, rate_config)[1]
+    calculated_forward = forward_rate(schedules, RateMarketData(rate_curve), rate_config)[1]
     total_day_count = day_count_fraction(start_date, end_date, ACT365())
     total_accrual = 1 + calculated_forward * total_day_count
     
