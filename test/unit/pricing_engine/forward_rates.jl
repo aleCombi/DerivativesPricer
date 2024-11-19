@@ -73,6 +73,7 @@ end
     margin=0.001
     rate_curve = InterpolatedRateCurve(pricing_date; input_values=rates, input_type=Hedgehog.Rate(), spine_dates=accrual_dates, rate_type=LinearRate())
     day_count_1 = day_count_fraction(Date(2013,6,1), Date(2013,9,1), rate_curve.day_count_convention)
+    market_data = RateMarketData(rate_curve)
 
     accrual_dates = [Date(2013,6,1), Date(2013,9,1)]
     fixing_dates = [accrual_dates[1]]
@@ -80,7 +81,7 @@ end
     discount_end_dates = accrual_dates[2:end]
     accrual_day_counts = [day_count_1]
     schedules = SimpleRateSchedule(fixing_dates, discount_start_dates, discount_end_dates, accrual_dates, accrual_day_counts)
-    forward_rates = forward_rate(schedules, rate_curve, rate_curve.rate_type, MultiplicativeMargin(margin))[1]
+    forward_rates = forward_rate(schedules, market_data, rate_curve.rate_type, MultiplicativeMargin(margin))[1]
     day_count_0 = day_count_fraction(pricing_date, Date(2013,6,1), rate_curve.day_count_convention)
     day_count_1 = day_count_fraction(Date(2013,6,1), Date(2013,9,1), rate_curve.day_count_convention)
     day_count_2 = day_count_fraction(pricing_date, Date(2013,9,1), rate_curve.day_count_convention)
@@ -93,7 +94,7 @@ end
     day_counts = day_count_fraction(dates, rate_config.day_count_convention)
     schedules = SimpleRateSchedule(dates[1:end-1], dates[1:end-1], dates[2:end], dates, day_counts)
     # Calculate forward rates
-    fwd_rates = forward_rate(schedules, rate_curve, rate_config)
+    fwd_rates = forward_rate(schedules, RateMarketData(rate_curve), rate_config)
 
     # Expected forward rates
     expected_fwd_rates = [(0.95 / 0.90 - 1) / 181 * 360, (0.90 / 0.85 - 1) / 184 * 360]

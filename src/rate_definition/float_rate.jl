@@ -18,7 +18,7 @@ A structure representing a rate index. This object typically maps to data source
 # Fields
 - `name::String`: The name of the rate index (e.g., LIBOR, EURIBOR, SOFR).
 """
-struct RateIndex
+struct RateIndex <: AbstractRateIndex
     name::String
 end
 

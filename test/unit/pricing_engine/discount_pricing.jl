@@ -17,7 +17,7 @@ end
     cash_flows = [1000.0, 1000.0, 1000.0]
     
     # Calculate the price
-    price = price_flow_stream(payment_dates, cash_flows, rate_curve)
+    price = price_flow_stream(payment_dates, cash_flows, RateMarketData(rate_curve))
 
     # Expected price
     expected_price = sum(cash_flows .* [0.95, 0.90, 0.85])
@@ -41,7 +41,7 @@ end
     stream = SimpleFloatRateStream(stream_config)
     # print(stream.schedules.pay_dates)
     # Calculate the price
-    price = price_flow_stream(stream, rate_curve)
+    price = price_flow_stream(stream, RateMarketData(rate_curve))
 
     # Expected price
     expected_price = 1000.0 * (0.9 * (0.95 / 0.90 - 1) + 0.85 * (0.90 / 0.85 - 1))

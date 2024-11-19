@@ -71,11 +71,18 @@ it applies the specified `rate_type` and `margin_config` to compute the forward 
 # Returns
 - A list of forward rates for each period in the schedule.
 """
-function forward_rate(schedules::SimpleRateSchedule, rate_curve::C, rate_type::R, margin_config::M=AdditiveMargin(0)) where {C<:AbstractRateCurve, R<:RateType, M<:MarginConfig}
-    return forward_rate(rate_curve, schedules.observation_start, schedules.observation_end, 
-                        schedules.accrual_day_counts; 
-                        rate_type=rate_type, 
-                        margin_config=margin_config)
+function forward_rate(schedules::SimpleRateSchedule, market_data::D, rate_type::R, margin_config::M=AdditiveMargin(0)) where {D<:MarketData, R<:RateType, M<:MarginConfig}
+    past_indices = findall(date -> date <= market_data_date(market_data), schedules.fixing_dates)
+    future_indices = findall(date -> date > market_data_date(market_data), schedules.fixing_dates)
+    fixed_rates = [get_fixing(fixing_date, market_data.fixing_source) for fixing_date in schedules.fixing_dates[past_indices]]
+    forward_rates = forward_rate(market_data.rate_curve, 
+                                schedules.observation_start[future_indices],
+                                schedules.observation_end[future_indices], 
+                                schedules.accrual_day_counts[future_indices]; 
+                                rate_type=rate_type, 
+                                margin_config=margin_config)
+                                
+    return vcat(fixed_rates, forward_rates)
 end
 
 """
@@ -91,8 +98,8 @@ Calculates forward rates over periods specified in the schedules using the confi
 # Returns
 - A list of forward rates for each period, computed using `rate_config`.
 """
-function forward_rate(schedules::SimpleRateSchedule, rate_curve::C, rate_config::SimpleRateConfig) where {C<:AbstractRateCurve}
-    return forward_rate(schedules, rate_curve, rate_config.rate_type, rate_config.margin)
+function forward_rate(schedules::SimpleRateSchedule, market_data::M, rate_config::SimpleRateConfig) where {M<:MarketData}
+    return forward_rate(schedules, market_data, rate_config.rate_type, rate_config.margin)
 end
 
 """
@@ -221,6 +228,6 @@ Calculates the forward rate for a given `FlowStream` based on the provided rate 
 # Returns
 - The forward rate calculated for each period in the stream's schedule using the rate configuration specified in the stream.
 """
-function forward_rate(stream::Stream, rate_curve::Curve) where {Stream <: FloatStream, Curve <: AbstractRateCurve}
-    return forward_rate(stream.schedules, rate_curve, stream.config.rate.rate_config)
+function forward_rate(stream::Stream, market_data::M) where {Stream <: FloatStream, M <: MarketData}
+    return forward_rate(stream.schedules, market_data, stream.config.rate.rate_config)
 end

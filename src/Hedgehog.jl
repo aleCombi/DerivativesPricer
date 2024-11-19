@@ -7,6 +7,7 @@ include("day_count_conventions.jl")
 include("date_generation/include_date_generation.jl")
 include("rate_definition/include_rate_definition.jl")
 include("flow_stream/include_flow_stream.jl")
+include("market_data/include_market_data.jl")
 include("pricing_engine/include_pricing_engine.jl")
 
 # fake include statements necessary to have LSP working on VS Code
