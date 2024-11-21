@@ -59,6 +59,18 @@ function SimpleRateSchedule(start_date::D, end_date::D, schedule_config::S, rate
     return SimpleRateSchedule(fixing_dates, observation_start, observation_end, accrual_dates, time_fractions)
 end
 
+function observation_dates(fixing_dates, rate_index::RateIndex{ForwardLooking, S})
+    observation_start = fixing_dates
+    observation_end = generate_end_date(fixing_dates, rate_index)
+    return observation_start, observation_end
+end
+
+function observation_dates(fixing_dates, rate_index::RateIndex{BackwardLooking, S})
+    observation_end = fixing_dates
+    observation_start = generate_start_date(fixing_dates, rate_index)
+    return observation_start, observation_end
+end
+
 function SimpleRateSchedule(instrument_schedule::I, rate_config::R) where {I<:AbstractInstrumentSchedule,R <: AbstractRateConfig}
     return SimpleRateSchedule(instrument_schedule.start_date, instrument_schedule.end_date, instrument_schedule.schedule_config, rate_config)
 end

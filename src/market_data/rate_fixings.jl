@@ -4,7 +4,7 @@ struct RateFixingTuples{D<:TimeType, R<:AbstractRateIndex} <: RateFixingSource
     date::D
     rate_index::R
     fixings::Base.ImmutableDict
-end
+end 
 
 function get_fixing(date, fixing_source::RateFixingTuples)
     return fixing_source.fixings[date]

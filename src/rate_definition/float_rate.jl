@@ -1,3 +1,7 @@
+abstract type ObservationPeriod end
+struct ForwardLooking <: ObservationPeriod end
+struct BackwardLooking <: ObservationPeriod end
+
 abstract type CompoundingStyle end
 struct CompoundedRate <: CompoundingStyle end
 struct AverageRate <: CompoundingStyle end
@@ -18,8 +22,16 @@ A structure representing a rate index. This object typically maps to data source
 # Fields
 - `name::String`: The name of the rate index (e.g., LIBOR, EURIBOR, SOFR).
 """
-struct RateIndex <: AbstractRateIndex
+struct RateIndex{O<:ObservationPeriod, S<:AbstractScheduleConfig, P <: Period, B <: BusinessDayConvention, C<:HolidayCalendar} <: AbstractRateIndex
     name::String
+    observation_period::O
+    tenor::P
+    calendar::C
+    business_day_convention::B
+end
+
+function RateIndex(name)
+    return RateIndex(name, ForwardLooking(), Day(1), BusinessDay.NoHolidays(), NoneBusinessDayConvention())
 end
 
 """
