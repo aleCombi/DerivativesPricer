@@ -239,7 +239,7 @@ end
     # instrument rate definition
     margin = MarginOnUnderlying(AdditiveMargin(0.02))
     rate_config = CompoundRateConfig(ACT360(), LinearRate(), ScheduleConfig(Month(1)); margin=margin)
-    instrument_rate = CompoundInstrumentRate(RateIndex("RateIndex"), rate_config)
+    instrument_rate = CompoundInstrumentRate(RateIndex("RateIndex", Hedgehog.ForwardLooking(), Month(1), NoHolidays(), NoneBusinessDayConvention()), rate_config)
 
     # instrument schedule definition
     schedule_config = ScheduleConfig(Month(2))
@@ -271,7 +271,7 @@ end
     # instrument rate definition
     margin = MarginOnUnderlying(AdditiveMargin(0.02))
     rate_config = CompoundRateConfig(ACT360(), LinearRate(), ScheduleConfig(Month(1)); margin=margin, compounding_style=AverageRate())
-    instrument_rate = CompoundInstrumentRate(RateIndex("RateIndex"), rate_config)
+    instrument_rate = CompoundInstrumentRate(RateIndex("RateIndex", Hedgehog.ForwardLooking(), Month(1), NoHolidays(), NoneBusinessDayConvention()), rate_config)
 
     # instrument schedule definition
     schedule_config = ScheduleConfig(Month(2))

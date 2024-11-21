@@ -45,7 +45,7 @@ Constructs a `CompoundedRateStreamSchedules` instance based on a `FloatStreamCon
 function CompoundedRateSchedules(stream_config::FloatStreamConfig{P,CompoundInstrumentRate}) where P
     accrual_dates = generate_schedule(stream_config.schedule)
     rate_config = stream_config.rate.rate_config
-    compounding_schedules = [SimpleRateSchedule(accrual_dates[i], accrual_dates[i+1], rate_config.compound_schedule, rate_config) for i in 1:length(accrual_dates)-1]
+    compounding_schedules = [SimpleRateSchedule(accrual_dates[i], accrual_dates[i+1], rate_config.compound_schedule, rate_config, stream_config.rate.rate_index) for i in 1:length(accrual_dates)-1]
     return CompoundedRateSchedules(accrual_dates, compounding_schedules)
 end
 

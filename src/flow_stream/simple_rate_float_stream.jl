@@ -34,7 +34,7 @@ and accruals.
 - A `SimpleRateStreamSchedules` instance with generated payment, fixing, discount, and accrual dates.
 """
 function SimpleRateSchedule(stream_config::FloatStreamConfig{P,SimpleInstrumentRate}) where P
-    return SimpleRateSchedule(stream_config.schedule, stream_config.rate.rate_config)
+    return SimpleRateSchedule(stream_config.schedule, stream_config.rate.rate_config,  stream_config.rate.rate_index)
 end
 
 """
@@ -50,29 +50,28 @@ fixing dates, discount dates, accrual dates, and accrual day counts.
 # Returns
 - A `SimpleRateStreamSchedules` instance containing payment dates, fixing dates, discount start and end dates, accrual dates, and day counts.
 """
-function SimpleRateSchedule(start_date::D, end_date::D, schedule_config::S, rate_config::R) where {D<:TimeType, S <: AbstractScheduleConfig, R <: AbstractRateConfig}
+function SimpleRateSchedule(start_date::D, end_date::D, schedule_config::S, rate_config::R, rate_index::I) where {D<:TimeType, S <: AbstractScheduleConfig, R <: AbstractRateConfig, I<:AbstractRateIndex}
     accrual_dates = generate_schedule(start_date, end_date, schedule_config)
     time_fractions = day_count_fraction(accrual_dates, rate_config.day_count_convention)
     fixing_dates = shifted_trimmed_schedule(accrual_dates, rate_config.fixing_shift)
-    observation_start = fixing_dates
-    observation_end = generate_end_date(fixing_dates, schedule_config)#TODO: these two lines should be controlled by the observation period determination of the rate index
+    (observation_start, observation_end) = observation_dates(fixing_dates, rate_index)
     return SimpleRateSchedule(fixing_dates, observation_start, observation_end, accrual_dates, time_fractions)
 end
 
-function observation_dates(fixing_dates, rate_index::RateIndex{ForwardLooking, S})
+function observation_dates(fixing_dates, rate_index::RateIndex{ForwardLooking,P,B,C}) where {P,B,C}
     observation_start = fixing_dates
     observation_end = generate_end_date(fixing_dates, rate_index)
     return observation_start, observation_end
 end
 
-function observation_dates(fixing_dates, rate_index::RateIndex{BackwardLooking, S})
+function observation_dates(fixing_dates, rate_index::RateIndex{BackwardLooking,P,B,C}) where {P,B,C}
     observation_end = fixing_dates
     observation_start = generate_start_date(fixing_dates, rate_index)
     return observation_start, observation_end
 end
 
-function SimpleRateSchedule(instrument_schedule::I, rate_config::R) where {I<:AbstractInstrumentSchedule,R <: AbstractRateConfig}
-    return SimpleRateSchedule(instrument_schedule.start_date, instrument_schedule.end_date, instrument_schedule.schedule_config, rate_config)
+function SimpleRateSchedule(instrument_schedule::I, rate_config::R, rate_index::In) where {I<:AbstractInstrumentSchedule,R <: AbstractRateConfig, In<:AbstractRateIndex}
+    return SimpleRateSchedule(instrument_schedule.start_date, instrument_schedule.end_date, instrument_schedule.schedule_config, rate_config, rate_index)
 end
 
 """

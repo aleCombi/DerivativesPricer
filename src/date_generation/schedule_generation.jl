@@ -229,17 +229,17 @@ Generate the end date of a rate period given the schedule configuration and the 
 # Returns
 - Shifted, adjusted, and rolled date.
 """
-function generate_end_date(start_date, rate_index::R) where {R<:AbstractRateIndex}
-	return adjust_date.(start_date .+ rate_index.period, rate_index.calendar, rate_index.business_day_convention)
+function generate_end_date(start_date, period::P, calendar::C, business_day_convention::B) where {P <: Period, B <: BusinessDayConvention, C<:HolidayCalendar}
+	adjustor = t -> adjust_date(t, calendar, business_day_convention)
+	return adjustor.(start_date .+ period)
 end
 
 reverse_business_adjustment(::ModifiedFollowing) = ModifiedPreceding()
 reverse_business_adjustment(::ModifiedPreceding) = ModifiedFollowing()
-reverse_business_adjustment(::Following) = Preceding()
-reverse_business_adjustment(::Preceding) = Following()
+reverse_business_adjustment(::FollowingBusinessDay) = PrecedingBusinessDay()
+reverse_business_adjustment(::PrecedingBusinessDay) = FollowingBusinessDay()
 
-function generate_start_date(end_date, rate_index::R) where {R<:AbstractRateIndex}
-	return adjust_date(end_date .- rate_index.period, rate_index.calendar, reverse_business_adjustment(rate_index.business_day_convention))
+function generate_start_date(end_date, period::P, calendar::C, business_day_convention::B) where {P <: Period, B <: BusinessDayConvention, C<:HolidayCalendar}
+	adjustor = t -> adjust_date(t, calendar, business_day_convention)
+	return adjustor.(end_date .- period)
 end
-
-

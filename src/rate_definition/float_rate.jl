@@ -22,7 +22,7 @@ A structure representing a rate index. This object typically maps to data source
 # Fields
 - `name::String`: The name of the rate index (e.g., LIBOR, EURIBOR, SOFR).
 """
-struct RateIndex{O<:ObservationPeriod, S<:AbstractScheduleConfig, P <: Period, B <: BusinessDayConvention, C<:HolidayCalendar} <: AbstractRateIndex
+struct RateIndex{O<:ObservationPeriod, P <: Period, B <: BusinessDayConvention, C<:HolidayCalendar} <: AbstractRateIndex
     name::String
     observation_period::O
     tenor::P
@@ -31,7 +31,15 @@ struct RateIndex{O<:ObservationPeriod, S<:AbstractScheduleConfig, P <: Period, B
 end
 
 function RateIndex(name)
-    return RateIndex(name, ForwardLooking(), Day(1), BusinessDay.NoHolidays(), NoneBusinessDayConvention())
+    return RateIndex(name, ForwardLooking(), Day(1), NoHolidays(), NoneBusinessDayConvention())
+end
+
+function generate_start_date(end_date, rate_index::RateIndex)
+    return generate_start_date(end_date, rate_index.tenor, rate_index.calendar, rate_index.business_day_convention)
+end
+
+function generate_end_date(start_date, rate_index::RateIndex)
+    return generate_end_date(start_date, rate_index.tenor, rate_index.calendar, rate_index.business_day_convention)
 end
 
 """

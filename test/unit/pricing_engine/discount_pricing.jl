@@ -31,7 +31,7 @@ end
     principal = 1000.0
     start_date = Date(2023, 1, 1)
     end_date = Date(2024, 1, 1)
-    rate_index = RateIndex("dummy")
+    rate_index = RateIndex("RateIndex", Hedgehog.ForwardLooking(), Month(6), NoHolidays(), NoneBusinessDayConvention())
     rate_convention = DummyRateType()
     schedule_config = DummyScheduleConfig()
     instrument_schedule = InstrumentSchedule(start_date, end_date, schedule_config)

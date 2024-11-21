@@ -124,10 +124,7 @@ end
 # Test 2: Test generation of end dates from start dates
 @testitem "Date Correction Tests, " setup=[ScheduleGeneration] begin
     start_dates = [Date(2023, 1, 1), Date(2023, 2, 1), Date(2023, 3, 1)] 
-    stub_period = StubPeriod(UpfrontStubPosition(), ShortStubLength())
-    schedule_config = ScheduleConfig(Month(1), business_days_convention=ModifiedFollowing(), calendar=WeekendsOnly(), stub_period=stub_period)
-    
-    end_dates = generate_end_date(start_dates, schedule_config)
+    end_dates = generate_end_date(start_dates, Month(1), WeekendsOnly(), ModifiedFollowing())
     
     # Test that date correction moves weekend dates to the next business day
     @test end_dates == [Date(2023, 2, 1), Date(2023, 3, 1), Date(2023, 4, 3)]  # First of april is a saturday

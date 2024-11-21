@@ -83,7 +83,7 @@ end
     rate_type = LinearRate()
     fixing_days_delay = 0
     rate_config = SimpleRateConfig(day_count, rate_type, NoShift(false), AdditiveMargin())
-    instrument_rate = SimpleInstrumentRate(RateIndex("rate_index"), rate_config)
+    instrument_rate = SimpleInstrumentRate(RateIndex("RateIndex", Hedgehog.ForwardLooking(), Month(1), NoHolidays(), NoneBusinessDayConvention()), rate_config)
 
     # fixed rate stream configuration
     principal = 1.0
