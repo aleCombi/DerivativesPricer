@@ -253,7 +253,7 @@ end
 
     calculated_forward = forward_rate(stream, RateMarketData(rate_curve, fixings))
 
-    compounded_accrual = (exp(31/365 * 0.05) - 1 + 31/360 * 0.02) * (exp(29/365 * 0.05) + 0.02 * 29/360) + exp(29/365 * 0.05) - 1 + 29/360 * 0.02
+    compounded_accrual = (31/360 * 0.07) * (exp(29/365 * 0.05) + 0.02 * 29/360) + exp(29/365 * 0.05) - 1 + 29/360 * 0.02
     compounded_rate = (compounded_accrual) / 60 * 360
     @test calculated_forward[1] ≈ compounded_rate
 end
